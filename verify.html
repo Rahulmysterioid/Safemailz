@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safemailz - Verify</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .verify-container {
+            max-width: 600px;
+            margin: 4rem auto 8rem;
+            padding: 0 1.5rem;
+            text-align: center;
+            position: relative;
+        }
+        
+        .back-btn {
+            position: absolute;
+            left: 1.5rem;
+            top: 0;
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--text-dark);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .verify-header {
+            margin-bottom: 2rem;
+            padding-top: 1rem;
+        }
+        
+        .verify-header h1 {
+            font-size: 2.25rem;
+            margin-bottom: 0.75rem;
+        }
+        
+        .verify-header p {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+            line-height: 1.6;
+        }
+        
+        .verify-header strong {
+            color: var(--text-dark);
+        }
+        
+        .code-inputs {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .code-input {
+            width: 60px;
+            height: 64px;
+            border: 2px solid var(--primary-color);
+            border-radius: 12px;
+            font-size: 1.5rem;
+            font-weight: 600;
+            text-align: center;
+            color: var(--text-dark);
+            font-family: var(--font-main);
+            outline: none;
+            box-shadow: 0 4px 10px rgba(69, 174, 241, 0.1);
+        }
+        
+        .code-input:focus {
+            border-color: #1A60A4;
+        }
+        
+        .verify-btn {
+            padding: 0.75rem 3rem;
+            font-size: 1.125rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
+        }
+        
+        .resend-link {
+            color: var(--text-gray);
+        }
+        
+        .resend-link a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">M</span>
+                <span class="logo-text">SAFEMAILZ</span>
+                <span class="logo-subtext">PROTECT YOUR CLIENTS</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#how-to-use">How to use</a>
+                <a href="index.html#features">Features</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="signin.html">Sign in</a>
+                <a href="signup.html" class="active" style="color: var(--primary-color);">Signup</a>
+            </nav>
+            
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="verify-container">
+            <a href="signup.html" class="back-btn">&lt;</a>
+            
+            <div class="verify-header">
+                <h1>Please enter the code</h1>
+                <p>We sent a code <strong>nouman.azam122@gmail.com</strong><br>enter 5 digit code that mentioned in the email</p>
+            </div>
+            
+            <form action="success.html" method="GET">
+                <div class="code-inputs">
+                    <input type="text" class="code-input" maxlength="1" value="8" required>
+                    <input type="text" class="code-input" maxlength="1" value="6" required>
+                    <input type="text" class="code-input" maxlength="1" value="3" required>
+                    <input type="text" class="code-input" maxlength="1" value="2" required>
+                    <input type="text" class="code-input" maxlength="1" value="3" required>
+                </div>
+                
+                <button type="submit" class="btn btn-primary verify-btn">Create Account</button>
+            </form>
+            
+            <div class="resend-link">
+                Haven't got the email yet? <a href="#">Resend email</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Safemailz</h4>
+                    <ul>
+                        <li><a href="#">About us</a></li>
+                        <li><a href="#">News</a></li>
+                        <li><a href="#">Career</a></li>
+                        <li><a href="#">Partner</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Enterprise</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Webinar</a></li>
+                        <li><a href="#">Help center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="margin-bottom: 1rem;">Subscribe</h4>
+                        <div class="subscribe-form">
+                            <input type="email" class="subscribe-input" placeholder="Email address">
+                            <button class="subscribe-btn">→</button>
+                        </div>
+                        <p class="subscribe-text">Hello, we are Safemailz. Our goal is to protect your clients' data from revolutionary how companies engage with their clients & their team.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-links">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Cookies</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-icon">in</a>
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Auto-advance code inputs
+        const inputs = document.querySelectorAll('.code-input');
+        inputs.forEach((input, index) => {
+            input.addEventListener('input', () => {
+                if (input.value.length === 1 && index < inputs.length - 1) {
+                    inputs[index + 1].focus();
+                }
+            });
+            input.addEventListener('keydown', (e) => {
+                if (e.key === 'Backspace' && input.value.length === 0 && index > 0) {
+                    inputs[index - 1].focus();
+                }
+            });
+        });
+
+        document.querySelector('form').addEventListener('submit', (e) => {
+            e.preventDefault();
+            window.location.href = 'success.html';
+        });
+    </script>
+</body>
+</html>

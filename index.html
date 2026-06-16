@@ -1,0 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safemailz - Protect Your Clients</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        /* Home Specific Styles */
+        .hero {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .hero-title {
+            font-size: 3.5rem;
+            max-width: 800px;
+            margin: 0 auto 1.5rem;
+        }
+        
+        .hero-subtitle {
+            font-size: 1.125rem;
+            max-width: 600px;
+            margin: 0 auto 2.5rem;
+        }
+        
+        .hero-actions {
+            display: flex;
+            gap: 1.5rem;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        /* Features Section */
+        .features {
+            padding: 4rem 0;
+            text-align: center;
+            background: #F8FAFC;
+        }
+        
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .section-subtitle {
+            margin-bottom: 3rem;
+            color: var(--text-gray);
+        }
+        
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem;
+            text-align: left;
+        }
+        
+        .feature-card {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.03);
+            border: 1px solid #E2E8F0;
+            transition: transform 0.2s;
+        }
+        
+        .feature-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .feature-card.active {
+            background: var(--primary-gradient);
+            color: white;
+            border: none;
+        }
+        
+        .feature-card.active p {
+            color: rgba(255,255,255,0.9);
+        }
+        
+        .feature-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            background: #F1F5F9;
+            color: #64748B;
+        }
+        
+        .feature-card.active .feature-icon {
+            background: rgba(255,255,255,0.2);
+            color: white;
+        }
+        
+        /* Dark Section */
+        .dark-section {
+            background: #000;
+            color: white;
+            padding: 5rem 0;
+            position: relative;
+        }
+        
+        .dark-section::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0;
+            width: 200px;
+            height: 100%;
+            background: linear-gradient(90deg, #45AEF1 0%, transparent 100%);
+            opacity: 0.2;
+        }
+
+        .dark-section::after {
+            content: '';
+            position: absolute;
+            bottom: 0; right: 0;
+            width: 0;
+            height: 0;
+            border-style: solid;
+            border-width: 0 0 50px 50px;
+            border-color: transparent transparent #22C55E transparent;
+        }
+        
+        .dark-content {
+            display: flex;
+            align-items: center;
+            gap: 4rem;
+        }
+        
+        .dark-images {
+            flex: 1;
+            position: relative;
+        }
+        
+        .dark-images img {
+            border-radius: 12px;
+        }
+        
+        .play-button {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 64px;
+            height: 64px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(4px);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid white;
+            cursor: pointer;
+        }
+        
+        .play-button::after {
+            content: '';
+            width: 0; height: 0;
+            border-style: solid;
+            border-width: 10px 0 10px 16px;
+            border-color: transparent transparent transparent white;
+            margin-left: 5px;
+        }
+        
+        .dark-text {
+            flex: 1;
+        }
+        
+        .dark-text h2 {
+            color: white;
+            margin-bottom: 1.5rem;
+        }
+        
+        .dark-text p {
+            color: #94A3B8;
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat h3 {
+            color: #45AEF1;
+            font-size: 2rem;
+            margin-bottom: 0.25rem;
+        }
+        
+        .stat p {
+            font-size: 0.875rem;
+            margin: 0;
+        }
+        
+        /* How to Use */
+        .how-to {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        .steps {
+            max-width: 800px;
+            margin: 3rem auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+        
+        .step-card {
+            display: flex;
+            text-align: left;
+            padding: 1.5rem;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            gap: 1.5rem;
+        }
+        
+        .step-number {
+            width: 32px;
+            height: 32px;
+            background: var(--primary-color);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        
+        /* Pricing */
+        .pricing {
+            padding: 5rem 0;
+            background: #F8FAFC;
+            text-align: center;
+        }
+        
+        .pricing-toggle {
+            display: inline-flex;
+            background: white;
+            border-radius: 30px;
+            padding: 4px;
+            margin: 2rem 0 3rem;
+            border: 1px solid var(--border-color);
+        }
+        
+        .toggle-btn {
+            padding: 0.5rem 1.5rem;
+            border-radius: 30px;
+            border: none;
+            background: none;
+            font-weight: 600;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+        
+        .toggle-btn.active {
+            background: var(--primary-color);
+            color: white;
+        }
+        
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 2rem;
+            max-width: 1000px;
+            margin: 0 auto;
+        }
+        
+        .pricing-card {
+            background: white;
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 2.5rem 2rem;
+            transition: transform 0.3s;
+        }
+        
+        .pricing-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+        }
+        
+        .pricing-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .pricing-price {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-price span {
+            font-size: 1rem;
+            color: var(--text-gray);
+            font-weight: 400;
+        }
+        
+        .pricing-features {
+            text-align: left;
+            margin-bottom: 2rem;
+        }
+        
+        .pricing-features li {
+            margin-bottom: 0.75rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .pricing-features li::before {
+            content: '✓';
+            color: #22C55E;
+            font-weight: bold;
+        }
+        
+        /* Security CTA */
+        .security-cta {
+            padding: 5rem 0;
+            text-align: center;
+        }
+        
+        /* Testimonials */
+        .testimonials {
+            padding: 5rem 0;
+            background: #F8FAFC;
+        }
+        
+        .testimonials-container {
+            display: flex;
+            align-items: flex-start;
+            gap: 4rem;
+        }
+        
+        .testimonials-intro {
+            flex: 1;
+        }
+        
+        .testimonials-grid {
+            flex: 2;
+            display: flex;
+            gap: 1.5rem;
+            overflow-x: auto;
+            padding-bottom: 1rem;
+        }
+        
+        .testimonial-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            min-width: 300px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .testimonial-avatar {
+            width: 100px;
+            height: 100px;
+            border-radius: 8px;
+            object-fit: cover;
+        }
+        
+        .testimonial-content h4 {
+            margin-bottom: 0.25rem;
+        }
+        
+        .testimonial-content p {
+            font-size: 0.875rem;
+            font-style: italic;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stars {
+            color: #FACC15;
+            font-size: 0.875rem;
+        }
+        
+        /* FAQ */
+        .faq {
+            padding: 5rem 0;
+        }
+        
+        .faq-container {
+            display: flex;
+            gap: 4rem;
+        }
+        
+        .faq-intro {
+            flex: 1;
+        }
+        
+        .faq-list {
+            flex: 2;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+        
+        .faq-item {
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 1rem;
+        }
+        
+        .faq-question {
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            cursor: pointer;
+            padding: 0.5rem 0;
+        }
+        
+        .faq-answer {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+
+        @media (max-width: 992px) {
+            .features-grid { grid-template-columns: repeat(2, 1fr); }
+            .dark-content { flex-direction: column; }
+            .pricing-grid { grid-template-columns: repeat(2, 1fr); }
+            .testimonials-container, .faq-container { flex-direction: column; gap: 2rem; }
+        }
+        @media (max-width: 768px) {
+            .features-grid { grid-template-columns: 1fr; }
+            .pricing-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">M</span>
+                <span class="logo-text">SAFEMAILZ</span>
+                <span class="logo-subtext">PROTECT YOUR CLIENTS</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="index.html" class="active" style="color: var(--primary-color);">Home</a>
+                <a href="#how-to-use">How to use</a>
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="signin.html">Sign in</a>
+                <a href="signup.html" style="color: var(--primary-color);">Signup</a>
+            </nav>
+            
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <main>
+        <!-- Hero Section -->
+        <section class="hero container">
+            <h1 class="hero-title">Protect Your Clients'<br>Sensitive Information</h1>
+            <p class="hero-subtitle">Enterprise-grade email security solutions designed for modern businesses to safeguard their most important communications.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary">Get Started Now</button>
+                <button class="btn btn-outline">Watch a Demo</button>
+            </div>
+        </section>
+
+        <!-- Features Section -->
+        <section id="features" class="features">
+            <div class="container">
+                <h2 class="section-title">Enterprise features designed to prevent data leaks</h2>
+                <p class="section-subtitle">Comprehensive tools to monitor and protect your organization's data.</p>
+                
+                <div class="features-grid">
+                    <div class="feature-card active">
+                        <div class="feature-icon">🛡️</div>
+                        <h3>End-to-End Encryption</h3>
+                        <p>Military-grade encryption ensures your messages remain confidential from send to receive.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">👤</div>
+                        <h3>Multi-Factor Authentication</h3>
+                        <p>Add an extra layer of security with advanced multi-factor authentication protocols.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">⚙️</div>
+                        <h3>User Access Control</h3>
+                        <p>Granular permissions let you control exactly who can view, edit, or forward emails.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📊</div>
+                        <h3>Data DLP Policy</h3>
+                        <p>Prevent sensitive data like credit cards and SSNs from ever leaving your network.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">🔍</div>
+                        <h3>Vulnerability Assessment</h3>
+                        <p>Continuous scanning to identify and patch potential security vulnerabilities proactively.</p>
+                    </div>
+                    <div class="feature-card">
+                        <div class="feature-icon">📝</div>
+                        <h3>Audit & Monitoring Logs</h3>
+                        <p>Detailed tracking of all activities for compliance and security investigations.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Dark Section -->
+        <section class="dark-section">
+            <div class="container dark-content">
+                <div class="dark-images">
+                    <img src="images/office_workers.png" alt="Team working">
+                    <div class="play-button"></div>
+                </div>
+                <div class="dark-text">
+                    <h2>Know More About Safemailz</h2>
+                    <p>A comprehensive suite of security tools that ensure your business stays protected. We use industry-leading encryption and security protocols to keep your data safe and compliant.</p>
+                    
+                    <div class="stats-grid">
+                        <div class="stat">
+                            <h3>4.5/5</h3>
+                            <p>Client Rating</p>
+                        </div>
+                        <div class="stat">
+                            <h3>425</h3>
+                            <p>Security Experts</p>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary">Get Started</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- How to Use Section -->
+        <section id="how-to-use" class="how-to container">
+            <h2 class="section-title">How to Use SafeMailz?</h2>
+            
+            <div class="steps">
+                <div class="step-card">
+                    <div class="step-number">1</div>
+                    <div>
+                        <h3>Sign up & create admin account</h3>
+                        <p>Start by creating your organization's administrative account providing basic company details.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">2</div>
+                    <div>
+                        <h3>Add employees</h3>
+                        <p>Invite your team members via email or sync with your existing directory services to onboard your staff.</p>
+                    </div>
+                </div>
+                <div class="step-card">
+                    <div class="step-number">3</div>
+                    <div>
+                        <h3>Share & confirm</h3>
+                        <p>Start sending secure emails immediately. All communications are automatically encrypted based on your rules.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="btn btn-primary">Get Started Now</button>
+        </section>
+
+        <!-- Pricing Section -->
+        <section id="pricing" class="pricing">
+            <div class="container">
+                <h2 class="section-title">Pricing Plans</h2>
+                
+                <div class="pricing-toggle">
+                    <button class="toggle-btn active">Monthly</button>
+                    <button class="toggle-btn">Yearly</button>
+                </div>
+                
+                <div class="pricing-grid">
+                    <div class="pricing-card">
+                        <div class="pricing-title">Basic</div>
+                        <div class="pricing-price">300 Rs<span>/seat</span></div>
+                        <ul class="pricing-features">
+                            <li>Up to 10 users</li>
+                            <li>Standard Encryption</li>
+                            <li>Email Support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%">Choose Plan</button>
+                    </div>
+                    
+                    <div class="pricing-card">
+                        <div class="pricing-title">Pro</div>
+                        <div class="pricing-price">600 Rs<span>/seat</span></div>
+                        <ul class="pricing-features">
+                            <li>Up to 50 users</li>
+                            <li>Advanced DLP</li>
+                            <li>Priority Support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%">Choose Plan</button>
+                    </div>
+                    
+                    <div class="pricing-card">
+                        <div class="pricing-title">Enterprise</div>
+                        <div class="pricing-price">1000 Rs<span>/seat</span></div>
+                        <ul class="pricing-features">
+                            <li>Unlimited users</li>
+                            <li>Custom integrations</li>
+                            <li>24/7 Phone Support</li>
+                        </ul>
+                        <button class="btn btn-primary" style="width: 100%">Choose Plan</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Enterprise Grade Security -->
+        <section class="security-cta container">
+            <h2 class="section-title">Enterprise-Grade Email Security</h2>
+            <p class="section-subtitle">Join thousands of organizations that trust Safemailz to protect their data.</p>
+            <div class="hero-actions">
+                <button class="btn btn-primary">Start Free Trial</button>
+                <button class="btn btn-outline">Contact Sales</button>
+            </div>
+        </section>
+
+        <!-- Testimonials -->
+        <section class="testimonials">
+            <div class="container testimonials-container">
+                <div class="testimonials-intro">
+                    <h2 class="section-title" style="text-align: left;">What others are saying about Us</h2>
+                    <p>Don't just take our word for it. See what leading industry experts have to say.</p>
+                    <div class="stars">★★★★★</div>
+                    <p style="font-size: 0.875rem; color: var(--text-dark); margin-top: 0.5rem; font-weight: 500;">Rated 4.9/5 on G2</p>
+                </div>
+                
+                <div class="testimonials-grid">
+                    <div class="testimonial-card">
+                        <img src="images/avatar_1.png" alt="Oliver" class="testimonial-avatar">
+                        <div class="testimonial-content">
+                            <h4>Oliver</h4>
+                            <p>"It has never been easier to protect our sensitive data. Safemailz is an essential tool."</p>
+                            <div class="stars">★★★★★</div>
+                        </div>
+                    </div>
+                    <div class="testimonial-card">
+                        <img src="images/avatar_2.png" alt="James" class="testimonial-avatar">
+                        <div class="testimonial-content">
+                            <h4>James</h4>
+                            <p>"The best investment we've made in our cybersecurity infrastructure this year."</p>
+                            <div class="stars">★★★★★</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- FAQ Section -->
+        <section class="faq container">
+            <div class="faq-container">
+                <div class="faq-intro">
+                    <h2 class="section-title" style="text-align: left;">Frequently Asked Questions</h2>
+                    <p>Find answers to common questions about our platform, features, and security protocols.</p>
+                    <button class="btn btn-primary" style="margin-top: 1.5rem;">See All</button>
+                </div>
+                
+                <div class="faq-list">
+                    <div class="faq-item">
+                        <div class="faq-question">How does Safemailz work? <span>+</span></div>
+                        <div class="faq-answer">Safemailz integrates with your existing email provider to encrypt outbound messages and attachments automatically.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Is my data secure? <span>-</span></div>
+                        <div class="faq-answer" style="display: block;">Yes, we use military-grade AES-256 encryption. We never store your encryption keys, meaning even we cannot read your emails.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">Does this work with large teams? <span>+</span></div>
+                        <div class="faq-answer">Absolutely. Our Enterprise plan is designed for organizations with thousands of users, featuring advanced administration tools.</div>
+                    </div>
+                    <div class="faq-item">
+                        <div class="faq-question">How do I create an account? <span>+</span></div>
+                        <div class="faq-answer">Simply click "Sign up", choose your plan, and follow the onboarding wizard to configure your organization.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Safemailz</h4>
+                    <ul>
+                        <li><a href="#">About us</a></li>
+                        <li><a href="#">News</a></li>
+                        <li><a href="#">Career</a></li>
+                        <li><a href="#">Partner</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Enterprise</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Webinar</a></li>
+                        <li><a href="#">Help center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="margin-bottom: 1rem;">Subscribe</h4>
+                        <div class="subscribe-form">
+                            <input type="email" class="subscribe-input" placeholder="Email address">
+                            <button class="subscribe-btn">→</button>
+                        </div>
+                        <p class="subscribe-text">Hello, we are Safemailz. Our goal is to protect your clients' data from revolutionary how companies engage with their clients & their team.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-links">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Cookies</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-icon">in</a>
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // Simple FAQ toggle logic
+        document.querySelectorAll('.faq-question').forEach(q => {
+            q.addEventListener('click', () => {
+                const answer = q.nextElementSibling;
+                const icon = q.querySelector('span');
+                if (answer.style.display === 'block') {
+                    answer.style.display = 'none';
+                    icon.textContent = '+';
+                } else {
+                    answer.style.display = 'block';
+                    icon.textContent = '-';
+                }
+            });
+        });
+    </script>
+</body>
+</html>

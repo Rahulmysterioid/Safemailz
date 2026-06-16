@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Safemailz - Signup</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+    <style>
+        .signup-container {
+            max-width: 600px;
+            margin: 4rem auto;
+            padding: 0 1.5rem;
+        }
+        
+        .signup-header {
+            text-align: center;
+            margin-bottom: 2.5rem;
+        }
+        
+        .signup-header h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+        }
+        
+        .signup-header p {
+            color: var(--text-gray);
+            font-size: 0.875rem;
+        }
+        
+        .password-input-wrapper {
+            position: relative;
+        }
+        
+        .password-toggle {
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+        
+        .help-text {
+            font-size: 0.75rem;
+            color: var(--text-gray);
+            margin-top: 0.5rem;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+            margin-bottom: 1rem;
+        }
+        
+        .checkbox-group input[type="checkbox"] {
+            margin-top: 0.25rem;
+            accent-color: var(--primary-color);
+            width: 16px;
+            height: 16px;
+        }
+        
+        .checkbox-group label {
+            font-size: 0.875rem;
+            color: var(--text-gray);
+        }
+        
+        .checkbox-group a {
+            color: var(--primary-color);
+            text-decoration: underline;
+        }
+        
+        .form-actions {
+            display: flex;
+            gap: 1rem;
+            margin-top: 2rem;
+            margin-bottom: 2.5rem;
+        }
+        
+        .form-actions .btn {
+            padding: 0.75rem 2rem;
+        }
+        
+        .security-badge {
+            background: #EAF4FE;
+            border-radius: 8px;
+            padding: 1.5rem;
+            display: flex;
+            gap: 1rem;
+            align-items: flex-start;
+            margin-bottom: 2.5rem;
+        }
+        
+        .security-badge-icon {
+            color: var(--primary-color);
+            font-size: 1.5rem;
+            flex-shrink: 0;
+        }
+        
+        .security-badge p {
+            color: var(--text-dark);
+            font-size: 0.875rem;
+            margin: 0;
+            line-height: 1.5;
+        }
+        
+        .login-link {
+            text-align: center;
+            font-size: 1rem;
+            color: var(--text-gray);
+        }
+        
+        .login-link a {
+            color: var(--primary-color);
+            font-weight: 500;
+            text-decoration: underline;
+        }
+
+        .select-wrapper {
+            position: relative;
+        }
+
+        .select-wrapper::after {
+            content: '⌄';
+            position: absolute;
+            right: 1rem;
+            top: 50%;
+            transform: translateY(-50%);
+            pointer-events: none;
+            color: var(--text-gray);
+            font-size: 1.25rem;
+        }
+
+        select.form-control {
+            appearance: none;
+            -webkit-appearance: none;
+            cursor: pointer;
+            color: var(--text-gray);
+        }
+        
+        .form-error {
+            color: #d93025;
+            font-size: 0.875rem;
+            margin-top: 0.5rem;
+            display: none;
+        }
+        
+        .global-error {
+            background-color: #fce8e6;
+            color: #d93025;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            display: none;
+            font-size: 0.875rem;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="container flex justify-between items-center">
+            <a href="index.html" class="logo">
+                <span class="logo-icon">M</span>
+                <span class="logo-text">SAFEMAILZ</span>
+                <span class="logo-subtext">PROTECT YOUR CLIENTS</span>
+            </a>
+            
+            <nav class="nav-links">
+                <a href="index.html">Home</a>
+                <a href="index.html#how-to-use">How to use</a>
+                <a href="index.html#features">Features</a>
+                <a href="index.html#pricing">Pricing</a>
+                <a href="signin.html">Sign in</a>
+                <a href="signup.html" class="active" style="color: var(--primary-color);">Signup</a>
+            </nav>
+            
+            <button class="mobile-menu-btn">☰</button>
+        </div>
+    </header>
+
+    <main>
+        <div class="signup-container">
+            <div class="signup-header">
+                <h1>Create an Organization account</h1>
+                <p>Please enter your organization details to create an account</p>
+            </div>
+            
+            <div id="globalError" class="global-error"></div>
+            <form id="signupForm" novalidate>
+                <div class="form-group">
+                    <label class="form-label" for="orgName">Organization Name *</label>
+                    <input type="text" class="form-control" id="orgName" placeholder="Enter organization name" required>
+                    <div class="form-error" id="orgNameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="adminName">Admin name *</label>
+                    <input type="text" class="form-control" id="adminName" placeholder="Enter admin name" required>
+                    <div class="form-error" id="adminNameError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="email">Email address *</label>
+                    <input type="email" class="form-control" id="email" placeholder="Enter email address" required>
+                    <div class="form-error" id="emailError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="password">Create Password *</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" class="form-control" id="password" placeholder="Create a password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('password', this)">👁️</button>
+                    </div>
+                    <div class="form-error" id="passwordError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="confirmPassword">Re-enter Password *</label>
+                    <div class="password-input-wrapper">
+                        <input type="password" class="form-control" id="confirmPassword" placeholder="Re-enter your password" required>
+                        <button type="button" class="password-toggle" onclick="togglePassword('confirmPassword', this)">👁️</button>
+                    </div>
+                    <div class="form-error" id="confirmPasswordError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="orgSize">Organization Size *</label>
+                    <div class="select-wrapper">
+                        <select class="form-control" id="orgSize" required>
+                            <option value="" disabled selected>Select organization size</option>
+                            <option value="1-10">1-10 employees</option>
+                            <option value="11-50">11-50 employees</option>
+                            <option value="51-200">51-200 employees</option>
+                            <option value="201+">201+ employees</option>
+                        </select>
+                    </div>
+                    <div class="form-error" id="orgSizeError"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label class="form-label" for="backupEmail">Backup Email</label>
+                    <input type="email" class="form-control" id="backupEmail" placeholder="Enter backup email (optional)">
+                    <p class="help-text">Used to recover your account and receive important security alerts if you lose access.</p>
+                    <div class="form-error" id="backupEmailError"></div>
+                </div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="terms" required>
+                    <label for="terms">I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></label>
+                </div>
+                <div class="form-error" id="termsError" style="margin-top: -0.5rem; margin-bottom: 1rem;"></div>
+                
+                <div class="checkbox-group">
+                    <input type="checkbox" id="updates">
+                    <label for="updates">Send me product updates, security tips, and best practices</label>
+                </div>
+                
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Signup</button>
+                    <!-- Typo from original screenshot preserved for accuracy or replaced, using Cancel -->
+                    <button type="button" class="btn btn-outline" style="border-radius: 6px;" onclick="window.location.href='index.html'">Cancel</button>
+                </div>
+            </form>
+            
+            <div class="security-badge">
+                <div class="security-badge-icon">🛡️</div>
+                <p>Your organization data is protected with enterprise-grade security. We never share your information with third parties</p>
+            </div>
+            
+            <div class="login-link">
+                Already have an account? <a href="signin.html">Sign in to your organization</a>
+            </div>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <h4>Safemailz</h4>
+                    <ul>
+                        <li><a href="#">About us</a></li>
+                        <li><a href="#">News</a></li>
+                        <li><a href="#">Career</a></li>
+                        <li><a href="#">Partner</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Product</h4>
+                    <ul>
+                        <li><a href="#">Features</a></li>
+                        <li><a href="#">Pricing</a></li>
+                        <li><a href="#">Enterprise</a></li>
+                        <li><a href="#">Security</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4>Resources</h4>
+                    <ul>
+                        <li><a href="#">Documentation</a></li>
+                        <li><a href="#">Blog</a></li>
+                        <li><a href="#">Webinar</a></li>
+                        <li><a href="#">Help center</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px;">
+                        <h4 style="margin-bottom: 1rem;">Subscribe</h4>
+                        <div class="subscribe-form">
+                            <input type="email" class="subscribe-input" placeholder="Email address">
+                            <button class="subscribe-btn">→</button>
+                        </div>
+                        <p class="subscribe-text">Hello, we are Safemailz. Our goal is to protect your clients' data from revolutionary how companies engage with their clients & their team.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="footer-bottom">
+                <div class="footer-bottom-links">
+                    <a href="#">Terms</a>
+                    <a href="#">Privacy</a>
+                    <a href="#">Cookies</a>
+                </div>
+                <div class="social-links">
+                    <a href="#" class="social-icon">in</a>
+                    <a href="#" class="social-icon">f</a>
+                    <a href="#" class="social-icon">t</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function togglePassword(inputId, btn) {
+            const input = document.getElementById(inputId);
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.style.opacity = '0.5';
+            } else {
+                input.type = 'password';
+                btn.style.opacity = '1';
+            }
+        }
+
+        document.getElementById('signupForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            // Reset errors
+            document.querySelectorAll('.form-error').forEach(el => el.style.display = 'none');
+            const globalError = document.getElementById('globalError');
+            globalError.style.display = 'none';
+
+            let isValid = true;
+            const showError = (id, message) => {
+                const el = document.getElementById(id);
+                el.textContent = message;
+                el.style.display = 'block';
+                isValid = false;
+            };
+
+            const orgName = document.getElementById('orgName').value.trim();
+            const adminName = document.getElementById('adminName').value.trim();
+            const email = document.getElementById('email').value.trim();
+            const password = document.getElementById('password').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            const orgSize = document.getElementById('orgSize').value;
+            const backupEmail = document.getElementById('backupEmail').value.trim();
+            const terms = document.getElementById('terms').checked;
+            const updates = document.getElementById('updates').checked;
+
+            if (!orgName) showError('orgNameError', 'Organization Name is required');
+            if (!adminName) showError('adminNameError', 'Admin Name is required');
+            if (!email) {
+                showError('emailError', 'Email address is required');
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('emailError', 'Invalid email address');
+            }
+            if (!password) showError('passwordError', 'Password is required');
+            if (password !== confirmPassword) showError('confirmPasswordError', 'Passwords do not match');
+            if (!orgSize) showError('orgSizeError', 'Organization Size is required');
+            if (backupEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(backupEmail)) {
+                showError('backupEmailError', 'Invalid backup email address');
+            }
+            if (!terms) showError('termsError', 'You must agree to the Terms of Service and Privacy Policy');
+
+            if (!isValid) return;
+
+            const submitBtn = document.getElementById('submitBtn');
+            submitBtn.disabled = true;
+            submitBtn.textContent = 'Signing up...';
+
+            try {
+                const response = await fetch('/api/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        organization_name: orgName,
+                        admin_name: adminName,
+                        email: email,
+                        password: password,
+                        organization_size: orgSize,
+                        backup_email: backupEmail,
+                        terms_accepted: terms,
+                        marketing_opt_in: updates
+                    })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    window.location.href = data.redirectUrl || 'verify.html';
+                } else {
+                    globalError.textContent = data.error || 'Signup failed. Please try again.';
+                    globalError.style.display = 'block';
+                }
+            } catch (err) {
+                globalError.textContent = 'A network error occurred. Please try again.';
+                globalError.style.display = 'block';
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.textContent = 'Signup';
+            }
+        });
+    </script>
+</body>
+</html>
