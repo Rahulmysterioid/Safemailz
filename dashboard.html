@@ -4920,7 +4920,11 @@
 
                 const data = await response.json();
                 if (response.ok) {
-                    alert('Invite sent successfully!');
+                    if (data.inviteUrl) {
+                        alert('Employee added! Invite Link:\n\n' + data.inviteUrl + '\n\nPlease copy this link and send it to your employee.');
+                    } else {
+                        alert('Invite sent successfully!');
+                    }
                     
                     let seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
                     if (selectedSeatIndex !== null && seats[selectedSeatIndex]) {

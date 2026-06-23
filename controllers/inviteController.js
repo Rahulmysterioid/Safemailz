@@ -96,7 +96,7 @@ const sendInvite = async (req, res) => {
                     console.log('Mock Email -> Invite URL:', inviteUrl);
                 }
 
-                res.json({ success: true, message: 'Invite sent successfully', token: token });
+                res.json({ success: true, message: 'Invite sent successfully', token: token, inviteUrl: inviteUrl });
             }
         );
     });
