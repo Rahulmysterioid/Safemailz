@@ -4488,17 +4488,22 @@
         function goToStep(step) {
             // Content visibility
             document.querySelectorAll('.payment-step-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`step${step}Content`).classList.add('active');
+            const stepContent = document.getElementById(`step${step}Content`);
+            if (stepContent) stepContent.classList.add('active');
 
             // Hide summary box on Step 2 (success)
+            const summaryBox = document.getElementById('paymentSummaryBox');
+            const header = document.querySelector('.payment-header');
+            const stepper = document.getElementById('paymentStepper');
+
             if (step === 2) {
-                document.getElementById('paymentSummaryBox').style.display = 'none';
-                document.querySelector('.payment-header').style.display = 'none';
-                document.getElementById('paymentStepper').style.display = 'none';
+                if (summaryBox) summaryBox.style.display = 'none';
+                if (header) header.style.display = 'none';
+                if (stepper) stepper.style.display = 'none';
             } else {
-                document.getElementById('paymentSummaryBox').style.display = 'block';
-                document.querySelector('.payment-header').style.display = 'flex';
-                document.getElementById('paymentStepper').style.display = 'flex';
+                if (summaryBox) summaryBox.style.display = 'block';
+                if (header) header.style.display = 'flex';
+                if (stepper) stepper.style.display = 'flex';
             }
 
             // Stepper active states
@@ -4507,14 +4512,15 @@
             const l1 = document.getElementById('line1');
 
             // Reset
-            s1.className = 'step'; s2.className = 'step';
-            l1.className = 'step-line';
+            if (s1) s1.className = 'step'; 
+            if (s2) s2.className = 'step';
+            if (l1) l1.className = 'step-line';
 
-            if (step >= 1) s1.className = 'step active';
+            if (step >= 1 && s1) s1.className = 'step active';
             if (step >= 2) {
-                s1.className = 'step completed';
-                l1.className = 'step-line completed';
-                s2.className = 'step active completed';
+                if (s1) s1.className = 'step completed';
+                if (l1) l1.className = 'step-line completed';
+                if (s2) s2.className = 'step active completed';
             }
         }
 
@@ -4606,7 +4612,10 @@
             if (subTab) subTab.classList.add('active');
 
             if (typeof goToStep === 'function') goToStep(2);
+            if (typeof subOpenState === 'function') subOpenState(3);
         }
+
+
 
         async function processFinalPayment(btnId = 'btnProceedPayment') {
             const btn = document.getElementById(btnId);
