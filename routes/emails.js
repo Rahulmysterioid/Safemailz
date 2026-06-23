@@ -251,6 +251,7 @@ router.post('/send', async (req, res) => {
                 `To: ${to}`,
                 `From: "${senderName}" <${senderEmail}>`,
                 `Subject: ${subject}`,
+                `MIME-Version: 1.0`,
                 `Content-Type: text/html; charset=utf-8`
             ];
             if (cc) emailLines.push(`Cc: ${cc}`);
