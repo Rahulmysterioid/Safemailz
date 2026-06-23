@@ -1,13 +1,21 @@
-const sqlite3 = require('sqlite3').verbose();
+const sqlite3 = require('@libsql/sqlite3').verbose();
 const path = require('path');
 
+let dbPath;
+if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
+    dbPath = `${process.env.TURSO_DATABASE_URL}?authToken=${process.env.TURSO_AUTH_TOKEN}`;
+    console.log('Connecting to Turso Cloud Database...');
+} else {
+    dbPath = path.resolve(__dirname, 'database.sqlite');
+    console.log('Connecting to Local SQLite Database...');
+}
+
 // Connect to the SQLite database
-const dbPath = path.resolve(__dirname, 'database.sqlite');
 const db = new sqlite3.Database(dbPath, (err) => {
     if (err) {
         console.error('Error connecting to the database:', err.message);
     } else {
-        console.log('Connected to the SQLite database.');
+        console.log('Successfully connected to the database.');
     }
 });
 
