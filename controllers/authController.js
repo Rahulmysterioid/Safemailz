@@ -101,36 +101,36 @@ const signin = async (req, res) => {
     }
 
     try {
-        db.get('SELECT * FROM users WHERE email = ?', [email], async (err, user) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Internal server error.' });
-            }
+        const util = require('util');
+        const dbGet = util.promisify(db.get.bind(db));
+        
+        const user = await dbGet('SELECT * FROM users WHERE email = ?', [email]);
+        
+        if (!user) {
+            return res.status(400).json({ error: 'Invalid email or password.' });
+        }
 
-            if (!user) {
-                return res.status(400).json({ error: 'Invalid email or password.' });
-            }
+        const isMatch = await bcrypt.compare(password, user.password_hash);
+        if (!isMatch) {
+            return res.status(400).json({ error: 'Invalid email or password.' });
+        }
 
-            const isMatch = await bcrypt.compare(password, user.password_hash);
-            if (!isMatch) {
-                return res.status(400).json({ error: 'Invalid email or password.' });
+        return res.status(200).json({
+            message: 'Login successful.',
+            redirectUrl: 'dashboard.html',
+            user: {
+                id: user.id,
+                organization_id: user.organization_id,
+                email: user.email,
+                admin_name: user.admin_name,
+                role: user.role
             }
-
-            return res.status(200).json({
-                message: 'Login successful.',
-                redirectUrl: 'dashboard.html',
-                user: {
-                    id: user.id,
-                    organization_id: user.organization_id,
-                    email: user.email,
-                    admin_name: user.admin_name,
-                    role: user.role
-                }
-            });
         });
     } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: 'Internal server error.' });
+        console.error('Signin error:', error);
+        if (!res.headersSent) {
+            return res.status(500).json({ error: 'Internal server error.' });
+        }
     }
 };
 
