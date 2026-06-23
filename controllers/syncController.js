@@ -374,7 +374,8 @@ exports.getSyncStatus = (req, res) => {
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
     db.get('SELECT sync_provider, sync_last_sync_time FROM users WHERE id = ?', [userId], (err, row) => {
-        if (err || !row) return res.status(500).json({ error: 'Database error' });
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!row) return res.status(404).json({ error: 'User not found' });
         
         if (row.sync_provider) {
             res.json({

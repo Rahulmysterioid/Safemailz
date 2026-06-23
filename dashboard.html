@@ -4590,47 +4590,37 @@
                 btn.textContent = 'Initializing...';
                 btn.disabled = true;
             }
-
             try {
                 if (typeof Razorpay === 'undefined') {
                     throw new Error('Razorpay script is not loaded. Please check your internet connection.');
                 }
 
-                const API_BASE = (window.location.protocol === 'file:' || window.location.port !== '3000') 
-                    ? 'http://localhost:3000' 
-                    : '';
-
                 // 1. Create order on backend
-                const response = await fetch(API_BASE + '/api/payment/razorpay-order', {
+                const response = await fetch('/api/payment/razorpay-order', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ amount: currentTotal })
                 });
 
                 if (!response.ok) {
-                    throw new Error(`Backend server returned ${response.status}. Make sure the Node server (server.js) is running on port 3000.`);
+                    const errorData = await response.json().catch(() => ({}));
+                    throw new Error(errorData.error || 'Failed to create payment order');
                 }
 
-                const data = await response.json();
+                const order = await response.json();
 
-                if (!data.success) {
-                    throw new Error(data.message || 'Failed to initialize payment order.');
-                }
-
-                // 2. Open Razorpay Checkout
+                // 2. Initialize Razorpay Checkout
                 const options = {
-                    key: 'rzp_test_T0qGvs8egbRbcW',
-                    amount: data.order.amount,
-                    currency: "INR",
-                    name: "Safemailz",
-                    description: "Subscription Payment",
-                    order_id: data.order.id,
+                    key: order.keyId,
+                    amount: order.amount,
+                    currency: order.currency,
+                    name: 'Safemailz',
+                    description: `Subscription - ${planName} Plan`,
+                    order_id: order.id,
                     handler: async function (response) {
-                        if (btn) btn.textContent = 'Verifying...';
-                        
                         try {
-                            // 3. Verify on backend
-                            const verifyRes = await fetch(API_BASE + '/api/payment/razorpay-verify', {
+                            // 3. Verify payment on backend
+                            const verifyRes = await fetch('/api/payment/razorpay-verify', {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({
@@ -5299,9 +5289,16 @@
                     document.getElementById('signupMarketing').textContent = user.marketing_opt_in ? 'Yes' : 'No';
                     document.getElementById('signupTerms').textContent = user.terms_accepted ? 'Yes' : 'No';
                     document.getElementById('signupCreatedAt').textContent = user.joined_date;
+                } else if (response.status === 401 || response.status === 404) {
+                    console.warn('Session invalid or user not found. Redirecting to login...');
+                    localStorage.removeItem('currentUser');
+                    window.location.href = '/signin.html';
+                } else {
+                    if (typeof showToast === 'function') showToast('Failed to load profile data.');
                 }
             } catch (err) {
                 console.error('Error fetching profile:', err);
+                if (typeof showToast === 'function') showToast('Network error loading profile.');
             }
         }
 
@@ -6418,9 +6415,27 @@ async function checkSyncStatus() {
             if (data.isSynced && !syncPollInterval) {
                 syncPollInterval = setInterval(() => forceSyncRefresh(false), 60000);
             }
+        } else {
+            // Handle error states
+            const loadingState = document.getElementById('syncLoadingState');
+            const connectState = document.getElementById('syncConnectState');
+            
+            if (loadingState) loadingState.style.display = 'none';
+            if (connectState) connectState.style.display = 'flex';
+            
+            if (response.status === 401 || response.status === 404) {
+                console.warn('Session invalid or user not found. Redirecting to login...');
+                localStorage.removeItem('currentUser');
+                window.location.href = '/signin.html';
+            }
         }
     } catch (err) {
         console.error('Failed to check sync status', err);
+        // Fallback UI state on network failure
+        const loadingState = document.getElementById('syncLoadingState');
+        const connectState = document.getElementById('syncConnectState');
+        if (loadingState) loadingState.style.display = 'none';
+        if (connectState) connectState.style.display = 'flex';
     }
 }
 
