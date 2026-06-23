@@ -34,7 +34,12 @@ router.post('/razorpay-order', async (req, res) => {
         };
 
         const order = await razorpay.orders.create(options);
-        res.json({ success: true, order });
+        res.json({ 
+            id: order.id,
+            amount: order.amount,
+            currency: order.currency,
+            keyId: process.env.RAZORPAY_KEY_ID || 'rzp_test_T0qGvs8egbRbcW'
+        });
     } catch (error) {
         console.error('Razorpay Error:', error);
         res.status(500).json({ success: false, message: 'Error creating order' });
