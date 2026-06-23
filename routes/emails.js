@@ -349,40 +349,43 @@ router.post('/send', async (req, res) => {
         const plainTextBody = body.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
         const preview = plainTextBody.substring(0, 100);
 
-        db.serialize(() => {
-            db.run('BEGIN TRANSACTION');
-
-            db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview, to_address, cc, bcc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-                [emailNo, context.userId, context.orgId, subject, body, preview, to, cc || null, bcc || null],
-                function (err) {
-                    if (err) {
-                        db.run('ROLLBACK');
-                        console.error('Failed to insert email record:', err);
-                        return res.json({ success: true, message: 'Email sent, but failed to save in local sent items' });
-                    }
-                    const emailId = this.lastID;
-
-                    // Insert for recipient (Inbox) if they are internal
-                    if (recipientUser) {
-                        db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', 0)`,
-                            [emailId, recipientUser.id, recipientUser.organization_id]);
-                    }
-
-                    // Insert for sender (Sent)
-                    db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'sent', 1)`,
-                        [emailId, context.userId, context.orgId],
-                        (err) => {
-                            if (err) {
-                                db.run('ROLLBACK');
-                                console.error('Failed to save sent item:', err);
-                                return res.json({ success: true, message: 'Email sent, but failed to save in local sent items' });
-                            }
-                            db.run('COMMIT');
-                            res.json({ success: true, message: 'Email sent' });
-                        }
-                    );
-                });
+        const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+            db.run(query, params, function (err) {
+                if (err) reject(err);
+                else resolve(this);
+            });
         });
+
+        try {
+            await dbRun('BEGIN TRANSACTION');
+
+            const emailInsertResult = await dbRun(
+                `INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview, to_address, cc, bcc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [emailNo, context.userId, context.orgId, subject, body, preview, to, cc || null, bcc || null]
+            );
+            const emailId = emailInsertResult.lastID;
+
+            // Insert for recipient (Inbox) if they are internal
+            if (recipientUser) {
+                await dbRun(
+                    `INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', 0)`,
+                    [emailId, recipientUser.id, recipientUser.organization_id]
+                );
+            }
+
+            // Insert for sender (Sent)
+            await dbRun(
+                `INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'sent', 1)`,
+                [emailId, context.userId, context.orgId]
+            );
+
+            await dbRun('COMMIT');
+            res.json({ success: true, message: 'Email sent' });
+        } catch (dbErr) {
+            console.error('Local DB save failed:', dbErr);
+            await dbRun('ROLLBACK').catch(e => console.error('Rollback failed:', e));
+            return res.json({ success: true, message: 'Email sent, but failed to save in local sent items' });
+        }
 
     } catch (err) {
         console.error('Send mail error:', err);
@@ -398,56 +401,58 @@ router.post('/draft', (req, res) => {
     const { id, to, subject, body } = req.body;
     const preview = body ? body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').substring(0, 100).trim() : '';
 
+    const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+        db.run(query, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
+        });
+    });
+
     if (id) {
         // Updating an existing draft
-        db.get('SELECT sender_id FROM emails WHERE id = ?', [id], (err, emailRow) => {
+        db.get('SELECT sender_id FROM emails WHERE id = ?', [id], async (err, emailRow) => {
             if (err) return res.status(500).json({ error: 'Database error' });
             if (!emailRow) return res.status(404).json({ error: 'Draft not found' });
             if (emailRow.sender_id !== context.userId) return res.status(403).json({ error: 'Access denied' });
 
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION');
-                db.run('UPDATE emails SET subject = ?, body = ?, preview = ? WHERE id = ?', 
-                    [subject || '', body || '', preview, id], (err) => {
-                        if (err) {
-                            db.run('ROLLBACK');
-                            return res.status(500).json({ error: 'Failed to update draft' });
-                        }
-                        db.run('COMMIT');
-                        res.json({ success: true, message: 'Draft updated', emailId: id });
-                    });
-            });
+            try {
+                await dbRun('BEGIN TRANSACTION');
+                await dbRun('UPDATE emails SET subject = ?, body = ?, preview = ? WHERE id = ?', [subject || '', body || '', preview, id]);
+                await dbRun('COMMIT');
+                res.json({ success: true, message: 'Draft updated', emailId: id });
+            } catch (updateErr) {
+                console.error('Draft update error:', updateErr);
+                await dbRun('ROLLBACK').catch(() => {});
+                return res.status(500).json({ error: 'Failed to update draft' });
+            }
         });
     } else {
         // Creating a new draft
         const emailNo = Math.floor(10000 + Math.random() * 90000).toString(); // Simple random 5 digit No
 
-        db.serialize(() => {
-            db.run('BEGIN TRANSACTION');
+        (async () => {
+            try {
+                await dbRun('BEGIN TRANSACTION');
 
-            db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview) VALUES (?, ?, ?, ?, ?, ?)`,
-                [emailNo, context.userId, context.orgId, subject || '', body || '', preview],
-                function (err) {
-                    if (err) {
-                        db.run('ROLLBACK');
-                        return res.status(500).json({ error: 'Failed to create draft' });
-                    }
-                    const emailId = this.lastID;
+                const insertResult = await dbRun(
+                    `INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview) VALUES (?, ?, ?, ?, ?, ?)`,
+                    [emailNo, context.userId, context.orgId, subject || '', body || '', preview]
+                );
+                const emailId = insertResult.lastID;
 
-                    // Insert for sender (Drafts)
-                    db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'drafts', 1)`,
-                        [emailId, context.userId, context.orgId],
-                        (err) => {
-                            if (err) {
-                                db.run('ROLLBACK');
-                                return res.status(500).json({ error: 'Failed to save draft association' });
-                            }
-                            db.run('COMMIT');
-                            res.json({ success: true, message: 'Draft saved', emailId: emailId });
-                        }
-                    );
-                });
-        });
+                await dbRun(
+                    `INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'drafts', 1)`,
+                    [emailId, context.userId, context.orgId]
+                );
+
+                await dbRun('COMMIT');
+                res.json({ success: true, message: 'Draft saved', emailId: emailId });
+            } catch (draftErr) {
+                console.error('Draft save error:', draftErr);
+                await dbRun('ROLLBACK').catch(() => {});
+                return res.status(500).json({ error: 'Failed to create draft' });
+            }
+        })();
     }
 });
 

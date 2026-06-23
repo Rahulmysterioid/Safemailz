@@ -213,6 +213,15 @@ async function getValidAccessToken(user) {
 // -----------------------------------------------------------------------------------
 
 async function syncGoogleEmails(user, accessToken) {
+    const util = require('util');
+    const dbGet = util.promisify(db.get.bind(db));
+    const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+        db.run(query, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
+        });
+    });
+
     try {
         // Fetch up to 50 recent messages from Inbox
         const listResponse = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages?labelIds=INBOX&maxResults=50', {
@@ -222,59 +231,66 @@ async function syncGoogleEmails(user, accessToken) {
         
         if (!listData.messages || listData.messages.length === 0) return;
 
-        for (const msg of listData.messages) {
-            // Check if already synced
-            const existing = await new Promise((resolve) => {
-                db.get('SELECT e.id as email_id, er.is_deleted FROM emails e LEFT JOIN email_recipients er ON e.id = er.email_id AND er.user_id = ? WHERE e.external_id = ?', [user.id, msg.id], (err, row) => resolve(row));
-            });
+        // Process in batches of 5 to avoid overloading the API or database
+        const batchSize = 5;
+        for (let i = 0; i < listData.messages.length; i += batchSize) {
+            const batch = listData.messages.slice(i, i + batchSize);
             
-            if (existing) {
-                // If it exists but is marked as deleted (or no recipient record exists for this user), restore it
-                if (existing.is_deleted === 1) {
-                    await new Promise((resolve) => db.run('UPDATE email_recipients SET is_deleted = 0, folder = "inbox" WHERE email_id = ? AND user_id = ?', [existing.email_id, user.id], resolve));
-                } else if (existing.is_deleted === null) {
-                    await new Promise((resolve) => db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
-                        [existing.email_id, user.id, user.organization_id, (msg.labelIds && msg.labelIds.includes('UNREAD')) ? 0 : 1], resolve));
-                }
-                continue;
-            }
-
-            // Fetch full message
-            const msgResponse = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
-                headers: { 'Authorization': `Bearer ${accessToken}` }
-            });
-            const msgData = await msgResponse.json();
-
-            const fromHeader = getGmailHeader(msgData.payload.headers, 'From');
-            let senderName = fromHeader;
-            let senderEmail = fromHeader;
-            
-            const match = fromHeader.match(/(.*)<(.*)>/);
-            if (match) {
-                senderName = match[1].trim() || match[2].trim();
-                senderEmail = match[2].trim();
-            }
-
-            const subject = getGmailHeader(msgData.payload.headers, 'Subject') || 'No Subject';
-            const dateStr = getGmailHeader(msgData.payload.headers, 'Date');
-            const dateObj = dateStr ? new Date(dateStr) : new Date();
-            const preview = msgData.snippet || '';
-            const body = getGmailBody(msgData.payload) || preview;
-            const emailNo = Math.floor(10000 + Math.random() * 90000).toString();
-
-            await new Promise((resolve) => {
-                db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, external_sender_name, external_sender_email, external_id, subject, body, preview, created_at) VALUES (?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?)`,
-                    [emailNo, senderName, senderEmail, msg.id, subject, body, preview, dateObj.toISOString()],
-                    function(err) {
-                        if (!err && this.lastID) {
-                            db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
-                                [this.lastID, user.id, user.organization_id, msgData.labelIds.includes('UNREAD') ? 0 : 1], resolve);
-                        } else {
-                            resolve();
+            await Promise.allSettled(batch.map(async (msg) => {
+                try {
+                    // Check if already synced
+                    const existing = await dbGet('SELECT e.id as email_id, er.is_deleted FROM emails e LEFT JOIN email_recipients er ON e.id = er.email_id AND er.user_id = ? WHERE e.external_id = ?', [user.id, msg.id]);
+                    
+                    if (existing) {
+                        if (existing.is_deleted === 1) {
+                            await dbRun('UPDATE email_recipients SET is_deleted = 0, folder = "inbox" WHERE email_id = ? AND user_id = ?', [existing.email_id, user.id]);
+                        } else if (existing.is_deleted === null) {
+                            const isUnread = msg.labelIds && msg.labelIds.includes('UNREAD');
+                            await dbRun(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
+                                [existing.email_id, user.id, user.organization_id, isUnread ? 0 : 1]);
                         }
+                        return;
                     }
-                );
-            });
+
+                    // Fetch full message
+                    const msgResponse = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}?format=full`, {
+                        headers: { 'Authorization': `Bearer ${accessToken}` }
+                    });
+                    if (!msgResponse.ok) throw new Error('Failed to fetch full message details');
+                    const msgData = await msgResponse.json();
+
+                    const fromHeader = getGmailHeader(msgData.payload.headers, 'From');
+                    let senderName = fromHeader;
+                    let senderEmail = fromHeader;
+                    const match = fromHeader.match(/(.*)<(.*)>/);
+                    if (match) {
+                        senderName = match[1].trim() || match[2].trim();
+                        senderEmail = match[2].trim();
+                    }
+
+                    const subject = getGmailHeader(msgData.payload.headers, 'Subject') || 'No Subject';
+                    const dateStr = getGmailHeader(msgData.payload.headers, 'Date');
+                    const dateObj = dateStr ? new Date(dateStr) : new Date();
+                    const preview = msgData.snippet || '';
+                    const body = getGmailBody(msgData.payload) || preview;
+                    const emailNo = Math.floor(10000 + Math.random() * 90000).toString();
+
+                    // Insert without transaction to allow safe parallel SQLite insertions
+                    const insertResult = await dbRun(
+                        `INSERT INTO emails (email_no, sender_id, sender_org_id, external_sender_name, external_sender_email, external_id, subject, body, preview, created_at) VALUES (?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?)`,
+                        [emailNo, senderName, senderEmail, msg.id, subject, body, preview, dateObj.toISOString()]
+                    );
+                    
+                    const isRead = msgData.labelIds && msgData.labelIds.includes('UNREAD') ? 0 : 1;
+                    await dbRun(
+                        `INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
+                        [insertResult.lastID, user.id, user.organization_id, isRead]
+                    );
+
+                } catch (msgErr) {
+                    console.error("Error processing single message", msg.id, msgErr);
+                }
+            }));
         }
     } catch (e) {
         console.error("Google Sync Error:", e);
@@ -282,6 +298,15 @@ async function syncGoogleEmails(user, accessToken) {
 }
 
 async function syncMicrosoftEmails(user, accessToken) {
+    const util = require('util');
+    const dbGet = util.promisify(db.get.bind(db));
+    const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+        db.run(query, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
+        });
+    });
+
     try {
         const listResponse = await fetch('https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages?$top=50&$select=id,sender,subject,bodyPreview,body,receivedDateTime,isRead', {
             headers: { 'Authorization': `Bearer ${accessToken}` }
@@ -290,42 +315,46 @@ async function syncMicrosoftEmails(user, accessToken) {
 
         if (!listData.value || listData.value.length === 0) return;
 
-        for (const msg of listData.value) {
-            const existing = await new Promise((resolve) => {
-                db.get('SELECT e.id as email_id, er.is_deleted FROM emails e LEFT JOIN email_recipients er ON e.id = er.email_id AND er.user_id = ? WHERE e.external_id = ?', [user.id, msg.id], (err, row) => resolve(row));
-            });
+        // Process in batches of 5 to avoid overloading the database
+        const batchSize = 5;
+        for (let i = 0; i < listData.value.length; i += batchSize) {
+            const batch = listData.value.slice(i, i + batchSize);
             
-            if (existing) {
-                if (existing.is_deleted === 1) {
-                    await new Promise((resolve) => db.run('UPDATE email_recipients SET is_deleted = 0, folder = "inbox" WHERE email_id = ? AND user_id = ?', [existing.email_id, user.id], resolve));
-                } else if (existing.is_deleted === null) {
-                    await new Promise((resolve) => db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
-                        [existing.email_id, user.id, user.organization_id, msg.isRead ? 1 : 0], resolve));
-                }
-                continue;
-            }
-
-            const senderName = msg.sender?.emailAddress?.name || msg.sender?.emailAddress?.address || 'Unknown';
-            const senderEmail = msg.sender?.emailAddress?.address || 'unknown@example.com';
-            const subject = msg.subject || 'No Subject';
-            const dateObj = msg.receivedDateTime ? new Date(msg.receivedDateTime) : new Date();
-            const preview = msg.bodyPreview || '';
-            const body = msg.body?.content || preview;
-            const emailNo = Math.floor(10000 + Math.random() * 90000).toString();
-
-            await new Promise((resolve) => {
-                db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, external_sender_name, external_sender_email, external_id, subject, body, preview, created_at) VALUES (?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?)`,
-                    [emailNo, senderName, senderEmail, msg.id, subject, body, preview, dateObj.toISOString()],
-                    function(err) {
-                        if (!err && this.lastID) {
-                            db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
-                                [this.lastID, user.id, user.organization_id, msg.isRead ? 1 : 0], resolve);
-                        } else {
-                            resolve();
+            await Promise.allSettled(batch.map(async (msg) => {
+                try {
+                    const existing = await dbGet('SELECT e.id as email_id, er.is_deleted FROM emails e LEFT JOIN email_recipients er ON e.id = er.email_id AND er.user_id = ? WHERE e.external_id = ?', [user.id, msg.id]);
+                    
+                    if (existing) {
+                        if (existing.is_deleted === 1) {
+                            await dbRun('UPDATE email_recipients SET is_deleted = 0, folder = "inbox" WHERE email_id = ? AND user_id = ?', [existing.email_id, user.id]);
+                        } else if (existing.is_deleted === null) {
+                            await dbRun(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
+                                [existing.email_id, user.id, user.organization_id, msg.isRead ? 1 : 0]);
                         }
+                        return;
                     }
-                );
-            });
+
+                    const senderName = msg.sender?.emailAddress?.name || msg.sender?.emailAddress?.address || 'Unknown';
+                    const senderEmail = msg.sender?.emailAddress?.address || 'unknown@example.com';
+                    const subject = msg.subject || 'No Subject';
+                    const dateObj = msg.receivedDateTime ? new Date(msg.receivedDateTime) : new Date();
+                    const preview = msg.bodyPreview || '';
+                    const body = msg.body?.content || preview;
+                    const emailNo = Math.floor(10000 + Math.random() * 90000).toString();
+
+                    const insertResult = await dbRun(
+                        `INSERT INTO emails (email_no, sender_id, sender_org_id, external_sender_name, external_sender_email, external_id, subject, body, preview, created_at) VALUES (?, NULL, NULL, ?, ?, ?, ?, ?, ?, ?)`,
+                        [emailNo, senderName, senderEmail, msg.id, subject, body, preview, dateObj.toISOString()]
+                    );
+
+                    await dbRun(
+                        `INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
+                        [insertResult.lastID, user.id, user.organization_id, msg.isRead ? 1 : 0]
+                    );
+                } catch (msgErr) {
+                    console.error("Error processing MS message", msg.id, msgErr);
+                }
+            }));
         }
     } catch (e) {
         console.error("MS Sync Error:", e);

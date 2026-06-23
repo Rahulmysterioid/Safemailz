@@ -6,6 +6,10 @@ if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
     dbPath = `${process.env.TURSO_DATABASE_URL}?authToken=${process.env.TURSO_AUTH_TOKEN}`;
     console.log('Connecting to Turso Cloud Database...');
 } else {
+    // Prevent fallback to local database on Render production because the ephemeral disk will wipe data
+    if (process.env.RENDER === 'true' || process.env.NODE_ENV === 'production') {
+        throw new Error('CRITICAL: Turso Cloud Database credentials (TURSO_DATABASE_URL and TURSO_AUTH_TOKEN) are missing in Production! Falling back to local database will cause data wiping on every restart.');
+    }
     dbPath = path.resolve(__dirname, 'database.sqlite');
     console.log('Connecting to Local SQLite Database...');
 }
