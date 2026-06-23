@@ -20,10 +20,17 @@ const db = new sqlite3.Database(dbPath, (err) => {
 });
 
 // Initialize the database tables
-const initDb = () => {
-    db.serialize(() => {
+const initDb = async () => {
+    const runQuery = (query) => new Promise((resolve, reject) => {
+        db.run(query, (err) => {
+            if (err) resolve(err); // Resolve with error instead of rejecting to allow migrations to fail safely
+            else resolve(null);
+        });
+    });
+
+    try {
         // Create organizations table
-        db.run(`
+        await runQuery(`
             CREATE TABLE IF NOT EXISTS organizations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 organization_name TEXT NOT NULL,
@@ -34,7 +41,7 @@ const initDb = () => {
         `);
 
         // Create users table
-        db.run(`
+        await runQuery(`
             CREATE TABLE IF NOT EXISTS users (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 organization_id INTEGER NOT NULL,
@@ -49,7 +56,7 @@ const initDb = () => {
         `);
 
         // Create emails table
-        db.run(`
+        await runQuery(`
             CREATE TABLE IF NOT EXISTS emails (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email_no TEXT UNIQUE,
@@ -67,8 +74,8 @@ const initDb = () => {
             )
         `);
 
-        // Create email recipients table (handles folders, read state, visibility per user)
-        db.run(`
+        // Create email recipients table
+        await runQuery(`
             CREATE TABLE IF NOT EXISTS email_recipients (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email_id INTEGER NOT NULL,
@@ -86,7 +93,7 @@ const initDb = () => {
         `);
 
         // Create email comments table
-        db.run(`
+        await runQuery(`
             CREATE TABLE IF NOT EXISTS email_comments (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email_id INTEGER NOT NULL,
@@ -99,7 +106,7 @@ const initDb = () => {
         `);
 
         // Create invitations table
-        db.run(`
+        await runQuery(`
             CREATE TABLE IF NOT EXISTS invitations (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 organization_id INTEGER NOT NULL,
@@ -111,36 +118,35 @@ const initDb = () => {
                 FOREIGN KEY (organization_id) REFERENCES organizations(id)
             )
         `);
+
         // Run Migrations (safe to fail if column already exists)
-        const runMigration = (query) => {
-            db.run(query, (err) => {
-                if (err && err.message.indexOf('duplicate column name') === -1 && err.message.indexOf('already exists') === -1) {
-                    console.error('Migration error:', err.message);
-                }
-            });
+        const runMigration = async (query) => {
+            const err = await runQuery(query);
+            if (err && err.message.indexOf('duplicate column name') === -1 && err.message.indexOf('already exists') === -1) {
+                console.error('Migration error:', err.message);
+            }
         };
 
         // Migrations for users table
-        runMigration("ALTER TABLE users ADD COLUMN sync_provider TEXT");
-        runMigration("ALTER TABLE users ADD COLUMN sync_access_token TEXT");
-        runMigration("ALTER TABLE users ADD COLUMN sync_refresh_token TEXT");
-        runMigration("ALTER TABLE users ADD COLUMN sync_token_expires_at DATETIME");
-        runMigration("ALTER TABLE users ADD COLUMN sync_last_sync_time DATETIME");
-        runMigration("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'admin'");
-        runMigration("ALTER TABLE users ADD COLUMN dob TEXT");
+        await runMigration("ALTER TABLE users ADD COLUMN sync_provider TEXT");
+        await runMigration("ALTER TABLE users ADD COLUMN sync_access_token TEXT");
+        await runMigration("ALTER TABLE users ADD COLUMN sync_refresh_token TEXT");
+        await runMigration("ALTER TABLE users ADD COLUMN sync_token_expires_at DATETIME");
+        await runMigration("ALTER TABLE users ADD COLUMN sync_last_sync_time DATETIME");
+        await runMigration("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'admin'");
+        await runMigration("ALTER TABLE users ADD COLUMN dob TEXT");
 
-        // Migrations for emails table (Adding columns to existing tables where they might have been created without them)
-        runMigration("ALTER TABLE emails ADD COLUMN external_sender_name TEXT");
-        runMigration("ALTER TABLE emails ADD COLUMN external_sender_email TEXT");
-        runMigration("ALTER TABLE emails ADD COLUMN external_id TEXT");
-        runMigration("ALTER TABLE emails ADD COLUMN to_address TEXT");
-        runMigration("ALTER TABLE emails ADD COLUMN cc TEXT");
-        runMigration("ALTER TABLE emails ADD COLUMN bcc TEXT");
+        // Migrations for emails table
+        await runMigration("ALTER TABLE emails ADD COLUMN external_sender_name TEXT");
+        await runMigration("ALTER TABLE emails ADD COLUMN external_sender_email TEXT");
+        await runMigration("ALTER TABLE emails ADD COLUMN external_id TEXT");
+        await runMigration("ALTER TABLE emails ADD COLUMN to_address TEXT");
+        await runMigration("ALTER TABLE emails ADD COLUMN cc TEXT");
+        await runMigration("ALTER TABLE emails ADD COLUMN bcc TEXT");
 
-        // To drop NOT NULL constraint from existing emails table, we'll recreate if we need to but for local dev it's often easier to just delete the db if it's new.
-        // Wait, SQLite doesn't let us ALTER COLUMN. If we have existing data, we can ignore the NOT NULL on insert if we insert dummy values, or we can just let developers delete the DB.
-        // I will add a schema check and recreate emails if it has NOT NULL sender_id.
-    });
+    } catch (e) {
+        console.error("Failed to initialize database:", e);
+    }
 };
 
 module.exports = {
