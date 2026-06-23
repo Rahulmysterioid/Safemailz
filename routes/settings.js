@@ -24,6 +24,7 @@ router.get('/profile', (req, res) => {
             u.id as user_id, 
             u.admin_name, 
             u.email, 
+            u.role,
             u.marketing_opt_in,
             u.terms_accepted,
             u.created_at as user_joined,
@@ -48,7 +49,7 @@ router.get('/profile', (req, res) => {
                     id: row.user_id,
                     admin_name: row.admin_name,
                     email: row.email,
-                    role: 'Admin',
+                    role: row.role === 'employee' ? 'Employee' : 'Admin',
                     status: 'Active',
                     marketing_opt_in: row.marketing_opt_in ? true : false,
                     terms_accepted: row.terms_accepted ? true : false,
@@ -62,6 +63,33 @@ router.get('/profile', (req, res) => {
                     joined_date: row.org_joined
                 }
             }
+        });
+    });
+});
+
+// GET /api/settings/employee/:email
+router.get('/employee/:email', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { email } = req.params;
+
+    const query = `
+        SELECT 
+            u.created_at,
+            u.dob
+        FROM users u
+        WHERE u.email = ? AND u.organization_id = ?
+    `;
+
+    db.get(query, [email, context.orgId], (err, row) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!row) return res.status(404).json({ error: 'Employee not found' });
+
+        res.json({
+            success: true,
+            joined_date: row.created_at,
+            dob: row.dob || 'Not provided'
         });
     });
 });
@@ -102,4 +130,124 @@ router.post('/password', (req, res) => {
     });
 });
 
+// DELETE /api/settings/account
+router.delete('/account', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { userId } = context;
+
+    db.serialize(() => {
+        db.run('BEGIN TRANSACTION');
+
+        db.run('DELETE FROM email_recipients WHERE user_id = ?', [userId], (err) => {
+            if (err) {
+                db.run('ROLLBACK');
+                return res.status(500).json({ error: 'Failed to delete recipient data' });
+            }
+
+            db.run('DELETE FROM email_comments WHERE user_id = ?', [userId], (err) => {
+                if (err) {
+                    db.run('ROLLBACK');
+                    return res.status(500).json({ error: 'Failed to delete comment data' });
+                }
+
+                db.run('UPDATE emails SET sender_id = NULL WHERE sender_id = ?', [userId], (err) => {
+                    if (err) {
+                        db.run('ROLLBACK');
+                        return res.status(500).json({ error: 'Failed to anonymize sent emails' });
+                    }
+
+                    db.run('DELETE FROM users WHERE id = ?', [userId], (err) => {
+                        if (err) {
+                            db.run('ROLLBACK');
+                            return res.status(500).json({ error: 'Failed to delete user account' });
+                        }
+
+                        db.run('COMMIT', (commitErr) => {
+                            if (commitErr) {
+                                db.run('ROLLBACK');
+                                return res.status(500).json({ error: 'Transaction commit failed' });
+                            }
+                            res.json({ success: true, message: 'Account permanently deleted' });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
+// DELETE /api/settings/employee/:email
+router.delete('/employee/:email', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { email } = req.params;
+
+    // Verify caller is admin
+    db.get('SELECT role FROM users WHERE id = ?', [context.userId], (err, adminRow) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!adminRow || adminRow.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can delete employees' });
+        }
+
+        // Find employee user ID
+        db.get('SELECT id FROM users WHERE email = ? AND organization_id = ?', [email, context.orgId], (err, userRow) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION');
+
+                // If user doesn't exist yet, just delete any pending invitations
+                if (!userRow) {
+                    db.run('DELETE FROM invitations WHERE email = ? AND organization_id = ?', [email, context.orgId], (err) => {
+                        if (err) {
+                            db.run('ROLLBACK');
+                            return res.status(500).json({ error: 'Failed to delete pending invitation' });
+                        }
+                        db.run('COMMIT', (err) => {
+                            if (err) {
+                                db.run('ROLLBACK');
+                                return res.status(500).json({ error: 'Commit failed' });
+                            }
+                            return res.json({ success: true, message: 'Pending invitation deleted' });
+                        });
+                    });
+                    return;
+                }
+
+                // If user exists, hard delete their account
+                const targetUserId = userRow.id;
+                
+                db.run('DELETE FROM email_recipients WHERE user_id = ?', [targetUserId], (err) => {
+                    if (err) { db.run('ROLLBACK'); return res.status(500).json({ error: 'Database error' }); }
+                    
+                    db.run('DELETE FROM email_comments WHERE user_id = ?', [targetUserId], (err) => {
+                        if (err) { db.run('ROLLBACK'); return res.status(500).json({ error: 'Database error' }); }
+                        
+                        db.run('UPDATE emails SET sender_id = NULL WHERE sender_id = ?', [targetUserId], (err) => {
+                            if (err) { db.run('ROLLBACK'); return res.status(500).json({ error: 'Database error' }); }
+                            
+                            db.run('DELETE FROM users WHERE id = ?', [targetUserId], (err) => {
+                                if (err) { db.run('ROLLBACK'); return res.status(500).json({ error: 'Database error' }); }
+                                
+                                db.run('DELETE FROM invitations WHERE email = ? AND organization_id = ?', [email, context.orgId], (err) => {
+                                    if (err) { db.run('ROLLBACK'); return res.status(500).json({ error: 'Database error' }); }
+                                    
+                                    db.run('COMMIT', (err) => {
+                                        if (err) { db.run('ROLLBACK'); return res.status(500).json({ error: 'Database error' }); }
+                                        res.json({ success: true, message: 'Employee permanently deleted' });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
+            });
+        });
+    });
+});
+
 module.exports = router;
+

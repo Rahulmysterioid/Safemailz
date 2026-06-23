@@ -123,7 +123,8 @@ const signin = async (req, res) => {
                     id: user.id,
                     organization_id: user.organization_id,
                     email: user.email,
-                    admin_name: user.admin_name
+                    admin_name: user.admin_name,
+                    role: user.role
                 }
             });
         });

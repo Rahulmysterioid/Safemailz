@@ -469,8 +469,8 @@
             <h1 class="hero-title">Protect Your Clients'<br>Sensitive Information</h1>
             <p class="hero-subtitle">Enterprise-grade email security solutions designed for modern businesses to safeguard their most important communications.</p>
             <div class="hero-actions">
-                <button class="btn btn-primary">Get Started Now</button>
-                <button class="btn btn-outline">Watch a Demo</button>
+                <button class="btn btn-primary" onclick="window.location.href='signup.html'">Get Started Now</button>
+                <button class="btn btn-outline" onclick="alert('Demo video coming soon!')">Watch a Demo</button>
             </div>
         </section>
 
@@ -537,7 +537,7 @@
                         </div>
                     </div>
                     
-                    <button class="btn btn-primary">Get Started</button>
+                    <button class="btn btn-primary" onclick="window.location.href='signup.html'">Get Started</button>
                 </div>
             </div>
         </section>
@@ -570,7 +570,7 @@
                 </div>
             </div>
             
-            <button class="btn btn-primary">Get Started Now</button>
+            <button class="btn btn-primary" onclick="window.location.href='signup.html'">Get Started Now</button>
         </section>
 
         <!-- Pricing Section -->
@@ -579,42 +579,42 @@
                 <h2 class="section-title">Pricing Plans</h2>
                 
                 <div class="pricing-toggle">
-                    <button class="toggle-btn active">Monthly</button>
-                    <button class="toggle-btn">Yearly</button>
+                    <button class="toggle-btn active" id="btn-monthly">Monthly</button>
+                    <button class="toggle-btn" id="btn-yearly">Yearly</button>
                 </div>
                 
                 <div class="pricing-grid">
                     <div class="pricing-card">
                         <div class="pricing-title">Basic</div>
-                        <div class="pricing-price">300 Rs<span>/seat</span></div>
+                        <div class="pricing-price"><span class="price-value">300</span> Rs<span>/seat</span></div>
                         <ul class="pricing-features">
                             <li>Up to 10 users</li>
                             <li>Standard Encryption</li>
                             <li>Email Support</li>
                         </ul>
-                        <button class="btn btn-primary" style="width: 100%">Choose Plan</button>
+                        <button class="btn btn-primary" style="width: 100%" onclick="window.location.href='signup.html'">Choose Plan</button>
                     </div>
                     
                     <div class="pricing-card">
                         <div class="pricing-title">Pro</div>
-                        <div class="pricing-price">600 Rs<span>/seat</span></div>
+                        <div class="pricing-price"><span class="price-value">600</span> Rs<span>/seat</span></div>
                         <ul class="pricing-features">
                             <li>Up to 50 users</li>
                             <li>Advanced DLP</li>
                             <li>Priority Support</li>
                         </ul>
-                        <button class="btn btn-primary" style="width: 100%">Choose Plan</button>
+                        <button class="btn btn-primary" style="width: 100%" onclick="window.location.href='signup.html'">Choose Plan</button>
                     </div>
                     
                     <div class="pricing-card">
                         <div class="pricing-title">Enterprise</div>
-                        <div class="pricing-price">1000 Rs<span>/seat</span></div>
+                        <div class="pricing-price"><span class="price-value">1000</span> Rs<span>/seat</span></div>
                         <ul class="pricing-features">
                             <li>Unlimited users</li>
                             <li>Custom integrations</li>
                             <li>24/7 Phone Support</li>
                         </ul>
-                        <button class="btn btn-primary" style="width: 100%">Choose Plan</button>
+                        <button class="btn btn-primary" style="width: 100%" onclick="window.location.href='signup.html'">Choose Plan</button>
                     </div>
                 </div>
             </div>
@@ -625,8 +625,8 @@
             <h2 class="section-title">Enterprise-Grade Email Security</h2>
             <p class="section-subtitle">Join thousands of organizations that trust Safemailz to protect their data.</p>
             <div class="hero-actions">
-                <button class="btn btn-primary">Start Free Trial</button>
-                <button class="btn btn-outline">Contact Sales</button>
+                <button class="btn btn-primary" onclick="window.location.href='signup.html'">Start Free Trial</button>
+                <button class="btn btn-outline" onclick="alert('Sales team will contact you shortly!')">Contact Sales</button>
             </div>
         </section>
 
@@ -667,7 +667,7 @@
                 <div class="faq-intro">
                     <h2 class="section-title" style="text-align: left;">Frequently Asked Questions</h2>
                     <p>Find answers to common questions about our platform, features, and security protocols.</p>
-                    <button class="btn btn-primary" style="margin-top: 1.5rem;">See All</button>
+                    <button class="btn btn-primary" style="margin-top: 1.5rem;" onclick="alert('More FAQs coming soon!')">See All</button>
                 </div>
                 
                 <div class="faq-list">
@@ -726,8 +726,8 @@
                     <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px;">
                         <h4 style="margin-bottom: 1rem;">Subscribe</h4>
                         <div class="subscribe-form">
-                            <input type="email" class="subscribe-input" placeholder="Email address">
-                            <button class="subscribe-btn">→</button>
+                            <input type="email" class="subscribe-input" id="subscribe-email" placeholder="Email address">
+                            <button class="subscribe-btn" onclick="subscribeNewsletter()">→</button>
                         </div>
                         <p class="subscribe-text">Hello, we are Safemailz. Our goal is to protect your clients' data from revolutionary how companies engage with their clients & their team.</p>
                     </div>
@@ -764,6 +764,57 @@
                 }
             });
         });
+
+        // Mobile Menu Logic
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks.style.display === 'flex') {
+                navLinks.style.display = 'none';
+            } else {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'white';
+                navLinks.style.padding = '1rem';
+                navLinks.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+            }
+        });
+
+        // Pricing Toggle Logic
+        const monthlyBtn = document.getElementById('btn-monthly');
+        const yearlyBtn = document.getElementById('btn-yearly');
+        const prices = document.querySelectorAll('.price-value');
+        const basePrices = [300, 600, 1000];
+        
+        monthlyBtn.addEventListener('click', () => {
+            monthlyBtn.classList.add('active');
+            yearlyBtn.classList.remove('active');
+            prices.forEach((el, index) => {
+                el.textContent = basePrices[index];
+            });
+        });
+
+        yearlyBtn.addEventListener('click', () => {
+            yearlyBtn.classList.add('active');
+            monthlyBtn.classList.remove('active');
+            prices.forEach((el, index) => {
+                el.textContent = basePrices[index] * 10; // e.g. 10 months for yearly
+            });
+        });
+
+        // Subscribe Logic
+        function subscribeNewsletter() {
+            const email = document.getElementById('subscribe-email').value;
+            if(email && email.includes('@')) {
+                alert('Thank you for subscribing to our newsletter!');
+                document.getElementById('subscribe-email').value = '';
+            } else {
+                alert('Please enter a valid email address.');
+            }
+        }
     </script>
 </body>
 </html>

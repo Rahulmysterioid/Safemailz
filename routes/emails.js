@@ -1,7 +1,14 @@
 const express = require('express');
 const { db } = require('../db');
+const nodemailer = require('nodemailer');
+const { getValidAccessToken } = require('../controllers/syncController');
 
 const router = express.Router();
+
+// Helper to encode to base64url for Gmail API
+function toBase64Url(str) {
+    return Buffer.from(str).toString('base64').replace(/\+/g, '-').replace(/\//g, '_').replace(/=+$/, '');
+}
 
 const toIST = (dateString) => {
     if (!dateString) return new Date();
@@ -48,13 +55,18 @@ router.get('/', (req, res) => {
             e.subject, 
             e.preview, 
             e.created_at,
+            e.external_sender_name,
+            e.external_sender_email,
+            e.to_address,
+            e.cc,
+            e.bcc,
             u.admin_name as sender_name,
             u.email as sender_email,
-            (SELECT u2.email FROM email_recipients er2 JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_email,
-            (SELECT u2.admin_name FROM email_recipients er2 JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_name
+            (SELECT u2.email FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_email,
+            (SELECT u2.admin_name FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_name
         FROM email_recipients er
         JOIN emails e ON er.email_id = e.id
-        JOIN users u ON e.sender_id = u.id
+        LEFT JOIN users u ON e.sender_id = u.id
         WHERE er.user_id = ? AND er.is_deleted = 0
     `;
     const params = [context.userId];
@@ -71,27 +83,51 @@ router.get('/', (req, res) => {
 
     query += ' ORDER BY e.created_at DESC';
 
-    db.all(query, params, (err, rows) => {
-        if (err) {
-            console.error(err);
-            return res.status(500).json({ error: 'Database error' });
+    db.all(`SELECT folder, COUNT(*) as count FROM email_recipients WHERE user_id = ? AND is_deleted = 0 GROUP BY folder`, [context.userId], (err, countRows) => {
+        let counts = { inbox: 0, sent: 0, drafts: 0, deleted: 0, junk: 0, archive: 0, notes: 0, conversation: 0 };
+        if (!err && countRows) {
+            countRows.forEach(r => counts[r.folder] = r.count);
         }
 
+        db.all(query, params, (err, rows) => {
+            if (err) {
+                console.error(err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+
         // Apply search in memory for simplicity
-        let emails = rows.map(row => ({
-            id: row.email_id,
-            recipient_id: row.recipient_id,
-            sender: row.folder === 'sent' ? `To: ${row.recipient_name || row.recipient_email || 'Unknown'}` : row.sender_name,
-            senderEmail: row.folder === 'sent' ? row.recipient_email : row.sender_email,
-            subject: row.subject,
-            preview: row.preview || row.subject,
-            folder: row.folder,
-            read: !!row.read,
-            replied: !!row.replied,
-            action: !!row.action,
-            emailNo: row.emailNo,
-            date: formatToISTTime(row.created_at)
-        }));
+        let emails = rows.map(row => {
+            let sender = '';
+            let senderEmail = '';
+            
+            if (row.folder === 'sent') {
+                const displayName = row.recipient_name || row.to_address || row.recipient_email || 'Unknown';
+                sender = `To: ${displayName}`;
+                senderEmail = row.to_address || row.recipient_email;
+            } else {
+                const displayName = row.sender_name || row.external_sender_name || row.external_sender_email || 'Unknown Sender';
+                sender = displayName;
+                senderEmail = row.sender_email || row.external_sender_email;
+            }
+
+            return {
+                id: row.email_id,
+                recipient_id: row.recipient_id,
+                sender: sender,
+                senderEmail: senderEmail,
+                to: row.to_address,
+                cc: row.cc,
+                bcc: row.bcc,
+                subject: row.subject,
+                preview: row.preview || row.subject,
+                folder: row.folder,
+                read: !!row.read,
+                replied: !!row.replied,
+                action: !!row.action,
+                emailNo: row.emailNo,
+                date: formatToISTTime(row.created_at)
+            };
+        });
 
         if (search) {
             const q = search.trim().toLowerCase();
@@ -105,7 +141,9 @@ router.get('/', (req, res) => {
             success: true,
             filter,
             search,
+            counts,
             emails
+        });
         });
     });
 });
@@ -124,15 +162,20 @@ router.get('/:id', (req, res) => {
             e.subject, 
             e.body, 
             e.created_at,
+            e.external_sender_name,
+            e.external_sender_email,
+            e.to_address,
+            e.cc,
+            e.bcc,
             u.admin_name as sender_name,
             u.email as sender_email,
             er.folder,
             er.is_read as read,
-            (SELECT u2.email FROM email_recipients er2 JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_email,
-            (SELECT u2.admin_name FROM email_recipients er2 JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_name
+            (SELECT u2.email FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_email,
+            (SELECT u2.admin_name FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_name
         FROM emails e
         JOIN email_recipients er ON e.id = er.email_id
-        JOIN users u ON e.sender_id = u.id
+        LEFT JOIN users u ON e.sender_id = u.id
         WHERE e.id = ? AND er.user_id = ?
     `;
 
@@ -145,6 +188,18 @@ router.get('/:id', (req, res) => {
             db.run('UPDATE email_recipients SET is_read = 1 WHERE email_id = ? AND user_id = ?', [emailId, context.userId]);
         }
 
+        let sender = '';
+        let senderEmail = '';
+        if (row.folder === 'sent') {
+            const displayName = row.recipient_name || row.to_address || row.recipient_email || 'Unknown';
+            sender = `To: ${displayName}`;
+            senderEmail = row.to_address || row.recipient_email;
+        } else {
+            const displayName = row.sender_name || row.external_sender_name || row.external_sender_email || 'Unknown Sender';
+            sender = displayName;
+            senderEmail = row.sender_email || row.external_sender_email;
+        }
+
         res.json({
             success: true,
             email: {
@@ -152,8 +207,11 @@ router.get('/:id', (req, res) => {
                 emailNo: row.emailNo,
                 subject: row.subject,
                 body: row.body,
-                sender: row.folder === 'sent' ? `To: ${row.recipient_name || row.recipient_email || 'Unknown'}` : row.sender_name,
-                senderEmail: row.folder === 'sent' ? row.recipient_email : row.sender_email,
+                sender: sender,
+                senderEmail: senderEmail,
+                to: row.to_address,
+                cc: row.cc,
+                bcc: row.bcc,
                 folder: row.folder,
                 date: formatToISTDateTime(row.created_at)
             }
@@ -162,38 +220,152 @@ router.get('/:id', (req, res) => {
 });
 
 // POST /api/emails/send
-router.post('/send', (req, res) => {
+router.post('/send', async (req, res) => {
     const context = getUserContext(req);
     if (!context) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { to, subject, body } = req.body;
+    const { to, cc, bcc, subject, body } = req.body;
     if (!to || !subject || !body) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
-    // Find recipient by email
-    db.get('SELECT id, organization_id FROM users WHERE email = ?', [to], (err, recipientUser) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        if (!recipientUser) return res.status(404).json({ error: 'Recipient not found' });
+    try {
+        // Fetch sender details and sync provider
+        const senderUser = await new Promise((resolve, reject) => {
+            db.get('SELECT * FROM users WHERE id = ?', [context.userId], (err, row) => {
+                if (err) reject(err);
+                else resolve(row);
+            });
+        });
+
+        if (!senderUser) return res.status(404).json({ error: 'Sender not found' });
+
+        const senderEmail = senderUser.email;
+        const senderName = senderUser.admin_name || 'Safemailz User';
+
+        if (senderUser.sync_provider === 'google') {
+            const token = await getValidAccessToken(senderUser);
+            if (!token) return res.status(401).json({ error: 'Google OAuth token expired or invalid' });
+
+            const emailLines = [
+                `To: ${to}`,
+                `From: "${senderName}" <${senderEmail}>`,
+                `Subject: ${subject}`,
+                `Content-Type: text/html; charset=utf-8`
+            ];
+            if (cc) emailLines.push(`Cc: ${cc}`);
+            if (bcc) emailLines.push(`Bcc: ${bcc}`);
+            emailLines.push('');
+            emailLines.push(body);
+            
+            const rawEmail = toBase64Url(emailLines.join('\r\n'));
+
+            const response = await fetch('https://gmail.googleapis.com/gmail/v1/users/me/messages/send', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ raw: rawEmail })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('Gmail send error:', errorData);
+                if (response.status === 403 || response.status === 401) {
+                    return res.status(403).json({ error: 'Permission denied. Please reconnect your Google account in Manage Apps to grant send permissions.' });
+                }
+                const errorMessage = errorData.error && errorData.error.message ? errorData.error.message : 'Failed to send via Gmail';
+                return res.status(500).json({ error: `Gmail Error: ${errorMessage}` });
+            }
+        } else if (senderUser.sync_provider === 'microsoft') {
+            const token = await getValidAccessToken(senderUser);
+            if (!token) return res.status(401).json({ error: 'Microsoft OAuth token expired or invalid' });
+
+            const graphMessage = {
+                subject: subject,
+                body: {
+                    contentType: 'HTML',
+                    content: body
+                },
+                toRecipients: to.split(',').map(email => ({ emailAddress: { address: email.trim() } }))
+            };
+            if (cc) graphMessage.ccRecipients = cc.split(',').map(email => ({ emailAddress: { address: email.trim() } }));
+            if (bcc) graphMessage.bccRecipients = bcc.split(',').map(email => ({ emailAddress: { address: email.trim() } }));
+
+            const response = await fetch('https://graph.microsoft.com/v1.0/me/sendMail', {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    message: graphMessage,
+                    saveToSentItems: true
+                })
+            });
+
+            if (!response.ok) {
+                const errorData = await response.json();
+                console.error('MS Graph send error:', errorData);
+                if (response.status === 403) {
+                    return res.status(403).json({ error: 'Permission denied. Please reconnect your Microsoft account in Manage Apps to grant send permissions.' });
+                }
+                return res.status(500).json({ error: 'Failed to send via Microsoft' });
+            }
+        } else {
+            // Fallback: SMTP via nodemailer
+            if (!process.env.SMTP_EMAIL || !process.env.SMTP_PASSWORD) {
+                return res.status(500).json({ error: 'SMTP configuration is missing. Please connect an email provider.' });
+            }
+
+            const transporter = nodemailer.createTransport({
+                service: 'gmail',
+                auth: {
+                    user: process.env.SMTP_EMAIL,
+                    pass: process.env.SMTP_PASSWORD
+                }
+            });
+
+            await transporter.sendMail({
+                from: `"${senderName} (via Safemailz)" <${process.env.SMTP_EMAIL}>`,
+                replyTo: senderEmail,
+                to: to,
+                cc: cc || undefined,
+                bcc: bcc || undefined,
+                subject: subject,
+                html: body
+            });
+        }
+
+        // External send successful. Now save locally.
+        const recipientUser = await new Promise((resolve) => {
+            db.get('SELECT id, organization_id FROM users WHERE email = ?', [to], (err, row) => resolve(row));
+        });
 
         const emailNo = Math.floor(10000 + Math.random() * 90000).toString(); // Simple random 5 digit No
-        const preview = body.substring(0, 100);
+        // Strip HTML tags for the preview text
+        const plainTextBody = body.replace(/<[^>]*>?/gm, ' ').replace(/\s+/g, ' ').trim();
+        const preview = plainTextBody.substring(0, 100);
 
         db.serialize(() => {
             db.run('BEGIN TRANSACTION');
 
-            db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview) VALUES (?, ?, ?, ?, ?, ?)`,
-                [emailNo, context.userId, context.orgId, subject, body, preview],
+            db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview, to_address, cc, bcc) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+                [emailNo, context.userId, context.orgId, subject, body, preview, to, cc || null, bcc || null],
                 function (err) {
                     if (err) {
                         db.run('ROLLBACK');
-                        return res.status(500).json({ error: 'Failed to send email' });
+                        console.error('Failed to insert email record:', err);
+                        return res.json({ success: true, message: 'Email sent, but failed to save in local sent items' });
                     }
                     const emailId = this.lastID;
 
-                    // Insert for recipient (Inbox)
-                    db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', 0)`,
-                        [emailId, recipientUser.id, recipientUser.organization_id]);
+                    // Insert for recipient (Inbox) if they are internal
+                    if (recipientUser) {
+                        db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', 0)`,
+                            [emailId, recipientUser.id, recipientUser.organization_id]);
+                    }
 
                     // Insert for sender (Sent)
                     db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'sent', 1)`,
@@ -201,7 +373,8 @@ router.post('/send', (req, res) => {
                         (err) => {
                             if (err) {
                                 db.run('ROLLBACK');
-                                return res.status(500).json({ error: 'Failed to save sent item' });
+                                console.error('Failed to save sent item:', err);
+                                return res.json({ success: true, message: 'Email sent, but failed to save in local sent items' });
                             }
                             db.run('COMMIT');
                             res.json({ success: true, message: 'Email sent' });
@@ -209,7 +382,72 @@ router.post('/send', (req, res) => {
                     );
                 });
         });
-    });
+
+    } catch (err) {
+        console.error('Send mail error:', err);
+        return res.status(500).json({ error: 'An unexpected error occurred while sending email' });
+    }
+});
+
+// POST /api/emails/draft
+router.post('/draft', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { id, to, subject, body } = req.body;
+    const preview = body ? body.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').substring(0, 100).trim() : '';
+
+    if (id) {
+        // Updating an existing draft
+        db.get('SELECT sender_id FROM emails WHERE id = ?', [id], (err, emailRow) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            if (!emailRow) return res.status(404).json({ error: 'Draft not found' });
+            if (emailRow.sender_id !== context.userId) return res.status(403).json({ error: 'Access denied' });
+
+            db.serialize(() => {
+                db.run('BEGIN TRANSACTION');
+                db.run('UPDATE emails SET subject = ?, body = ?, preview = ? WHERE id = ?', 
+                    [subject || '', body || '', preview, id], (err) => {
+                        if (err) {
+                            db.run('ROLLBACK');
+                            return res.status(500).json({ error: 'Failed to update draft' });
+                        }
+                        db.run('COMMIT');
+                        res.json({ success: true, message: 'Draft updated', emailId: id });
+                    });
+            });
+        });
+    } else {
+        // Creating a new draft
+        const emailNo = Math.floor(10000 + Math.random() * 90000).toString(); // Simple random 5 digit No
+
+        db.serialize(() => {
+            db.run('BEGIN TRANSACTION');
+
+            db.run(`INSERT INTO emails (email_no, sender_id, sender_org_id, subject, body, preview) VALUES (?, ?, ?, ?, ?, ?)`,
+                [emailNo, context.userId, context.orgId, subject || '', body || '', preview],
+                function (err) {
+                    if (err) {
+                        db.run('ROLLBACK');
+                        return res.status(500).json({ error: 'Failed to create draft' });
+                    }
+                    const emailId = this.lastID;
+
+                    // Insert for sender (Drafts)
+                    db.run(`INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'drafts', 1)`,
+                        [emailId, context.userId, context.orgId],
+                        (err) => {
+                            if (err) {
+                                db.run('ROLLBACK');
+                                return res.status(500).json({ error: 'Failed to save draft association' });
+                            }
+                            db.run('COMMIT');
+                            res.json({ success: true, message: 'Draft saved', emailId: emailId });
+                        }
+                    );
+                });
+        });
+    }
 });
 
 // PUT /api/emails/:id/status

@@ -166,7 +166,7 @@
                 </div>
 
                 <div class="forgot-password-wrapper">
-                    <a href="#" class="forgot-password-link">Forget Password?</a>
+                    <a href="#" class="forgot-password-link" onclick="alert('Forgot password flow coming soon!')">Forget Password?</a>
                 </div>
                 
                 <div class="form-actions">
@@ -210,8 +210,8 @@
                     <div style="background: rgba(255,255,255,0.05); padding: 1.5rem; border-radius: 8px;">
                         <h4 style="margin-bottom: 1rem;">Subscribe</h4>
                         <div class="subscribe-form">
-                            <input type="email" class="subscribe-input" placeholder="Email address">
-                            <button class="subscribe-btn">→</button>
+                            <input type="email" class="subscribe-input" id="subscribe-email" placeholder="Email address">
+                            <button class="subscribe-btn" onclick="subscribeNewsletter()">→</button>
                         </div>
                         <p class="subscribe-text">Hello, we are Safemailz. Our goal is to protect your clients' data from revolutionary how companies engage with their clients & their team.</p>
                     </div>
@@ -253,6 +253,35 @@
                         <line x1="1" y1="1" x2="23" y2="23"/>
                     </svg>
                 `;
+            }
+        }
+
+        // Mobile Menu Logic
+        document.querySelector('.mobile-menu-btn').addEventListener('click', () => {
+            const navLinks = document.querySelector('.nav-links');
+            if (navLinks.style.display === 'flex') {
+                navLinks.style.display = 'none';
+            } else {
+                navLinks.style.display = 'flex';
+                navLinks.style.flexDirection = 'column';
+                navLinks.style.position = 'absolute';
+                navLinks.style.top = '100%';
+                navLinks.style.left = '0';
+                navLinks.style.width = '100%';
+                navLinks.style.background = 'white';
+                navLinks.style.padding = '1rem';
+                navLinks.style.boxShadow = '0 4px 10px rgba(0,0,0,0.1)';
+            }
+        });
+
+        // Subscribe Logic
+        function subscribeNewsletter() {
+            const email = document.getElementById('subscribe-email').value;
+            if(email && email.includes('@')) {
+                alert('Thank you for subscribing to our newsletter!');
+                document.getElementById('subscribe-email').value = '';
+            } else {
+                alert('Please enter a valid email address.');
             }
         }
 

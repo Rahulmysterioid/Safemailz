@@ -36,6 +36,7 @@
         let activeEmailFilter = 'all';
         let activeMailSection = 'dashboard';
         let emailSearchQuery = '';
+        let selectedEmailIds = new Set();
         let isDashboardCollapsed = false;
         const EMAIL_DASHBOARD_COLLAPSE_THRESHOLD = 24;
         const DEFAULT_EMAIL_PERMISSIONS = {
@@ -230,6 +231,48 @@
             
             if (body) body.innerHTML = '';
 
+            selectedEmailIds.clear();
+            updateToolbarState();
+
+    // Handle Email Checkbox (Prevent row click)
+function toggleEmailSelection(e, mailId) {
+    e.stopPropagation();
+    if (e.target.checked) {
+        selectedEmailIds.add(mailId);
+    } else {
+        selectedEmailIds.delete(mailId);
+    }
+    updateToolbarState();
+    updateSelectAllCheckboxState();
+}
+
+// Toggle Select All Emails
+function toggleAllEmails(checkbox) {
+    const allCheckboxes = document.querySelectorAll('.mail-row-checkbox');
+    if (checkbox.checked) {
+        allCheckboxes.forEach(cb => {
+            cb.checked = true;
+            selectedEmailIds.add(cb.value);
+        });
+    } else {
+        allCheckboxes.forEach(cb => {
+            cb.checked = false;
+        });
+        selectedEmailIds.clear();
+    }
+    updateToolbarState();
+}
+
+function updateSelectAllCheckboxState() {
+    const selectAllCheckbox = document.getElementById('selectAllEmails');
+    const allCheckboxes = document.querySelectorAll('.mail-row-checkbox');
+    if (selectAllCheckbox && allCheckboxes.length > 0) {
+        const checkedBoxes = document.querySelectorAll('.mail-row-checkbox:checked');
+        selectAllCheckbox.checked = (allCheckboxes.length === checkedBoxes.length);
+    }
+}
+
+// Action Toolbar
             records.forEach(mail => {
                 const row = document.createElement('div');
                 row.className = `mail-row ${mail.read ? 'read' : 'unread'}`;
@@ -241,6 +284,7 @@
                 const initials = mail.sender ? mail.sender.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase() : 'U';
                 row.innerHTML = `
                     <div class="mail-from-cell">
+                        <input type="checkbox" class="email-select-cb" onclick="event.stopPropagation(); toggleEmailSelection(event, '${mail.id}')">
                         <span class="mail-avatar">${escapeHtml(initials)}</span>
                         <div>
                             <div class="mail-sender">${escapeHtml(mail.sender || 'Unknown')}</div>
@@ -418,7 +462,163 @@
         function openForward() {
             openComposeModal();
             document.getElementById('composeSubject').value = "Fwd: " + document.getElementById('readingSubject').textContent;
-            document.getElementById('composeBody').value = "\\n\\n--- Forwarded Message ---\\nFrom: " + document.getElementById('readingSenderEmail').textContent + "\\n" + document.getElementById('readingBody').textContent;
+            document.getElementById('composeBody').value = "\n\n--- Forwarded Message ---\nFrom: " + document.getElementById('readingSenderEmail').textContent + "\n" + document.getElementById('readingBody').textContent;
+        }
+
+        function switchEmailFolder(filter) {
+            applyEmailFilter(filter);
+        }
+
+        function showToast(message) {
+            const toast = document.getElementById('emailToast');
+            const toastMessage = document.getElementById('emailToastMessage');
+            if (toast && toastMessage) {
+                toastMessage.textContent = message;
+                toast.classList.add('show');
+                setTimeout(() => {
+                    toast.classList.remove('show');
+                }, 3000);
+            }
+        }
+
+        function toggleEmailSelection(event, emailId) {
+            if (event.target.checked) {
+                selectedEmailIds.add(emailId);
+            } else {
+                selectedEmailIds.delete(emailId);
+            }
+            updateToolbarState();
+        }
+
+        function updateToolbarState() {
+            const hasSelection = selectedEmailIds.size > 0 || currentOpenEmailId;
+            const buttons = ['btnToolbarDelete', 'btnToolbarArchive', 'btnToolbarReport', 'btnToolbarSweep', 'btnToolbarMove', 'btnToolbarReply', 'btnToolbarRead'];
+            buttons.forEach(id => {
+                const btn = document.getElementById(id);
+                if (btn) {
+                    if (hasSelection) {
+                        btn.removeAttribute('disabled');
+                    } else {
+                        btn.setAttribute('disabled', 'true');
+                    }
+                }
+            });
+        }
+
+        let pendingAction = null;
+
+        function handleEmailAction(action) {
+            const targets = selectedEmailIds.size > 0 ? Array.from(selectedEmailIds) : (currentOpenEmailId ? [currentOpenEmailId] : []);
+            if (targets.length === 0) return;
+
+            if (['delete', 'archive', 'report', 'sweep'].includes(action)) {
+                pendingAction = action;
+                const modal = document.getElementById('confirmActionModal');
+                const title = document.getElementById('confirmActionTitle');
+                const message = document.getElementById('confirmActionMessage');
+                
+                title.textContent = "Confirm " + action.charAt(0).toUpperCase() + action.slice(1);
+                if (action === 'sweep') {
+                    message.textContent = "Are you sure you want to sweep (delete) all emails from the sender of the selected email?";
+                } else {
+                    message.textContent = `Are you sure you want to ${action} the selected ${targets.length} email(s)?`;
+                }
+                
+                const btnConfirm = document.getElementById('btnConfirmActionProceed');
+                btnConfirm.onclick = () => {
+                    closeModal('confirmActionModal');
+                    executeAction(pendingAction, targets);
+                };
+                
+                openModal('confirmActionModal');
+            } else {
+                executeAction(action, targets);
+            }
+        }
+
+        async function executeAction(action, targets) {
+            if (targets.length === 0) return;
+
+            let finalTargets = [...targets];
+
+            if (action === 'sweep') {
+                try {
+                    const firstEmailId = finalTargets[0];
+                    const response = await fetch('/api/emails/' + firstEmailId, { headers: getHeaders() });
+                    if (response.ok) {
+                        const data = await response.json();
+                        const sender = data.email.senderEmail || data.email.sender;
+                        
+                        const allRecords = await getEmailRecords();
+                        const sweepIds = allRecords.filter(m => m.senderEmail === sender || m.sender === sender).map(m => m.id);
+                        if (sweepIds.length > 0) finalTargets = sweepIds;
+                        action = 'delete';
+                    }
+                } catch(e) {
+                    console.error("Sweep failed", e);
+                    return;
+                }
+            } else if (action === 'move') {
+                const folderName = prompt('Enter folder name to move to (e.g. inbox, sent, archive):', 'archive');
+                if (!folderName) return;
+                action = 'custom_move';
+                window._customMoveFolder = folderName.trim().toLowerCase();
+            } else if (action === 'reply') {
+                if (targets.length > 1) {
+                    alert('Can only reply to one email at a time.');
+                    return;
+                }
+                openReply();
+                return;
+            }
+
+            try {
+                let updates = {};
+                if (action === 'delete') updates = { folder: 'deleted' };
+                else if (action === 'archive') updates = { folder: 'archive' };
+                else if (action === 'report') updates = { folder: 'junk' };
+                else if (action === 'custom_move') updates = { folder: window._customMoveFolder };
+                
+                let successCount = 0;
+                
+                for (const emailId of finalTargets) {
+                    let itemUpdates = { ...updates };
+                    
+                    if (action === 'toggleRead') {
+                        const response = await fetch('/api/emails/' + emailId, { headers: getHeaders() });
+                        if (response.ok) {
+                            const data = await response.json();
+                            itemUpdates = { is_read: !data.email.read };
+                        } else {
+                            continue;
+                        }
+                    }
+
+                    if (Object.keys(itemUpdates).length > 0) {
+                        const response = await fetch('/api/emails/' + emailId + '/status', {
+                            method: 'PUT',
+                            headers: getHeaders(),
+                            body: JSON.stringify(itemUpdates)
+                        });
+                        
+                        if (response.ok) {
+                            successCount++;
+                            if (currentOpenEmailId === emailId && itemUpdates.folder && itemUpdates.folder !== activeEmailFilter.replace('folder:', '')) {
+                                document.getElementById('mailReadingColumn').style.display = 'none';
+                                currentOpenEmailId = null;
+                            }
+                        }
+                    }
+                }
+                
+                if (successCount > 0) {
+                    showToast(`Successfully applied action to ${successCount} email(s).`);
+                    selectedEmailIds.clear();
+                    renderEmailModule();
+                }
+            } catch (err) {
+                console.error('Failed to apply email action', err);
+            }
         }
 
         function syncEmailActiveStates() {
@@ -1284,7 +1484,7 @@
                         contact: "9999999999"
                     },
                     theme: {
-                        color: "#1A6BA8"
+                        color: "var(--primary-color)"
                     },
                     modal: {
                         ondismiss: function() {
@@ -1399,8 +1599,12 @@
                         <div style="font-size: 0.7rem; color: #E91E63; font-weight: 600; background: #FCE4EC; padding: 0.15rem 0.4rem; border-radius: 10px; width: max-content; margin-bottom: 0.25rem;">Expire in 10 days</div>
                         <div class="sidebar-emp-header">
                             <span class="name-placeholder">${i + 1}. ${seat.firstName} ${seat.lastName}</span>
-                            <div class="sidebar-emp-kebab">
+                            <div class="sidebar-emp-kebab" style="position: relative;" onclick="toggleSidebarDropdown(event, ${i})">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                <div class="sidebar-dropdown" id="sidebarDropdown-${i}" style="display: none; position: absolute; left: 100%; top: 0; background: white; border: 1px solid #E2E8F0; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); z-index: 100; min-width: 120px; text-align: left;">
+                                    <div onclick="resendEmployeeInvite(event, ${i})" style="padding: 8px 12px; cursor: pointer; font-size: 0.8rem; color: #111; border-bottom: 1px solid #E2E8F0;">Invite</div>
+                                    <div onclick="deleteEmployeeSeat(event, ${i})" style="padding: 8px 12px; cursor: pointer; color: #E91E63; font-size: 0.8rem;">Delete</div>
+                                </div>
                             </div>
                         </div>
                         <div style="font-size: 0.75rem; color: #666; display: flex; justify-content: space-between; margin-top: 0.25rem;">
@@ -1408,7 +1612,7 @@
                             <span>1.18 GB of 50 GB</span>
                         </div>
                         <div style="width: 100%; height: 4px; background: #E0E0E0; border-radius: 2px; margin-top: 0.25rem;">
-                            <div style="width: 5%; height: 100%; background: #1A6BA8; border-radius: 2px;"></div>
+                            <div style="width: 5%; height: 100%; background: var(--primary-color); border-radius: 2px;"></div>
                         </div>
                     `;
                     div.onclick = () => selectEmployee(i);
@@ -1419,6 +1623,73 @@
             // Hide empty state in sidebar
             document.getElementById('sidebarEmptyState').style.display = 'none';
             document.getElementById('sidebarTotalEmployees').textContent = count;
+        }
+
+        // Dropdown Logic
+        function toggleSidebarDropdown(event, index) {
+            event.stopPropagation();
+            // Close all other dropdowns
+            document.querySelectorAll('.sidebar-dropdown').forEach(el => {
+                if (el.id !== 'sidebarDropdown-' + index) el.style.display = 'none';
+            });
+            const dropdown = document.getElementById('sidebarDropdown-' + index);
+            if (dropdown) {
+                dropdown.style.display = dropdown.style.display === 'none' ? 'block' : 'none';
+            }
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.sidebar-dropdown').forEach(el => el.style.display = 'none');
+        });
+
+        async function resendEmployeeInvite(event, index) {
+            event.stopPropagation();
+            document.getElementById('sidebarDropdown-' + index).style.display = 'none';
+            
+            const seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+            const seat = seats[index];
+            if (!seat) return;
+
+            try {
+                const response = await fetch('/api/invite/send', {
+                    method: 'POST',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ firstName: seat.firstName, lastName: seat.lastName, email: seat.email })
+                });
+
+                const data = await response.json();
+                if (response.ok) {
+                    alert('Invite sent successfully to ' + seat.email);
+                } else {
+                    alert(data.error || 'Failed to send invite.');
+                }
+            } catch (error) {
+                console.error(error);
+                alert('Network error while sending invite.');
+            }
+        }
+
+        function deleteEmployeeSeat(event, index) {
+            event.stopPropagation();
+            document.getElementById('sidebarDropdown-' + index).style.display = 'none';
+
+            if (confirm('Are you sure you want to delete this employee?')) {
+                let seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+                if (seats[index]) {
+                    seats[index] = { status: 'empty' };
+                    localStorage.setItem('purchasedSeats', JSON.stringify(seats));
+                    populateEmployeeList(currentQuantity);
+                    
+                    // If the deleted employee was selected, clear view
+                    if (currentProfileIndex === index) {
+                        currentProfileIndex = null;
+                        document.getElementById('emptyState').style.display = 'flex';
+                        document.getElementById('employeeTableContainer').style.display = 'none';
+                        document.getElementById('profileViewContainer').style.display = 'none';
+                    }
+                }
+            }
         }
 
         function openAddEmployeeModal(index) {
@@ -1628,3 +1899,149 @@
             }
         }
     
+
+// Mock Action Function for missing functionalities
+function mockAction(actionName) {
+    alert(actionName + ' functionality is mocked and will be implemented soon!');
+}
+
+// ================= Live Email Sync Logic =================
+
+let syncPollInterval = null;
+
+async function checkSyncStatus() {
+    const user = JSON.parse(localStorage.getItem('currentUser'));
+    if (!user) return;
+
+    try {
+        const response = await fetch('/api/sync/status', { headers: getHeaders() });
+        if (response.ok) {
+            const data = await response.json();
+            updateSyncUI(user.email, data);
+            
+            if (data.isSynced && !syncPollInterval) {
+                // Poll every 60 seconds
+                syncPollInterval = setInterval(forceSyncRefresh, 60000);
+            }
+        }
+    } catch (err) {
+        console.error('Failed to check sync status', err);
+    }
+}
+
+function updateSyncUI(userEmail, data) {
+    const loadingState = document.getElementById('syncLoadingState');
+    const connectState = document.getElementById('syncConnectState');
+    const activeState = document.getElementById('syncActiveState');
+    const btnConnect = document.getElementById('btnConnectProvider');
+    const providerTitle = document.getElementById('syncProviderTitle');
+
+    if (!loadingState) return;
+
+    loadingState.style.display = 'none';
+
+    // Determine provider from signup email
+    let provider = 'unknown';
+    const emailDomain = userEmail.split('@')[1]?.toLowerCase();
+    if (['gmail.com', 'googlemail.com'].includes(emailDomain)) provider = 'google';
+    else if (['outlook.com', 'hotmail.com', 'live.com', 'msn.com'].includes(emailDomain)) provider = 'microsoft';
+
+    if (data.isSynced) {
+        connectState.style.display = 'none';
+        activeState.style.display = 'flex';
+        document.getElementById('activeSyncProviderName').textContent = data.provider === 'google' ? 'Gmail' : 'Outlook';
+        document.getElementById('lastSyncTimeLabel').textContent = data.lastSync ? new Date(data.lastSync).toLocaleString() : 'Just now';
+    } else {
+        activeState.style.display = 'none';
+        connectState.style.display = 'flex';
+        if (provider === 'google') {
+            providerTitle.textContent = 'Connect Gmail';
+            btnConnect.textContent = 'Connect with Google';
+            btnConnect.dataset.provider = 'google';
+        } else if (provider === 'microsoft') {
+            providerTitle.textContent = 'Connect Outlook';
+            btnConnect.textContent = 'Connect with Microsoft';
+            btnConnect.dataset.provider = 'microsoft';
+        } else {
+            providerTitle.textContent = 'Unsupported Provider';
+            btnConnect.textContent = 'IMAP Setup (Coming Soon)';
+            btnConnect.disabled = true;
+        }
+    }
+}
+
+async function initiateSyncOAuth() {
+    const btn = document.getElementById('btnConnectProvider');
+    const provider = btn.dataset.provider;
+    if (!provider) return;
+
+    btn.textContent = 'Connecting...';
+    btn.disabled = true;
+
+    try {
+        const response = await fetch('/api/sync/auth/' + provider, { headers: getHeaders() });
+        const data = await response.json();
+        if (data.url) {
+            window.location.href = data.url;
+        } else {
+            alert('Failed to initiate sync auth');
+            btn.textContent = 'Connect';
+            btn.disabled = false;
+        }
+    } catch (err) {
+        console.error(err);
+        btn.textContent = 'Connect';
+        btn.disabled = false;
+    }
+}
+
+async function forceSyncRefresh() {
+    const btn = document.getElementById('btnForceSync');
+    if (btn) {
+        btn.textContent = 'Syncing...';
+        btn.disabled = true;
+    }
+
+    try {
+        const response = await fetch('/api/sync/refresh', { method: 'POST', headers: getHeaders() });
+        if (response.ok) {
+            if (activeMailSection === 'dashboard' || activeMailSection === 'emails') {
+                renderEmailModule(); // Refresh UI to show new emails
+            }
+            checkSyncStatus(); // Update last synced time
+        }
+    } catch (err) {
+        console.error('Manual sync failed', err);
+    } finally {
+        if (btn) {
+            btn.textContent = 'Sync Now';
+            btn.disabled = false;
+        }
+    }
+}
+
+// Call checkSyncStatus on load
+document.addEventListener('DOMContentLoaded', () => {
+    checkSyncStatus();
+    
+    // Check if we just returned from OAuth callback
+    const urlParams = new URLSearchParams(window.location.search);
+    if (urlParams.get('manage') === 'success') {
+        setTimeout(() => {
+            document.querySelector('.tab[id="tabEmail"]')?.click();
+            setTimeout(() => {
+                const manageTab = document.querySelector('.mail-subtab[data-mail-section="manage"]');
+                if (manageTab) {
+                    manageTab.click();
+                    showToast('Successfully connected email provider!');
+                }
+            }, 100);
+        }, 500);
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+    } else if (urlParams.get('manage') === 'error') {
+        setTimeout(() => {
+            showToast('Failed to connect email provider. Please try again.');
+        }, 500);
+    }
+});

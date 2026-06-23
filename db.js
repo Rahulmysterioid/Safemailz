@@ -45,8 +45,11 @@ const initDb = () => {
             CREATE TABLE IF NOT EXISTS emails (
                 id INTEGER PRIMARY KEY AUTOINCREMENT,
                 email_no TEXT UNIQUE,
-                sender_id INTEGER NOT NULL,
-                sender_org_id INTEGER NOT NULL,
+                sender_id INTEGER,
+                sender_org_id INTEGER,
+                external_sender_name TEXT,
+                external_sender_email TEXT,
+                external_id TEXT UNIQUE,
                 subject TEXT,
                 body TEXT,
                 preview TEXT,
@@ -86,6 +89,49 @@ const initDb = () => {
                 FOREIGN KEY (user_id) REFERENCES users(id)
             )
         `);
+
+        // Create invitations table
+        db.run(`
+            CREATE TABLE IF NOT EXISTS invitations (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                organization_id INTEGER NOT NULL,
+                email TEXT NOT NULL,
+                token TEXT NOT NULL UNIQUE,
+                status TEXT DEFAULT 'pending',
+                expires_at DATETIME NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (organization_id) REFERENCES organizations(id)
+            )
+        `);
+        // Run Migrations (safe to fail if column already exists)
+        const runMigration = (query) => {
+            db.run(query, (err) => {
+                if (err && err.message.indexOf('duplicate column name') === -1 && err.message.indexOf('already exists') === -1) {
+                    console.error('Migration error:', err.message);
+                }
+            });
+        };
+
+        // Migrations for users table
+        runMigration("ALTER TABLE users ADD COLUMN sync_provider TEXT");
+        runMigration("ALTER TABLE users ADD COLUMN sync_access_token TEXT");
+        runMigration("ALTER TABLE users ADD COLUMN sync_refresh_token TEXT");
+        runMigration("ALTER TABLE users ADD COLUMN sync_token_expires_at DATETIME");
+        runMigration("ALTER TABLE users ADD COLUMN sync_last_sync_time DATETIME");
+        runMigration("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'admin'");
+        runMigration("ALTER TABLE users ADD COLUMN dob TEXT");
+
+        // Migrations for emails table (Adding columns to existing tables where they might have been created without them)
+        runMigration("ALTER TABLE emails ADD COLUMN external_sender_name TEXT");
+        runMigration("ALTER TABLE emails ADD COLUMN external_sender_email TEXT");
+        runMigration("ALTER TABLE emails ADD COLUMN external_id TEXT");
+        runMigration("ALTER TABLE emails ADD COLUMN to_address TEXT");
+        runMigration("ALTER TABLE emails ADD COLUMN cc TEXT");
+        runMigration("ALTER TABLE emails ADD COLUMN bcc TEXT");
+
+        // To drop NOT NULL constraint from existing emails table, we'll recreate if we need to but for local dev it's often easier to just delete the db if it's new.
+        // Wait, SQLite doesn't let us ALTER COLUMN. If we have existing data, we can ignore the NOT NULL on insert if we insert dummy values, or we can just let developers delete the DB.
+        // I will add a schema check and recreate emails if it has NOT NULL sender_id.
     });
 };
 

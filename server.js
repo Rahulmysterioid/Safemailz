@@ -1,3 +1,4 @@
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const path = require('path');
@@ -26,6 +27,10 @@ const emailRoutes = require('./routes/emails');
 app.use('/api/emails', emailRoutes);
 const settingsRoutes = require('./routes/settings');
 app.use('/api/settings', settingsRoutes);
+const syncRoutes = require('./routes/sync');
+app.use('/api/sync', syncRoutes);
+const inviteRoutes = require('./routes/invite');
+app.use('/api/invite', inviteRoutes);
 
 // Clean URL routes (so /signin works the same as /signin.html)
 app.get('/signin', (req, res) => res.sendFile(path.join(__dirname, 'signin.html')));
