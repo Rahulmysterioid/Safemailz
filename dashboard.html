@@ -4546,13 +4546,32 @@
             const strToday = today.toLocaleDateString('en-US', dateOptions);
             const strNext = nextDate.toLocaleDateString('en-US', dateOptions);
 
-            document.getElementById('successTxnId').textContent = currentTxnId;
-            document.getElementById('receiptId').textContent = currentTxnId;
-            document.getElementById('successPlan').textContent = `${isMonthly ? 'Monthly' : 'Yearly'} Plan (${currentQuantity} Users)`;
-            document.getElementById('successAmount').textContent = `Rs ${currentTotal}`;
-            document.getElementById('successMethod').textContent = methodLabel;
-            document.getElementById('successDate').textContent = strToday;
-            document.getElementById('successNextDate').textContent = strNext;
+            const safeSetText = (id, text) => {
+                const el = document.getElementById(id);
+                if (el) el.textContent = text;
+            };
+
+            safeSetText('successTxnId', currentTxnId);
+            safeSetText('subSuccessTxnId', currentTxnId);
+            safeSetText('receiptId', currentTxnId);
+            safeSetText('subSuccessReceiptId', currentTxnId);
+            
+            const planStr = `${isMonthly ? 'Monthly' : 'Yearly'} Plan (${currentQuantity} Users)`;
+            safeSetText('successPlan', planStr);
+            safeSetText('subSuccessPlan', planStr);
+            
+            const amountStr = `Rs ${currentTotal}`;
+            safeSetText('successAmount', amountStr);
+            safeSetText('subSuccessAmount', amountStr);
+            
+            safeSetText('successMethod', methodLabel);
+            safeSetText('subSuccessMethod', methodLabel);
+            
+            safeSetText('successDate', strToday);
+            safeSetText('subSuccessDate', strToday);
+            
+            safeSetText('successNextDate', strNext);
+            safeSetText('subSuccessNextDate', strNext);
 
             let seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
             if (seats.length !== currentQuantity) {
@@ -4567,20 +4586,26 @@
 
             localStorage.setItem('purchasedQuantity', currentQuantity);
             localStorage.setItem('purchasedPlan', isMonthly ? 'Monthly' : 'Yearly');
-            document.getElementById('sidebarTotalEmployees').textContent = currentQuantity;
+            safeSetText('sidebarTotalEmployees', currentQuantity);
 
             // Ensure subscription view is visible for the success screen
-            document.getElementById('employeesView').style.display = 'none';
-            document.getElementById('emptyState').style.display = 'none';
-            document.getElementById('employeeTableContainer').style.display = 'none';
-            document.getElementById('profileViewContainer').style.display = 'none';
-            document.getElementById('emailModuleView').style.display = 'none';
-            document.getElementById('subscriptionView').style.display = 'flex';
+            const safeSetDisplay = (id, display) => {
+                const el = document.getElementById(id);
+                if (el) el.style.display = display;
+            };
+
+            safeSetDisplay('employeesView', 'none');
+            safeSetDisplay('emptyState', 'none');
+            safeSetDisplay('employeeTableContainer', 'none');
+            safeSetDisplay('profileViewContainer', 'none');
+            safeSetDisplay('emailModuleView', 'none');
+            safeSetDisplay('subscriptionView', 'flex');
             
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.getElementById('tabSubscription').classList.add('active');
+            const subTab = document.getElementById('tabSubscription');
+            if (subTab) subTab.classList.add('active');
 
-            goToStep(2);
+            if (typeof goToStep === 'function') goToStep(2);
         }
 
         async function processFinalPayment(btnId = 'btnProceedPayment') {
