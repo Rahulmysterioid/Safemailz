@@ -4921,7 +4921,12 @@
                 const data = await response.json();
                 if (response.ok) {
                     if (data.inviteUrl) {
-                        alert('Employee added! Invite Link:\n\n' + data.inviteUrl + '\n\nPlease copy this link and send it to your employee.');
+                        try {
+                            await navigator.clipboard.writeText(data.inviteUrl);
+                            alert('✅ Link Copied to Clipboard!\n\n' + data.inviteUrl + '\n\nAap is link ko paste karke employee ko bhej sakte hain.');
+                        } catch (e) {
+                            prompt('Employee added! Copy the invite link below:', data.inviteUrl);
+                        }
                     } else {
                         alert('Invite sent successfully!');
                     }
