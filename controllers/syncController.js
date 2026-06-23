@@ -199,7 +199,18 @@ async function getValidAccessToken(user) {
             updateQuery += ` WHERE id = ?`;
             params.push(user.id);
             
-            await new Promise((resolve) => db.run(updateQuery, params, resolve));
+            const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+                db.run(query, params, function (err) {
+                    if (err) reject(err);
+                    else resolve(this);
+                });
+            });
+
+            try {
+                await dbRun(updateQuery, params);
+            } catch (err) {
+                console.error("Failed to update access token in DB:", err);
+            }
             return tokenData.access_token;
         }
         return null; // Refresh failed
@@ -362,24 +373,36 @@ async function syncMicrosoftEmails(user, accessToken) {
 }
 
 async function performSync(userId) {
-    return new Promise((resolve, reject) => {
-        db.get(`SELECT id, organization_id, sync_provider, sync_access_token, sync_refresh_token, sync_token_expires_at FROM users WHERE id = ?`, [userId], async (err, user) => {
-            if (err || !user || !user.sync_provider) return resolve(false);
-
-            const token = await getValidAccessToken(user);
-            if (!token) return resolve(false);
-
-            if (user.sync_provider === 'google') {
-                await syncGoogleEmails(user, token);
-            } else if (user.sync_provider === 'microsoft') {
-                await syncMicrosoftEmails(user, token);
-            }
-
-            // Update sync time
-            db.run(`UPDATE users SET sync_last_sync_time = CURRENT_TIMESTAMP WHERE id = ?`, [userId]);
-            resolve(true);
+    const util = require('util');
+    const dbGet = util.promisify(db.get.bind(db));
+    const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+        db.run(query, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
         });
     });
+
+    try {
+        const user = await dbGet(`SELECT id, organization_id, sync_provider, sync_access_token, sync_refresh_token, sync_token_expires_at FROM users WHERE id = ?`, [userId]);
+        
+        if (!user || !user.sync_provider) return false;
+
+        const token = await getValidAccessToken(user);
+        if (!token) return false;
+
+        if (user.sync_provider === 'google') {
+            await syncGoogleEmails(user, token);
+        } else if (user.sync_provider === 'microsoft') {
+            await syncMicrosoftEmails(user, token);
+        }
+
+        // Update sync time
+        await dbRun(`UPDATE users SET sync_last_sync_time = CURRENT_TIMESTAMP WHERE id = ?`, [userId]);
+        return true;
+    } catch (err) {
+        console.error('performSync Error:', err);
+        return false;
+    }
 }
 
 // -----------------------------------------------------------------------------------
@@ -398,12 +421,16 @@ exports.refreshSync = async (req, res) => {
     }
 };
 
-exports.getSyncStatus = (req, res) => {
+exports.getSyncStatus = async (req, res) => {
     const userId = req.headers['x-user-id'];
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    db.get('SELECT sync_provider, sync_last_sync_time FROM users WHERE id = ?', [userId], (err, row) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
+    const util = require('util');
+    const dbGet = util.promisify(db.get.bind(db));
+
+    try {
+        const row = await dbGet('SELECT sync_provider, sync_last_sync_time FROM users WHERE id = ?', [userId]);
+        
         if (!row) return res.status(404).json({ error: 'User not found' });
         
         if (row.sync_provider) {
@@ -415,17 +442,30 @@ exports.getSyncStatus = (req, res) => {
         } else {
             res.json({ isSynced: false });
         }
-    });
+    } catch (err) {
+        console.error('getSyncStatus DB Error:', err);
+        res.status(500).json({ error: 'Database error' });
+    }
 };
 
-exports.disconnectSync = (req, res) => {
+exports.disconnectSync = async (req, res) => {
     const userId = req.headers['x-user-id'];
     if (!userId) return res.status(401).json({ error: 'Unauthorized' });
 
-    db.run(`UPDATE users SET sync_provider = NULL, sync_access_token = NULL, sync_refresh_token = NULL, sync_token_expires_at = NULL WHERE id = ?`, [userId], (err) => {
-        if (err) return res.status(500).json({ error: 'Failed to disconnect' });
-        res.json({ message: 'Disconnected successfully' });
+    const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+        db.run(query, params, function (err) {
+            if (err) reject(err);
+            else resolve(this);
+        });
     });
+
+    try {
+        await dbRun(`UPDATE users SET sync_provider = NULL, sync_access_token = NULL, sync_refresh_token = NULL, sync_token_expires_at = NULL WHERE id = ?`, [userId]);
+        res.json({ message: 'Disconnected successfully' });
+    } catch (err) {
+        console.error('disconnectSync DB Error:', err);
+        res.status(500).json({ error: 'Failed to disconnect' });
+    }
 };
 
 exports.getValidAccessToken = getValidAccessToken;
