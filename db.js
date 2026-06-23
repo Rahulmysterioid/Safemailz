@@ -1,32 +1,101 @@
-const sqlite3 = require('@libsql/sqlite3').verbose();
+const { createClient } = require('@libsql/client');
 const path = require('path');
 
 let dbPath;
+let authToken;
+let client;
+
 if (process.env.TURSO_DATABASE_URL && process.env.TURSO_AUTH_TOKEN) {
-    dbPath = `${process.env.TURSO_DATABASE_URL}?authToken=${process.env.TURSO_AUTH_TOKEN}`;
-    console.log('Connecting to Turso Cloud Database...');
+    dbPath = process.env.TURSO_DATABASE_URL;
+    authToken = process.env.TURSO_AUTH_TOKEN;
+    console.log('Connecting to Turso Cloud Database via @libsql/client...');
+    client = createClient({ url: dbPath, authToken: authToken });
 } else {
     // Prevent fallback to local database on Render production because the ephemeral disk will wipe data
     if (process.env.RENDER === 'true' || process.env.NODE_ENV === 'production') {
         throw new Error('CRITICAL: Turso Cloud Database credentials (TURSO_DATABASE_URL and TURSO_AUTH_TOKEN) are missing in Production! Falling back to local database will cause data wiping on every restart.');
     }
-    dbPath = path.resolve(__dirname, 'database.sqlite');
-    console.log('Connecting to Local SQLite Database...');
+    dbPath = 'file:database.sqlite';
+    console.log('Connecting to Local SQLite Database via @libsql/client...');
+    client = createClient({ url: dbPath });
 }
 
-// Connect to the SQLite database
-const db = new sqlite3.Database(dbPath, (err) => {
-    if (err) {
-        console.error('Error connecting to the database:', err.message);
-    } else {
-        console.log('Successfully connected to the database.');
+// Ensure callback works exactly like sqlite3
+function extractArgs(args) {
+    let sql = args[0];
+    let params = [];
+    let callback = null;
+
+    if (args.length === 2) {
+        if (typeof args[1] === 'function') callback = args[1];
+        else params = args[1];
+    } else if (args.length === 3) {
+        params = args[1];
+        callback = args[2];
     }
-});
+
+    return { sql, params, callback };
+}
+
+// Wrapper to make @libsql/client drop-in compatible with sqlite3 API
+const db = {
+    get: function(...args) {
+        const { sql, params, callback } = extractArgs(args);
+        client.execute({ sql, args: params }).then(rs => {
+            if (callback) {
+                const row = rs.rows.length > 0 ? rs.rows[0] : undefined;
+                callback(null, row);
+            }
+        }).catch(err => {
+            console.error('[DB GET Error]:', err.message);
+            if (callback) callback(err);
+        });
+    },
+    all: function(...args) {
+        const { sql, params, callback } = extractArgs(args);
+        client.execute({ sql, args: params }).then(rs => {
+            if (callback) callback(null, rs.rows);
+        }).catch(err => {
+            console.error('[DB ALL Error]:', err.message);
+            if (callback) callback(err);
+        });
+    },
+    run: function(...args) {
+        const { sql, params, callback } = extractArgs(args);
+        
+        // HTTP protocol doesn't support interactive transactions directly.
+        // We shim BEGIN/COMMIT/ROLLBACK to auto-commit to prevent errors.
+        if (typeof sql === 'string') {
+            const sqlUpper = sql.trim().toUpperCase();
+            if (sqlUpper === 'BEGIN TRANSACTION' || sqlUpper === 'COMMIT' || sqlUpper === 'ROLLBACK') {
+                if (callback) callback.call({ lastID: undefined, changes: 0 }, null);
+                return;
+            }
+        }
+
+        client.execute({ sql, args: params }).then(rs => {
+            if (callback) {
+                const context = {
+                    lastID: rs.lastInsertRowid ? Number(rs.lastInsertRowid) : undefined,
+                    changes: rs.rowsAffected
+                };
+                callback.call(context, null);
+            }
+        }).catch(err => {
+            console.error('[DB RUN Error]:', err.message);
+            if (callback) callback(err);
+        });
+    },
+    serialize: function(cb) {
+        // @libsql/client is stateless and doesn't queue synchronously. 
+        if (cb) cb();
+    }
+};
 
 // Initialize the database tables
 const initDb = async () => {
     const runQuery = (query) => new Promise((resolve, reject) => {
-        db.run(query, (err) => {
+        db.run(query, [], (err) => {
             if (err) resolve(err); // Resolve with error instead of rejecting to allow migrations to fail safely
             else resolve(null);
         });
