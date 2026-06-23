@@ -32,61 +32,54 @@ const signup = async (req, res) => {
     }
 
     try {
-        // 3. Check if email already exists
-        db.get('SELECT id FROM users WHERE email = ?', [email], async (err, row) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Internal server error.' });
-            }
-            if (row) {
-                return res.status(400).json({ error: 'An account with this email already exists.' });
-            }
-
-            // 4. Hash the password
-            const saltRounds = 10;
-            const password_hash = await bcrypt.hash(password, saltRounds);
-
-            // 5. Insert organization and user within a transaction-like approach
-            db.serialize(() => {
-                db.run('BEGIN TRANSACTION');
-
-                db.run(
-                    `INSERT INTO organizations (organization_name, organization_size, backup_email) VALUES (?, ?, ?)`,
-                    [organization_name, organization_size, backup_email || null],
-                    function (err) {
-                        if (err) {
-                            console.error(err);
-                            db.run('ROLLBACK');
-                            return res.status(500).json({ error: 'Failed to create organization.' });
-                        }
-
-                        const organization_id = this.lastID;
-
-                        db.run(
-                            `INSERT INTO users (organization_id, admin_name, email, password_hash, marketing_opt_in, terms_accepted) VALUES (?, ?, ?, ?, ?, ?)`,
-                            [organization_id, admin_name, email, password_hash, marketing_opt_in ? 1 : 0, terms_accepted ? 1 : 0],
-                            function (err) {
-                                if (err) {
-                                    console.error(err);
-                                    db.run('ROLLBACK');
-                                    // If email was somehow inserted concurrently, it would violate UNIQUE constraint
-                                    if (err.message.includes('UNIQUE constraint failed')) {
-                                        return res.status(400).json({ error: 'An account with this email already exists.' });
-                                    }
-                                    return res.status(500).json({ error: 'Failed to create user account.' });
-                                }
-
-                                db.run('COMMIT');
-                                return res.status(201).json({
-                                    message: 'Account created successfully.',
-                                    redirectUrl: 'success.html'
-                                });
-                            }
-                        );
-                    }
-                );
+        const util = require('util');
+        const dbGet = util.promisify(db.get.bind(db));
+        const dbRun = (query, params = []) => new Promise((resolve, reject) => {
+            db.run(query, params, function (err) {
+                if (err) reject(err);
+                else resolve(this);
             });
         });
+
+        // 3. Check if email already exists
+        const row = await dbGet('SELECT id FROM users WHERE email = ?', [email]);
+        if (row) {
+            return res.status(400).json({ error: 'An account with this email already exists.' });
+        }
+
+        // 4. Hash the password
+        const saltRounds = 10;
+        const password_hash = await bcrypt.hash(password, saltRounds);
+
+        // 5. Insert organization and user within a transaction-like approach
+        try {
+            await dbRun('BEGIN TRANSACTION');
+
+            const orgResult = await dbRun(
+                `INSERT INTO organizations (organization_name, organization_size, backup_email) VALUES (?, ?, ?)`,
+                [organization_name, organization_size, backup_email || null]
+            );
+            const organization_id = orgResult.lastID;
+
+            await dbRun(
+                `INSERT INTO users (organization_id, admin_name, email, password_hash, marketing_opt_in, terms_accepted) VALUES (?, ?, ?, ?, ?, ?)`,
+                [organization_id, admin_name, email, password_hash, marketing_opt_in ? 1 : 0, terms_accepted ? 1 : 0]
+            );
+
+            await dbRun('COMMIT');
+
+            return res.status(201).json({
+                message: 'Account created successfully.',
+                redirectUrl: 'success.html'
+            });
+        } catch (txnError) {
+            console.error('Transaction error:', txnError);
+            await dbRun('ROLLBACK').catch(e => console.error('Rollback failed:', e));
+            if (txnError.message && txnError.message.includes('UNIQUE constraint failed')) {
+                return res.status(400).json({ error: 'An account with this email already exists.' });
+            }
+            return res.status(500).json({ error: 'Failed to create account.' });
+        }
     } catch (error) {
         console.error(error);
         return res.status(500).json({ error: 'Internal server error.' });
