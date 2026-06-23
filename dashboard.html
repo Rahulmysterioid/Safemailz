@@ -4608,6 +4608,7 @@
                 }
 
                 const order = await response.json();
+                const planName = billingCycle === 'monthly' ? 'Monthly' : 'Yearly';
 
                 // 2. Initialize Razorpay Checkout
                 const options = {
