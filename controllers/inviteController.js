@@ -73,28 +73,8 @@ const sendInvite = async (req, res) => {
                 const host = req.get('host') || 'localhost:3000';
                 const inviteUrl = `${protocol}://${host}/signup-invite.html?token=${token}`;
 
-                // Send email
-                if (transporter) {
-                    try {
-                        let info = await transporter.sendMail({
-                            from: `"Safemailz Admin" <${process.env.SMTP_EMAIL || 'admin@safemailz.com'}>`,
-                            to: email,
-                            subject: 'You are invited to join Safemailz',
-                            text: `Hello ${firstName},\n\nYou have been invited to join an organization on Safemailz.\n\nPlease click the link below to complete your signup:\n${inviteUrl}\n\nThis link will expire in 24 hours.`,
-                            html: `<p>Hello ${firstName},</p><p>You have been invited to join an organization on Safemailz.</p><p><a href="${inviteUrl}">Click here to complete your signup</a></p><p>This link will expire in 24 hours.</p>`
-                        });
-                        
-                        if (process.env.SMTP_EMAIL && process.env.SMTP_PASSWORD) {
-                            console.log('Real Email sent successfully to: %s', email);
-                        } else {
-                            console.log('Preview URL: %s', nodemailer.getTestMessageUrl(info));
-                        }
-                    } catch (mailErr) {
-                        console.error('Error sending mail:', mailErr);
-                    }
-                } else {
-                    console.log('Mock Email -> Invite URL:', inviteUrl);
-                }
+                // Removed email sending logic to prevent SMTP timeouts on Render free tier.
+                console.log('Invite URL generated:', inviteUrl);
 
                 res.json({ success: true, message: 'Invite sent successfully', token: token, inviteUrl: inviteUrl });
             }
