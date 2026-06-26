@@ -82,7 +82,10 @@ const db = {
                 callback.call(context, null);
             }
         }).catch(err => {
-            console.error('[DB RUN Error]:', err.message);
+            // Suppress duplicate column errors during migrations
+            if (err && err.message && err.message.indexOf('duplicate column name') === -1) {
+                console.error('[DB RUN Error]:', err.message);
+            }
             if (callback) callback(err);
         });
     },
@@ -187,6 +190,21 @@ const initDb = async () => {
                 token TEXT NOT NULL UNIQUE,
                 status TEXT DEFAULT 'pending',
                 expires_at DATETIME NOT NULL,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (organization_id) REFERENCES organizations(id)
+            )
+        `);
+
+        // Create clients table
+        await runQuery(`
+            CREATE TABLE IF NOT EXISTS clients (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                organization_id INTEGER NOT NULL,
+                display_name TEXT NOT NULL,
+                name TEXT NOT NULL,
+                email TEXT NOT NULL,
+                phone TEXT,
+                address TEXT,
                 created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (organization_id) REFERENCES organizations(id)
             )

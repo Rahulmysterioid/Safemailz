@@ -31,6 +31,8 @@ const syncRoutes = require('./routes/sync');
 app.use('/api/sync', syncRoutes);
 const inviteRoutes = require('./routes/invite');
 app.use('/api/invite', inviteRoutes);
+const clientsRoutes = require('./routes/clients');
+app.use('/api/clients', clientsRoutes);
 
 // Clean URL routes (so /signin works the same as /signin.html)
 app.get('/signin', (req, res) => res.sendFile(path.join(__dirname, 'signin.html')));

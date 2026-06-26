@@ -77,7 +77,8 @@ router.get('/employee/:email', (req, res) => {
     const query = `
         SELECT 
             u.created_at,
-            u.dob
+            u.dob,
+            u.role
         FROM users u
         WHERE u.email = ? AND u.organization_id = ?
     `;
@@ -89,7 +90,8 @@ router.get('/employee/:email', (req, res) => {
         res.json({
             success: true,
             joined_date: row.created_at,
-            dob: row.dob || 'Not provided'
+            dob: row.dob || 'Not provided',
+            role: row.role || 'employee'
         });
     });
 });
@@ -178,6 +180,45 @@ router.delete('/account', (req, res) => {
     });
 });
 
+// PUT /api/settings/employee/:email/role
+router.put('/employee/:email/role', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { email } = req.params;
+    const { role } = req.body;
+
+    if (role !== 'admin' && role !== 'employee') {
+        return res.status(400).json({ error: 'Invalid role' });
+    }
+
+    // Verify caller is admin
+    db.get('SELECT role, email FROM users WHERE id = ?', [context.userId], (err, callerRow) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!callerRow || callerRow.role !== 'admin') {
+            return res.status(403).json({ error: 'Only admins can change roles' });
+        }
+
+        // Check if caller is trying to demote themselves
+        if (callerRow.email === email && role === 'employee') {
+            return res.status(400).json({ error: 'You cannot demote yourself' });
+        }
+
+        // Update role
+        db.run(
+            'UPDATE users SET role = ? WHERE email = ? AND organization_id = ?',
+            [role, email, context.orgId],
+            function (updateErr) {
+                if (updateErr) return res.status(500).json({ error: 'Failed to update role' });
+                if (this.changes === 0) {
+                    return res.status(404).json({ error: 'Employee not found in your organization' });
+                }
+                res.json({ success: true, message: `Role updated to ${role}` });
+            }
+        );
+    });
+});
+
 // DELETE /api/settings/employee/:email
 router.delete('/employee/:email', (req, res) => {
     const context = getUserContext(req);
@@ -247,6 +288,39 @@ router.delete('/employee/:email', (req, res) => {
             });
         });
     });
+});
+
+// GET /api/settings/admins
+router.get('/admins', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    db.all(
+        'SELECT admin_name as name, email FROM users WHERE organization_id = ? AND role = ? ORDER BY admin_name ASC',
+        [context.orgId, 'admin'],
+        (err, rows) => {
+            if (err) {
+                console.error('[DB Error fetching admins]:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            const mappedRows = rows.map((r, index) => ({
+                id: 'adm-' + index + '-' + Date.now(),
+                name: r.name,
+                email: r.email,
+                expiry: 'Expire in 10 days',
+                storageUsed: '1.18 GB',
+                storageTotal: '50 GB',
+                permissions: {
+                    addEmployees: true,
+                    createProjects: true,
+                    manageProjects: true,
+                    makeAdmin: false,
+                    deleteProject: false
+                }
+            }));
+            res.json({ success: true, admins: mappedRows });
+        }
+    );
 });
 
 module.exports = router;
