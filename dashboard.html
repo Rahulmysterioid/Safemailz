@@ -17,27 +17,27 @@
             --primary: #2563EB;
             --primary-hover: #1D4ED8;
             --primary-light: #EFF6FF;
-            
+
             --surface: #FFFFFF;
             --surface-sidebar: #F8FAFC;
             --surface-list: #F1F5F9;
             --surface-hover: #F8FAFC;
             --surface-active: #E0F2FE;
-            
+
             --text-primary: #111827;
             --text-secondary: #6B7280;
             --text-muted: #9CA3AF;
-            
+
             --border-light: #E5E7EB;
             --border-accent: #2563EB;
-            
+
             --badge-bg: #DBEAFE;
             --badge-text: #1E40AF;
-            
+
             --danger: #EF4444;
-            
+
             --font-main: 'Inter', system-ui, -apple-system, sans-serif;
-            
+
             --transition-speed: 150ms;
         }
 
@@ -45,19 +45,19 @@
             --primary: #3B82F6;
             --primary-hover: #60A5FA;
             --primary-light: rgba(59, 130, 246, 0.1);
-            
+
             --surface: #1F2937;
             --surface-sidebar: #111827;
             --surface-list: #374151;
             --surface-hover: #374151;
             --surface-active: rgba(59, 130, 246, 0.15);
-            
+
             --text-primary: #F9FAFB;
             --text-secondary: #D1D5DB;
             --text-muted: #9CA3AF;
-            
+
             --border-light: #4B5563;
-            
+
             --badge-bg: rgba(59, 130, 246, 0.2);
             --badge-text: #93C5FD;
         }
@@ -72,11 +72,13 @@
         .dashboard-wrapper {
             display: flex;
             flex-direction: row;
-            height: calc(100vh - 60px); /* Assuming topbar is ~60px */
+            height: calc(100vh - 60px);
+            /* Assuming topbar is ~60px */
             overflow: hidden;
         }
 
-        .sidebar, .email-sidebar {
+        .sidebar,
+        .email-sidebar {
             width: 240px !important;
             min-width: 240px !important;
             background-color: var(--surface-sidebar) !important;
@@ -114,17 +116,22 @@
 
         /* Responsive Breakpoints */
         @media (max-width: 900px) {
-            .sidebar, .email-sidebar {
+
+            .sidebar,
+            .email-sidebar {
                 width: 64px !important;
                 min-width: 64px !important;
             }
+
             .sidebar .email-admin-info,
             .sidebar .email-sidebar-title span,
             .sidebar .email-folder-list li::after {
                 display: none !important;
             }
+
             /* Hide text in sidebar folders */
-            .sidebar .email-folder, .sidebar .create-folder {
+            .sidebar .email-folder,
+            .sidebar .create-folder {
                 justify-content: center !important;
                 padding: 10px !important;
             }
@@ -134,7 +141,9 @@
             .dashboard-wrapper {
                 flex-direction: column;
             }
-            .sidebar, .email-sidebar {
+
+            .sidebar,
+            .email-sidebar {
                 width: 100% !important;
                 height: auto;
                 min-height: 60px;
@@ -144,14 +153,18 @@
                 flex-direction: row;
                 overflow-x: auto;
             }
+
             .mail-split-view {
                 flex-direction: column !important;
             }
-            .mail-list-column, .mail-reading-column {
+
+            .mail-list-column,
+            .mail-reading-column {
                 width: 100% !important;
                 min-width: 100% !important;
                 max-width: 100% !important;
             }
+
             .mail-list-column {
                 border-right: none !important;
                 border-bottom: 1px solid var(--border-light) !important;
@@ -167,11 +180,13 @@
             padding-left: 36px !important;
             transition: all var(--transition-speed) ease;
         }
+
         .topbar-search input:focus {
             border-color: var(--primary);
             box-shadow: 0 0 0 2px var(--primary-light);
             outline: none;
         }
+
         .topbar-search-icon {
             position: absolute;
             left: 12px;
@@ -181,12 +196,16 @@
         .tabs-container {
             display: flex;
             overflow-x: auto;
-            scrollbar-width: none; /* Firefox */
+            scrollbar-width: none;
+            /* Firefox */
             border-bottom: 1px solid var(--border-light);
         }
+
         .tabs-container::-webkit-scrollbar {
-            display: none; /* Chrome */
+            display: none;
+            /* Chrome */
         }
+
         .tab {
             padding: 12px 24px;
             color: var(--text-secondary);
@@ -195,9 +214,11 @@
             transition: all var(--transition-speed) ease;
             white-space: nowrap;
         }
+
         .tab:hover {
             color: var(--text-primary);
         }
+
         .tab.active {
             color: var(--primary) !important;
             border-bottom: 2px solid var(--primary) !important;
@@ -211,16 +232,19 @@
             border-radius: 0 6px 6px 0;
             margin: 2px 0;
         }
+
         .email-folder-list li:hover {
             background-color: var(--surface-hover);
             color: var(--text-primary);
         }
+
         .email-folder-list li.active {
             background-color: var(--primary-light) !important;
             color: var(--primary) !important;
             border-left: 3px solid var(--border-accent) !important;
             font-weight: 600;
         }
+
         .folder-badge {
             background-color: var(--badge-bg) !important;
             color: var(--badge-text) !important;
@@ -240,14 +264,17 @@
             transition: all var(--transition-speed) ease;
             position: relative;
         }
+
         .mail-row:hover {
             background-color: var(--surface-hover);
             transform: translateY(-1px);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
         }
+
         .mail-row.active {
             background-color: var(--surface-active);
         }
+
         .mail-row.unread::before {
             content: '';
             position: absolute;
@@ -270,6 +297,7 @@
             margin: 12px 16px;
             border: 1px solid var(--border-light);
         }
+
         .mail-tab {
             padding: 6px 16px;
             border-radius: 6px;
@@ -280,10 +308,11 @@
             cursor: pointer;
             transition: all var(--transition-speed) ease;
         }
+
         .mail-tab.active {
             background-color: var(--surface);
             color: var(--text-primary);
-            box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
         }
 
         /* Preview Pane Enhancements */
@@ -291,31 +320,36 @@
             padding: 24px 24px 16px 24px !important;
             border-bottom: 1px solid var(--border-light) !important;
         }
+
         #readingSubject {
             font-size: 20px !important;
             font-weight: 700 !important;
             color: var(--text-primary) !important;
             margin-bottom: 12px;
         }
+
         .reading-sender-info {
             display: flex;
             align-items: center;
             gap: 12px;
         }
+
         #readingSenderName {
             font-weight: 600 !important;
             color: var(--text-primary) !important;
         }
+
         #readingSenderEmail {
             color: var(--text-secondary) !important;
             font-size: 13px;
         }
+
         #readingDate {
             color: var(--text-muted) !important;
             font-size: 12px;
             margin-left: auto;
         }
-        
+
         /* Action Toolbar */
         .mail-main-toolbar {
             padding: 8px 16px !important;
@@ -323,6 +357,7 @@
             border-bottom: 1px solid var(--border-light) !important;
             background-color: var(--surface);
         }
+
         .btn-new-mail {
             background-color: var(--primary) !important;
             color: white !important;
@@ -331,9 +366,11 @@
             font-weight: 500 !important;
             border: none !important;
         }
+
         .btn-new-mail:hover {
             background-color: var(--primary-hover) !important;
         }
+
         .mail-toolbar-btn {
             border: 1px solid var(--border-light) !important;
             background: transparent;
@@ -345,13 +382,16 @@
             gap: 6px;
             transition: all var(--transition-speed) ease;
         }
+
         .mail-toolbar-btn:hover {
             background-color: var(--surface-hover);
             color: var(--text-primary);
         }
+
         .mail-toolbar-btn:active {
             transform: scale(0.98);
         }
+
         .toolbar-divider {
             width: 1px;
             height: 24px;
@@ -360,7 +400,8 @@
         }
 
         /* Focus rings for accessibility */
-        button:focus-visible, input:focus-visible {
+        button:focus-visible,
+        input:focus-visible {
             outline: none;
             box-shadow: 0 0 0 2px var(--surface), 0 0 0 4px var(--primary);
         }
@@ -372,9 +413,11 @@
             padding: 16px 24px !important;
             border-bottom: 1px solid var(--border-light) !important;
         }
+
         .reading-sender-details {
             flex: 1;
         }
+
         .reading-actions-top {
             order: 2;
             background-color: var(--surface-sidebar) !important;
@@ -384,6 +427,7 @@
             gap: 4px;
             border: 1px solid var(--border-light) !important;
         }
+
         .reading-actions-top .icon-btn {
             width: 32px;
             height: 32px;
@@ -393,15 +437,18 @@
             border-radius: 50%;
             transition: all var(--transition-speed) ease;
         }
+
         .reading-actions-top .icon-btn:hover {
             background-color: var(--border-light);
         }
+
         .reading-date {
             order: 3;
             margin-left: 16px;
             color: var(--text-muted) !important;
             font-size: 12px;
         }
+
         .reading-body {
             background-color: var(--surface-sidebar) !important;
             border-radius: 12px;
@@ -409,8 +456,10 @@
             padding: 24px !important;
             border: 1px solid var(--border-light) !important;
         }
+
         /* Style for injected CTAs if they exist in HTML emails */
-        .reading-body a.btn, .reading-body button.btn {
+        .reading-body a.btn,
+        .reading-body button.btn {
             display: inline-block;
             padding: 10px 20px;
             border-radius: 6px;
@@ -418,11 +467,13 @@
             text-decoration: none;
             transition: all var(--transition-speed) ease;
         }
+
         .reading-body .primary-cta {
             background-color: var(--primary) !important;
             color: white !important;
             border: none !important;
         }
+
         .reading-body .ghost-cta {
             background-color: transparent !important;
             color: var(--text-primary) !important;
@@ -431,27 +482,42 @@
 
         /* Custom Webkit Scrollbars for a modern look */
         ::-webkit-scrollbar {
-            width: 8px;
-            height: 8px;
+            width: 10px;
+            height: 10px;
         }
+
         ::-webkit-scrollbar-track {
             background: transparent;
         }
+
         ::-webkit-scrollbar-thumb {
-            background: var(--border-light);
+            background-color: #C1C9D2;
             border-radius: 10px;
-            border: 2px solid var(--surface);
+            border: 3px solid transparent;
+            background-clip: content-box;
         }
+
         ::-webkit-scrollbar-thumb:hover {
-            background: var(--text-muted);
+            background-color: #A0AABF;
+            border: 3px solid transparent;
+            background-clip: content-box;
         }
 
         /* Pulse animation for badges */
         @keyframes pulseBadge {
-            0% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4); }
-            70% { box-shadow: 0 0 0 4px rgba(37, 99, 235, 0); }
-            100% { box-shadow: 0 0 0 0 rgba(37, 99, 235, 0); }
+            0% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0.4);
+            }
+
+            70% {
+                box-shadow: 0 0 0 4px rgba(37, 99, 235, 0);
+            }
+
+            100% {
+                box-shadow: 0 0 0 0 rgba(37, 99, 235, 0);
+            }
         }
+
         .folder-badge {
             animation: pulseBadge 2s infinite;
         }
@@ -462,21 +528,42 @@
                 opacity: 0;
                 transform: translateY(10px);
             }
+
             to {
                 opacity: 1;
                 transform: translateY(0);
             }
         }
+
         .mail-row {
             animation: slideInUp 0.3s ease forwards;
-            opacity: 0; /* initial state before animation */
+            opacity: 0;
+            /* initial state before animation */
         }
-        .mail-row:nth-child(1) { animation-delay: 0.05s; }
-        .mail-row:nth-child(2) { animation-delay: 0.1s; }
-        .mail-row:nth-child(3) { animation-delay: 0.15s; }
-        .mail-row:nth-child(4) { animation-delay: 0.2s; }
-        .mail-row:nth-child(5) { animation-delay: 0.25s; }
-        .mail-row:nth-child(n+6) { animation-delay: 0.3s; }
+
+        .mail-row:nth-child(1) {
+            animation-delay: 0.05s;
+        }
+
+        .mail-row:nth-child(2) {
+            animation-delay: 0.1s;
+        }
+
+        .mail-row:nth-child(3) {
+            animation-delay: 0.15s;
+        }
+
+        .mail-row:nth-child(4) {
+            animation-delay: 0.2s;
+        }
+
+        .mail-row:nth-child(5) {
+            animation-delay: 0.25s;
+        }
+
+        .mail-row:nth-child(n+6) {
+            animation-delay: 0.3s;
+        }
 
         /* -------------------------------------- */
         /* Task 1: Fix Active Navbar Button Style */
@@ -484,34 +571,43 @@
         .tab {
             transition: all 0.2s ease !important;
         }
+
         .tab:hover {
             background-color: rgba(37, 99, 235, 0.1) !important;
             color: var(--text-primary) !important;
         }
+
         .tab.active {
             background-color: var(--primary) !important;
             color: #FFFFFF !important;
             border-bottom: none !important;
         }
+
         .tabs-container {
             position: sticky !important;
             top: 0;
             z-index: 100;
             background-color: var(--surface);
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05) !important;
         }
 
         /* -------------------------------------- */
         /* Task 2: UI Enhancements                */
         /* -------------------------------------- */
-        
+
         /* Left Sidebar */
-        .email-folder, .sidebar-actions button, .sidebar-admin-list .admin-item {
+        .email-folder,
+        .sidebar-actions button,
+        .sidebar-admin-list .admin-item {
             transition: background-color 0.2s ease, transform 0.1s ease !important;
         }
-        .email-folder:hover, .sidebar-actions button:hover, .sidebar-admin-list .admin-item:hover {
+
+        .email-folder:hover,
+        .sidebar-actions button:hover,
+        .sidebar-admin-list .admin-item:hover {
             background-color: rgba(37, 99, 235, 0.05) !important;
         }
+
         .create-folder {
             border: 1px solid var(--border-light) !important;
             border-radius: 6px !important;
@@ -521,11 +617,13 @@
             color: var(--text-secondary) !important;
             transition: all 0.2s ease !important;
         }
+
         .create-folder:hover {
             background-color: rgba(37, 99, 235, 0.05) !important;
             color: var(--primary) !important;
             border-color: var(--primary) !important;
         }
+
         .folder-badge {
             border-radius: 12px !important;
             padding: 2px 8px !important;
@@ -533,30 +631,39 @@
         }
 
         /* Email List Panel */
-        .mail-row:hover {
+        .mail-row:not(.active):hover {
             background-color: var(--surface-hover) !important;
         }
+
         .mail-row.unread {
             border-left: 3px solid var(--primary) !important;
         }
+
         .mail-row.unread .mail-sender {
             font-weight: 700 !important;
         }
+
         /* Ensure select all checkbox aligns */
         .mail-list-header {
             display: flex;
             align-items: center;
             padding-left: 24px;
         }
-        .mail-from-cell input[type="checkbox"], .mail-list-header input[type="checkbox"] {
+
+        .mail-from-cell input[type="checkbox"],
+        .mail-list-header input[type="checkbox"] {
             margin-right: 12px;
         }
 
         /* Email Compose Panel */
-        .email-compose-wrapper, .support-compose-panel, .email-composer-toolbar {
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05) !important;
+        .email-compose-wrapper,
+        .support-compose-panel,
+        .email-composer-toolbar {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05) !important;
         }
-        #composeTo, #composeSubject {
+
+        #composeTo,
+        #composeSubject {
             border: none !important;
             border-bottom: 1px solid var(--border-light) !important;
             border-radius: 0 !important;
@@ -564,38 +671,56 @@
             box-shadow: none !important;
             background: transparent !important;
         }
-        #composeTo:focus, #composeSubject:focus {
+
+        #composeTo:focus,
+        #composeSubject:focus {
             border-bottom: 1px solid var(--primary) !important;
             box-shadow: none !important;
             outline: none !important;
         }
-        .btn-composer-send, .support-btn-send {
+
+        .btn-composer-send,
+        .support-btn-send {
             background-color: var(--primary) !important;
             color: #FFFFFF !important;
             box-shadow: 0 2px 4px rgba(37, 99, 235, 0.2) !important;
             transition: all 0.2s ease !important;
             border-radius: 6px !important;
         }
-        .btn-composer-send:hover, .support-btn-send:hover {
+
+        .btn-composer-send:hover,
+        .support-btn-send:hover {
             background-color: var(--primary-hover) !important;
             box-shadow: 0 4px 8px rgba(37, 99, 235, 0.3) !important;
             transform: translateY(-1px);
             color: #FFFFFF !important;
         }
-        .btn-composer-send span, .support-btn-send span {
+
+        .btn-composer-send span,
+        .support-btn-send span {
             color: #FFFFFF !important;
         }
-        
+
         /* General */
-        .dashboard-wrapper .sidebar, .mail-list-panel, .mail-reading-column, .email-compose-wrapper {
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05) !important;
+        .dashboard-wrapper .sidebar,
+        .mail-list-panel,
+        .mail-reading-column,
+        .email-compose-wrapper {
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05) !important;
         }
-        .reading-body, .email-compose-wrapper, .mail-list-panel {
+
+        .reading-body,
+        .email-compose-wrapper,
+        .mail-list-panel {
             border-radius: 8px !important;
         }
-        input, select, textarea {
+
+        input,
+        select,
+        textarea {
             border-radius: 4px !important;
         }
+
         .mail-row {
             border-radius: 8px !important;
             margin: 4px 8px !important;
@@ -637,7 +762,8 @@
 
         <!-- Right icons -->
         <div class="topbar-right">
-            <button class="icon-btn" aria-label="Notifications" title="Notifications" onclick="mockAction('View notifications')">
+            <button class="icon-btn" aria-label="Notifications" title="Notifications"
+                onclick="mockAction('View notifications')">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                     <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
@@ -654,8 +780,8 @@
                 </svg>
             </button>
             <div class="profile-dropdown-container">
-                <img src="images/avatar_1.png" alt="Profile" class="avatar" style="cursor: pointer;" title="Profile Menu"
-                    onclick="toggleProfileDropdown()"
+                <img src="images/avatar_1.png" alt="Profile" class="avatar" style="cursor: pointer;"
+                    title="Profile Menu" onclick="toggleProfileDropdown()"
                     onerror="this.src='https://ui-avatars.com/api/?name=Admin&background=45AEF1&color=fff'">
                 <div class="profile-dropdown-menu hidden" id="profileDropdown">
                     <button class="profile-dropdown-item" onclick="openSettingsPanel('settingsAccountInfo')">Account
@@ -678,8 +804,8 @@
         <aside class="email-sidebar" id="emailSidebar" style="display: none;">
             <div class="email-admin-panel">
                 <div class="email-admin-info">
-                    <strong>Admin Panel</strong>
-                    <span class="email-admin-email">admin@safemailz.com</span>
+                    <strong id="sidebarAdminName" class="email-admin-name" style="display:block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</strong>
+                    <span id="sidebarAdminEmail" class="email-admin-email" style="display:block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
                 </div>
                 <button class="btn-switch-account" onclick="mockAction('Switch account')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -702,13 +828,14 @@
                         <span id="syncingStatus"
                             style="display: none; font-size: 0.7rem; color: #3DA2F3; font-weight: normal; margin-left: 8px;">Syncing...</span>
                     </div>
-                    <svg class="toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        style="transition: transform 0.2s ease;">
+                    <svg class="toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="transition: transform 0.2s ease;">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </div>
-                <ul class="email-folder-list" id="foldersList" style="transition: max-height 0.3s ease; overflow: hidden; max-height: 500px;">
+                <ul class="email-folder-list" id="foldersList"
+                    style="transition: max-height 0.3s ease; overflow: hidden; max-height: 500px;">
                     <li class="active email-folder" data-email-filter="folder:inbox"
                         onclick="switchEmailFolder('folder:inbox')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
@@ -807,13 +934,14 @@
                 <div class="email-sidebar-title" style="display: flex; justify-content: space-between; cursor: pointer;"
                     onclick="toggleSidebarSection('projectsList', this)">
                     My Projects
-                    <svg class="toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
-                        stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                        style="transition: transform 0.2s ease;">
+                    <svg class="toggle-arrow" xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                        viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                        stroke-linejoin="round" style="transition: transform 0.2s ease;">
                         <polyline points="6 9 12 15 18 9"></polyline>
                     </svg>
                 </div>
-                <ul class="email-project-list" id="projectsList" style="transition: max-height 0.3s ease; overflow: hidden; max-height: 200px;">
+                <ul class="email-project-list" id="projectsList"
+                    style="transition: max-height 0.3s ease; overflow: hidden; max-height: 200px;">
                     <li><span class="project-dot"></span>Marketing campaign 1</li>
                     <li><span class="project-dot"></span>Marketing campaign 2</li>
                     <li><span class="project-dot"></span>Marketing campaign 3</li>
@@ -876,27 +1004,55 @@
                     </li>
                 </ul>
             </div>
-            
+
             <!-- Bottom Avatar Profile -->
-            <div class="sidebar-user-profile" style="margin-top: auto; padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; gap: 12px;">
-                <div style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
+            <div class="sidebar-user-profile"
+                style="margin-top: auto; padding: 16px; border-top: 1px solid var(--border-light); display: flex; align-items: center; gap: 12px;">
+                <div class="user-avatar" id="headerUserInitials"
+                    style="width: 36px; height: 36px; border-radius: 50%; background: linear-gradient(135deg, var(--primary), var(--primary-hover)); color: white; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 14px;">
                     AD
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <span style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Admin User</span>
-                    <span style="font-size: 12px; color: var(--text-secondary);">admin@safemailz.com</span>
+                    <span id="headerUserName" style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Admin User</span>
+                    <span id="headerUserEmail" style="font-size: 12px; color: var(--text-secondary);">admin@safemailz.com</span>
                 </div>
             </div>
             <script>
+                // Immediately bind profile info from localStorage
+                (function bindUserProfile() {
+                    try {
+                        const userStr = localStorage.getItem('currentUser');
+                        if (!userStr) return;
+                        const user = JSON.parse(userStr);
+                        const name = user.admin_name || user.email || 'Admin';
+                        const email = user.email || '';
+
+                        const sn = document.getElementById('sidebarAdminName');
+                        if (sn) sn.textContent = name;
+                        const se = document.getElementById('sidebarAdminEmail');
+                        if (se) se.textContent = email;
+
+                        const hn = document.getElementById('headerUserName');
+                        if (hn) hn.textContent = name;
+                        const he = document.getElementById('headerUserEmail');
+                        if (he) he.textContent = email;
+                        const hi = document.getElementById('headerUserInitials');
+                        if (hi) {
+                            const parts = name.split(' ').filter(Boolean);
+                            hi.textContent = (parts[0]?.[0] || 'A').toUpperCase() + (parts[1]?.[0] || '').toUpperCase();
+                        }
+                    } catch(e) {}
+                })();
+
                 function toggleSidebarSection(id, element) {
                     const el = document.getElementById(id);
                     const arrow = element.querySelector('.toggle-arrow');
-                    if(el.style.maxHeight !== '0px') {
+                    if (el.style.maxHeight !== '0px') {
                         el.style.maxHeight = '0px';
-                        if(arrow) arrow.style.transform = 'rotate(-90deg)';
+                        if (arrow) arrow.style.transform = 'rotate(-90deg)';
                     } else {
                         el.style.maxHeight = id === 'projectsList' ? '200px' : '500px';
-                        if(arrow) arrow.style.transform = 'rotate(0deg)';
+                        if (arrow) arrow.style.transform = 'rotate(0deg)';
                     }
                 }
             </script>
@@ -1899,16 +2055,20 @@
                             </button>
                             <div class="toolbar-divider"></div>
                             <!-- Destructive Actions -->
-                            <button class="mail-toolbar-btn" id="btnToolbarDelete" onclick="handleEmailAction('delete')" disabled>
+                            <button class="mail-toolbar-btn" id="btnToolbarDelete" onclick="handleEmailAction('delete')"
+                                disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
                                     <polyline points="3 6 5 6 21 6"></polyline>
-                                    <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                    <path
+                                        d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2">
+                                    </path>
                                 </svg>
                                 <span>Delete</span>
                             </button>
-                            <button class="mail-toolbar-btn" id="btnToolbarReport" style="color: var(--danger);" onclick="handleEmailAction('report')" disabled>
+                            <button class="mail-toolbar-btn" id="btnToolbarReport" style="color: var(--danger);"
+                                onclick="handleEmailAction('report')" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1918,11 +2078,12 @@
                                 </svg>
                                 <span>Report</span>
                             </button>
-                            
+
                             <div class="toolbar-divider"></div>
-                            
+
                             <!-- Neutral Actions -->
-                            <button class="mail-toolbar-btn" id="btnToolbarArchive" onclick="handleEmailAction('archive')" disabled>
+                            <button class="mail-toolbar-btn" id="btnToolbarArchive"
+                                onclick="handleEmailAction('archive')" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1932,7 +2093,8 @@
                                 </svg>
                                 <span>Archive</span>
                             </button>
-                            <button class="mail-toolbar-btn" id="btnToolbarSweep" onclick="handleEmailAction('sweep')" disabled>
+                            <button class="mail-toolbar-btn" id="btnToolbarSweep" onclick="handleEmailAction('sweep')"
+                                disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1940,7 +2102,8 @@
                                 </svg>
                                 <span>Sweep</span>
                             </button>
-                            <button class="mail-toolbar-btn" id="btnToolbarMove" onclick="handleEmailAction('move')" disabled>
+                            <button class="mail-toolbar-btn" id="btnToolbarMove" onclick="handleEmailAction('move')"
+                                disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1954,10 +2117,12 @@
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
                             </button>
-                            
+
                             <div class="toolbar-divider"></div>
-                            
-                            <button class="mail-toolbar-btn" id="btnToolbarRestore" style="color: var(--primary); display: none;" onclick="handleEmailAction('restore')" disabled>
+
+                            <button class="mail-toolbar-btn" id="btnToolbarRestore"
+                                style="color: var(--primary); display: none;" onclick="handleEmailAction('restore')"
+                                disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1966,10 +2131,11 @@
                                 </svg>
                                 <span>Restore</span>
                             </button>
-                            
+
                             <div class="toolbar-divider"></div>
-                            
-                            <button class="mail-toolbar-btn" id="btnToolbarReply" onclick="handleEmailAction('reply')" disabled>
+
+                            <button class="mail-toolbar-btn" id="btnToolbarReply" onclick="handleEmailAction('reply')"
+                                disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
@@ -1983,11 +2149,14 @@
                                     <polyline points="6 9 12 15 18 9"></polyline>
                                 </svg>
                             </button>
-                            <button class="mail-toolbar-btn" id="btnToolbarRead" onclick="handleEmailAction('toggleRead')" disabled>
+                            <button class="mail-toolbar-btn" id="btnToolbarRead"
+                                onclick="handleEmailAction('toggleRead')" disabled>
                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
                                     fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
                                     stroke-linejoin="round">
-                                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
+                                    <path
+                                        d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z">
+                                    </path>
                                     <polyline points="22,6 12,13 2,6"></polyline>
                                 </svg>
                                 <span>Read / Unread</span>
@@ -1995,538 +2164,562 @@
                         </div>
 
                         <!-- Compose Formatting Toolbar (shown when composing, hidden otherwise) -->
-                        <div class="email-composer-toolbar" id="formatToolbar" style="display: none;">
-                            <!-- History & Clipboard Group -->
-                            <div class="toolbar-split-btn-group">
-                                <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('undo')"
-                                    title="Undo">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M3 7v6h6"></path>
-                                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
-                                    </svg>
-                                </button>
-                                <button class="email-composer-toolbar-chevron" type="button" id="editorUndoBtn"
-                                    onclick="toggleEditorDropdown('editorUndoMenu', event)" title="Undo Options">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorUndoMenu" style="width: 100px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="formatDoc('undo')">Undo</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="formatDoc('redo')">Redo</button>
+                        <!-- Compose Formatting Toolbar (shown when composing, hidden otherwise) -->
+                        <div class="email-composer-toolbar expanded-ribbon" id="formatToolbar" style="display: none;">
+                            <!-- Group 1: Clipboard -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="mockAction('Paste')" title="Paste">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
+                                            </path>
+                                            <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
+                                        </svg>
+                                        <span class="stacked-btn-text">Paste</span>
+                                    </button>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <button class="email-composer-toolbar-btn" type="button"
+                                            onclick="formatDoc('undo')" title="Undo">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M3 7v6h6"></path>
+                                                <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path>
+                                            </svg>
+                                            <span class="ribbon-btn-text">Undo</span>
+                                        </button>
+                                        <button class="email-composer-toolbar-btn" type="button"
+                                            onclick="triggerFormatPainter()" title="Format Painter">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path
+                                                    d="M18 14V8a6 6 0 0 0-12 0v6M12 2v6M5 14h14v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3z">
+                                                </path>
+                                            </svg>
+                                            <span class="ribbon-btn-text">Format Painter</span>
+                                        </button>
+                                    </div>
                                 </div>
+                                <span class="ribbon-group-label">Clipboard</span>
                             </div>
 
-                            <div class="toolbar-split-btn-group">
-                                <button class="email-composer-toolbar-btn" type="button" onclick="mockAction('Paste')"
-                                    title="Paste">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path
-                                            d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2">
-                                        </path>
-                                        <rect x="8" y="2" width="8" height="4" rx="1" ry="1"></rect>
-                                    </svg>
-                                </button>
-                                <button class="email-composer-toolbar-chevron" type="button" id="editorPasteBtn"
-                                    onclick="toggleEditorDropdown('editorPasteMenu', event)" title="Paste Options">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorPasteMenu" style="width: 130px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="mockAction('Paste Plain Text')">Paste Text Only</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="mockAction('Paste HTML')">Paste HTML</button>
+                            <!-- Group 2: Basic Text -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <!-- Row 1: Font and Size -->
+                                        <div style="display: flex; gap: 4px;">
+                                            <div style="position: relative;">
+                                                <button class="email-composer-toolbar-btn dropdown-select-btn"
+                                                    type="button" id="editorFontBtn"
+                                                    onclick="toggleEditorDropdown('editorFontMenu', event)"
+                                                    title="Font Family"
+                                                    style="width: 120px; justify-content: space-between;">
+                                                    <span id="currentFontName"
+                                                        style="font-size: 0.75rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Aptos</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </button>
+                                                <div class="email-composer-dropdown-menu" id="editorFontMenu"
+                                                    style="width: 140px;">
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFont('Aptos', 'Aptos')"
+                                                        style="font-family: 'Aptos', sans-serif;">Aptos</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFont('Arial', 'Arial')"
+                                                        style="font-family: Arial;">Arial</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFont('Calibri', 'Calibri')"
+                                                        style="font-family: Calibri;">Calibri</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFont('Times New Roman', 'Times New Roman')"
+                                                        style="font-family: Times New Roman;">Times New Roman</button>
+                                                </div>
+                                            </div>
+                                            <div style="position: relative;">
+                                                <button class="email-composer-toolbar-btn dropdown-select-btn"
+                                                    type="button" id="editorFontSizeBtn"
+                                                    onclick="toggleEditorDropdown('editorFontSizeMenu', event)"
+                                                    title="Font Size"
+                                                    style="width: 50px; justify-content: space-between;">
+                                                    <span id="currentFontSize" style="font-size: 0.75rem;">12</span>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </button>
+                                                <div class="email-composer-dropdown-menu" id="editorFontSizeMenu"
+                                                    style="width: 60px;">
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFontSizePt('10')">10</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFontSizePt('11')">11</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFontSizePt('12')">12</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeFontSizePt('14')">14</button>
+                                                </div>
+                                            </div>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('removeFormat')" title="Clear Formatting">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z">
+                                                    </path>
+                                                </svg>
+                                                <span class="ribbon-btn-text">Clear</span>
+                                            </button>
+                                        </div>
+                                        <!-- Row 2: Formatting Toggles -->
+                                        <div style="display: flex; gap: 2px;">
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('bold')" title="Bold"><strong
+                                                    style="font-family: serif; font-size: 14px;">B</strong></button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('italic')" title="Italic"><em
+                                                    style="font-family: serif; font-size: 14px;">I</em></button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('underline')" title="Underline"><span
+                                                    style="text-decoration: underline; font-family: serif; font-size: 14px;">U</span></button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('strikeThrough')" title="Strikethrough">
+                                                <span
+                                                    style="text-decoration: line-through; font-family: serif; font-size: 14px;">ab</span>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="mockAction('Subscript')" title="Subscript">
+                                                <span style="font-family: serif; font-size: 12px;">X<sub>2</sub></span>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="mockAction('Superscript')" title="Superscript">
+                                                <span style="font-family: serif; font-size: 12px;">X<sup>2</sup></span>
+                                            </button>
+                                            <div class="email-composer-toolbar-divider"
+                                                style="display: inline-block; height: 16px; margin: 4px;"></div>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="switchCase()" title="Change Case">
+                                                <span style="font-weight:600; font-size:12px;">aA</span>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn color-dropdown-btn" type="button"
+                                                id="editorHighlightColorBtn"
+                                                onclick="toggleEditorDropdown('editorHighlightColorMenu', event)"
+                                                title="Highlight Color">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path
+                                                        d="M12 22C17.5 22 22 17.5 22 12S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z">
+                                                    </path>
+                                                    <path d="M11 7l4 4-7.5 7.5H4v-3.5L11 7z"></path>
+                                                </svg>
+                                                <span class="color-underline-indicator highlight-indicator"
+                                                    style="background-color: yellow;"></span>
+                                            </button>
+                                            <div class="email-composer-color-palette" id="editorHighlightColorMenu">
+                                                <div class="email-composer-color-grid-title">Highlight Color</div>
+                                                <div class="email-composer-color-grid" id="highlightColorGrid2"></div>
+                                            </div>
+                                            <button class="email-composer-toolbar-btn color-dropdown-btn" type="button"
+                                                id="editorTextColorBtn"
+                                                onclick="toggleEditorDropdown('editorTextColorMenu', event)"
+                                                title="Font Color">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M4 20l8-16 8 16M6 16h12M12 4v16"></path>
+                                                </svg>
+                                                <span class="color-underline-indicator text-indicator"
+                                                    style="background-color: red;"></span>
+                                            </button>
+                                            <div class="email-composer-color-palette" id="editorTextColorMenu">
+                                                <div class="email-composer-color-grid-title">Text Color</div>
+                                                <div class="email-composer-color-grid" id="textColorGrid2"></div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <span class="ribbon-group-label">Basic Text</span>
                             </div>
 
-                            <button class="email-composer-toolbar-btn" type="button" onclick="triggerFormatPainter()"
-                                title="Format Painter">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M18 14V8a6 6 0 0 0-12 0v6M12 2v6M5 14h14v3a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-3z">
-                                    </path>
-                                </svg>
-                            </button>
-
-                            <div class="email-composer-toolbar-divider"></div>
-
-                            <!-- Font Family -->
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn dropdown-select-btn" type="button"
-                                    id="editorFontBtn" onclick="toggleEditorDropdown('editorFontMenu', event)"
-                                    title="Font Family">
-                                    <span id="currentFontName"
-                                        style="font-size: 0.72rem; max-width: 65px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Aptos</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-left: 4px;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorFontMenu" style="width: 140px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Aptos', 'Aptos')"
-                                        style="font-family: 'Aptos', sans-serif;">Aptos</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Arial', 'Arial')"
-                                        style="font-family: Arial;">Arial</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Calibri', 'Calibri')"
-                                        style="font-family: Calibri;">Calibri</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Courier New', 'Courier New')"
-                                        style="font-family: Courier New;">Courier New</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Georgia', 'Georgia')"
-                                        style="font-family: Georgia;">Georgia</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Segoe UI', 'Segoe UI')"
-                                        style="font-family: Segoe UI;">Segoe UI</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Times New Roman', 'Times New Roman')"
-                                        style="font-family: Times New Roman;">Times New Roman</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFont('Verdana', 'Verdana')"
-                                        style="font-family: Verdana;">Verdana</button>
+                            <!-- Group 3: Paragraph -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <div style="display: flex; flex-direction: column; gap: 4px;">
+                                        <!-- Row 1: Lists & Indents -->
+                                        <div style="display: flex; gap: 2px;">
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('insertUnorderedList')" title="Bullet List">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="8" y1="6" x2="21" y2="6"></line>
+                                                    <line x1="8" y1="12" x2="21" y2="12"></line>
+                                                    <line x1="8" y1="18" x2="21" y2="18"></line>
+                                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
+                                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
+                                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
+                                                </svg>
+                                                <span class="ribbon-btn-text">Bullets</span>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('insertOrderedList')" title="Numbered List">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="10" y1="6" x2="21" y2="6"></line>
+                                                    <line x1="10" y1="12" x2="21" y2="12"></line>
+                                                    <line x1="10" y1="18" x2="21" y2="18"></line>
+                                                    <path d="M4 6H5V10M4 10H6"></path>
+                                                    <path d="M4 14H6C6 14 6 15 5 16C4.5 16.5 4 17 4 18H6"></path>
+                                                </svg>
+                                                <span class="ribbon-btn-text">Numbering</span>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('outdent')" title="Decrease Indent">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="11 17 6 12 11 7"></polyline>
+                                                    <line x1="21" y1="18" x2="9" y2="18"></line>
+                                                    <line x1="21" y1="12" x2="6" y2="12"></line>
+                                                    <line x1="21" y1="6" x2="9" y2="6"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('indent')" title="Increase Indent">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <polyline points="13 17 18 12 13 7"></polyline>
+                                                    <line x1="21" y1="18" x2="9" y2="18"></line>
+                                                    <line x1="21" y1="12" x2="6" y2="12"></line>
+                                                    <line x1="21" y1="6" x2="9" y2="6"></line>
+                                                </svg>
+                                            </button>
+                                        </div>
+                                        <!-- Row 2: Alignments -->
+                                        <div style="display: flex; gap: 2px;">
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('justifyLeft')" title="Align Left">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="17" y1="10" x2="3" y2="10"></line>
+                                                    <line x1="21" y1="6" x2="3" y2="6"></line>
+                                                    <line x1="21" y1="14" x2="3" y2="14"></line>
+                                                    <line x1="17" y1="18" x2="3" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('justifyCenter')" title="Center">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="18" y1="10" x2="6" y2="10"></line>
+                                                    <line x1="21" y1="6" x2="3" y2="6"></line>
+                                                    <line x1="21" y1="14" x2="3" y2="14"></line>
+                                                    <line x1="18" y1="18" x2="6" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('justifyRight')" title="Align Right">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="21" y1="10" x2="7" y2="10"></line>
+                                                    <line x1="21" y1="6" x2="3" y2="6"></line>
+                                                    <line x1="21" y1="14" x2="3" y2="14"></line>
+                                                    <line x1="21" y1="18" x2="7" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                            <button class="email-composer-toolbar-btn" type="button"
+                                                onclick="formatDoc('justifyFull')" title="Justify">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <line x1="21" y1="10" x2="3" y2="10"></line>
+                                                    <line x1="21" y1="6" x2="3" y2="6"></line>
+                                                    <line x1="21" y1="14" x2="3" y2="14"></line>
+                                                    <line x1="21" y1="18" x2="3" y2="18"></line>
+                                                </svg>
+                                            </button>
+                                            <div style="position: relative;">
+                                                <button class="email-composer-toolbar-btn dropdown-select-btn"
+                                                    type="button" id="editorLineSpacingBtn"
+                                                    onclick="toggleEditorDropdown('editorLineSpacingMenu', event)"
+                                                    title="Line Spacing">
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                        <line x1="21" y1="10" x2="7" y2="10"></line>
+                                                        <line x1="21" y1="6" x2="3" y2="6"></line>
+                                                        <line x1="21" y1="14" x2="7" y2="14"></line>
+                                                        <line x1="21" y1="18" x2="3" y2="18"></line>
+                                                        <polyline points="3 7 3 17"></polyline>
+                                                        <polyline points="1 10 3 7 5 10"></polyline>
+                                                        <polyline points="1 14 3 17 5 14"></polyline>
+                                                    </svg>
+                                                    <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                                        viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                        style="margin-left: 2px;">
+                                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                                    </svg>
+                                                </button>
+                                                <div class="email-composer-dropdown-menu" id="editorLineSpacingMenu"
+                                                    style="width: 100px;">
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeLineSpacing('1.0')">1.0</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeLineSpacing('1.15')">1.15</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeLineSpacing('1.5')">1.5</button>
+                                                    <button class="email-composer-dropdown-item" type="button"
+                                                        onclick="changeLineSpacing('2.0')">2.0</button>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
                                 </div>
+                                <span class="ribbon-group-label">Paragraph</span>
                             </div>
 
-                            <!-- Font Size -->
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn dropdown-select-btn" type="button"
-                                    id="editorFontSizeBtn" onclick="toggleEditorDropdown('editorFontSizeMenu', event)"
-                                    title="Font Size">
-                                    <span id="currentFontSize" style="font-size: 0.72rem;">12</span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-left: 4px;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorFontSizeMenu" style="width: 80px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('8')">8</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('9')">9</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('10')">10</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('11')">11</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('12')">12</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('14')">14</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('16')">16</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('18')">18</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('20')">20</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('24')">24</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('28')">28</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('36')">36</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('48')">48</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeFontSizePt('72')">72</button>
+                            <!-- Group 4: Insert -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="triggerAttachmentSelect()" title="Attach File">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
+                                            </path>
+                                        </svg>
+                                        <span class="stacked-btn-text">Attach File</span>
+                                    </button>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <button class="email-composer-toolbar-btn" type="button" onclick="insertLink()"
+                                            title="Insert Link">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71">
+                                                </path>
+                                                <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71">
+                                                </path>
+                                            </svg>
+                                            <span class="ribbon-btn-text">Link</span>
+                                        </button>
+                                        <div style="position: relative;">
+                                            <button class="email-composer-toolbar-btn dropdown-select-btn" type="button"
+                                                id="editorTemplateBtn"
+                                                onclick="toggleEditorDropdown('editorTemplateMenu', event)"
+                                                title="Signature/Template">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                                    <polyline points="17 8 12 3 7 8"></polyline>
+                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
+                                                </svg>
+                                                <span class="ribbon-btn-text">Signature</span>
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="10" height="10"
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                                                    style="margin-left: 2px;">
+                                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                                </svg>
+                                            </button>
+                                            <div class="email-composer-dropdown-menu" id="editorTemplateMenu"
+                                                style="width: 150px;">
+                                                <button class="email-composer-dropdown-item" type="button"
+                                                    onclick="insertEmailTemplate('formal')">Formal Greeting</button>
+                                                <button class="email-composer-dropdown-item" type="button"
+                                                    onclick="insertEmailTemplate('signature')">Standard
+                                                    Signature</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <button class="email-composer-toolbar-btn" type="button"
+                                            onclick="mockAction('Pictures')" title="Pictures">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <circle cx="8.5" cy="8.5" r="1.5"></circle>
+                                                <polyline points="21 15 16 10 5 21"></polyline>
+                                            </svg>
+                                            <span class="ribbon-btn-text">Pictures</span>
+                                        </button>
+                                        <button class="email-composer-toolbar-btn" type="button"
+                                            onclick="mockAction('Emoji')" title="Emoji">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <circle cx="12" cy="12" r="10"></circle>
+                                                <path d="M8 14s1.5 2 4 2 4-2 4-2"></path>
+                                                <line x1="9" y1="9" x2="9.01" y2="9"></line>
+                                                <line x1="15" y1="9" x2="15.01" y2="9"></line>
+                                            </svg>
+                                            <span class="ribbon-btn-text">Emoji</span>
+                                        </button>
+                                    </div>
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="mockAction('Table')" title="Table">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                                            <line x1="3" y1="15" x2="21" y2="15"></line>
+                                            <line x1="9" y1="3" x2="9" y2="21"></line>
+                                            <line x1="15" y1="3" x2="15" y2="21"></line>
+                                        </svg>
+                                        <span class="stacked-btn-text">Table</span>
+                                    </button>
                                 </div>
+                                <span class="ribbon-group-label">Insert</span>
                             </div>
 
-                            <div class="email-composer-toolbar-divider"></div>
-
-                            <!-- Text Styling Group -->
-                            <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('bold')"
-                                title="Bold">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M6 4h8a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-                                    <path d="M6 12h9a4 4 0 0 1 4 4 4 4 0 0 1-4 4H6z"></path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('italic')"
-                                title="Italic">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="19" y1="4" x2="10" y2="4"></line>
-                                    <line x1="14" y1="20" x2="5" y2="20"></line>
-                                    <line x1="15" y1="4" x2="9" y2="20"></line>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('underline')"
-                                title="Underline">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M6 3v7a6 6 0 0 0 6 6 6 6 0 0 0 6-6V3"></path>
-                                    <line x1="4" y1="21" x2="20" y2="21"></line>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="formatDoc('strikeThrough')" title="Strikethrough">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                    <path d="M16 6A5 5 0 0 0 8 6a5 5 0 0 0 0 5M8 18a5 5 0 0 0 8 0a5 5 0 0 0 0-5"></path>
-                                </svg>
-                            </button>
-
-                            <!-- Text Highlight Color -->
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn color-dropdown-btn" type="button"
-                                    id="editorHighlightColorBtn"
-                                    onclick="toggleEditorDropdown('editorHighlightColorMenu', event)"
-                                    title="Highlight Color">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M12 22C17.5 22 22 17.5 22 12S17.5 2 12 2 2 6.5 2 12s4.5 10 10 10z">
-                                        </path>
-                                        <path d="M11 7l4 4-7.5 7.5H4v-3.5L11 7z"></path>
-                                    </svg>
-                                    <span class="color-underline-indicator highlight-indicator"
-                                        style="background-color: yellow;"></span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-left: 2px;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-color-palette" id="editorHighlightColorMenu">
-                                    <div class="email-composer-color-grid-title">Highlight Color</div>
-                                    <div class="email-composer-color-grid" id="highlightColorGrid2"></div>
+                            <!-- Group 5: Voice -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        id="editorDictationBtn" onclick="toggleDictation()"
+                                        title="Dictation (Voice Typing)">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
+                                            <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+                                            <line x1="12" y1="19" x2="12" y2="22"></line>
+                                        </svg>
+                                        <span class="stacked-btn-text">Dictate</span>
+                                    </button>
                                 </div>
+                                <span class="ribbon-group-label">Voice</span>
                             </div>
 
-                            <!-- Font Color -->
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn color-dropdown-btn" type="button"
-                                    id="editorTextColorBtn" onclick="toggleEditorDropdown('editorTextColorMenu', event)"
-                                    title="Font Color">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M4 20l8-16 8 16M6 16h12M12 4v16"></path>
-                                    </svg>
-                                    <span class="color-underline-indicator text-indicator"
-                                        style="background-color: red;"></span>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-left: 2px;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-color-palette" id="editorTextColorMenu">
-                                    <div class="email-composer-color-grid-title">Text Color</div>
-                                    <div class="email-composer-color-grid" id="textColorGrid2"></div>
+                            <!-- Group 6: Proofing -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="mockAction('Editor / Spell Check')" title="Editor">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <path
+                                                d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z">
+                                            </path>
+                                            <path d="M9 12l2 2 4-4"></path>
+                                        </svg>
+                                        <span class="stacked-btn-text">Editor</span>
+                                    </button>
                                 </div>
+                                <span class="ribbon-group-label">Proofing</span>
                             </div>
 
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="adjustFontSize('increase')" title="Increase Font Size">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M4 15l8-8 8 8"></path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="adjustFontSize('decrease')" title="Decrease Font Size">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M4 9l8 8 8-8"></path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="formatDoc('formatBlock', 'blockquote')" title="Blockquote">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M3 21c3 0 7-1 7-8V5H3v8h4c0 4.4-3.6 8-7 8zm11 0c3 0 7-1 7-8V5h-7v8h4c0 4.4-3.6 8-7 8z">
-                                    </path>
-                                </svg>
-                            </button>
-
-                            <div class="email-composer-toolbar-divider"></div>
-
-                            <!-- Paragraph & Alignment Group -->
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="formatDoc('insertUnorderedList')" title="Bullet List">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="8" y1="6" x2="21" y2="6"></line>
-                                    <line x1="8" y1="12" x2="21" y2="12"></line>
-                                    <line x1="8" y1="18" x2="21" y2="18"></line>
-                                    <line x1="3" y1="6" x2="3.01" y2="6"></line>
-                                    <line x1="3" y1="12" x2="3.01" y2="12"></line>
-                                    <line x1="3" y1="18" x2="3.01" y2="18"></line>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="formatDoc('insertOrderedList')" title="Numbered List">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <line x1="10" y1="6" x2="21" y2="6"></line>
-                                    <line x1="10" y1="12" x2="21" y2="12"></line>
-                                    <line x1="10" y1="18" x2="21" y2="18"></line>
-                                    <path d="M4 6H5V10M4 10H6"></path>
-                                    <path d="M4 14H6C6 14 6 15 5 16C4.5 16.5 4 17 4 18H6"></path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('outdent')"
-                                title="Decrease Indent">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="11 17 6 12 11 7"></polyline>
-                                    <line x1="21" y1="18" x2="9" y2="18"></line>
-                                    <line x1="21" y1="12" x2="6" y2="12"></line>
-                                    <line x1="21" y1="6" x2="9" y2="6"></line>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('indent')"
-                                title="Increase Indent">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="13 17 18 12 13 7"></polyline>
-                                    <line x1="21" y1="18" x2="9" y2="18"></line>
-                                    <line x1="21" y1="12" x2="6" y2="12"></line>
-                                    <line x1="21" y1="6" x2="9" y2="6"></line>
-                                </svg>
-                            </button>
-
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn dropdown-select-btn" type="button"
-                                    id="editorAlignBtn" onclick="toggleEditorDropdown('editorAlignMenu', event)"
-                                    title="Alignment">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <line x1="21" y1="10" x2="3" y2="10"></line>
-                                        <line x1="21" y1="6" x2="3" y2="6"></line>
-                                        <line x1="21" y1="14" x2="3" y2="14"></line>
-                                        <line x1="21" y1="18" x2="3" y2="18"></line>
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-left: 2px;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorAlignMenu" style="width: 120px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="formatDoc('justifyLeft')">Align Left</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="formatDoc('justifyCenter')">Align Center</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="formatDoc('justifyRight')">Align Right</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="formatDoc('justifyFull')">Justify</button>
+                            <!-- Group 7: Add-ins -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="mockAction('Apps Grid')" title="Add-ins">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <rect x="3" y="3" width="7" height="7"></rect>
+                                            <rect x="14" y="3" width="7" height="7"></rect>
+                                            <rect x="14" y="14" width="7" height="7"></rect>
+                                            <rect x="3" y="14" width="7" height="7"></rect>
+                                        </svg>
+                                        <span class="stacked-btn-text">Add-ins</span>
+                                    </button>
                                 </div>
+                                <span class="ribbon-group-label">Add-ins</span>
                             </div>
 
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn dropdown-select-btn" type="button"
-                                    id="editorLineSpacingBtn"
-                                    onclick="toggleEditorDropdown('editorLineSpacingMenu', event)" title="Line Spacing">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <line x1="21" y1="10" x2="7" y2="10"></line>
-                                        <line x1="21" y1="6" x2="3" y2="6"></line>
-                                        <line x1="21" y1="14" x2="7" y2="14"></line>
-                                        <line x1="21" y1="18" x2="3" y2="18"></line>
-                                        <polyline points="3 7 3 17"></polyline>
-                                        <polyline points="1 10 3 7 5 10"></polyline>
-                                        <polyline points="1 14 3 17 5 14"></polyline>
-                                    </svg>
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="8" height="8" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round" style="margin-left: 2px;">
-                                        <polyline points="6 9 12 15 18 9"></polyline>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorLineSpacingMenu"
-                                    style="width: 100px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeLineSpacing('1.0')">1.0</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeLineSpacing('1.15')">1.15</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeLineSpacing('1.5')">1.5</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="changeLineSpacing('2.0')">2.0</button>
+                            <!-- Group 8: Tags -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <div style="display: flex; flex-direction: column; gap: 2px;">
+                                        <button class="email-composer-toolbar-btn" type="button" id="importanceHighBtn"
+                                            onclick="setImportance('high')" title="High Importance">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"
+                                                stroke-linecap="round" stroke-linejoin="round" style="color: #d93025;">
+                                                <line x1="12" y1="4" x2="12" y2="15"></line>
+                                                <line x1="12" y1="19" x2="12.01" y2="19"></line>
+                                            </svg>
+                                            <span class="ribbon-btn-text">High Importance</span>
+                                        </button>
+                                        <button class="email-composer-toolbar-btn" type="button" id="importanceLowBtn"
+                                            onclick="setImportance('low')" title="Low Importance">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round" style="color: #1a73e8;">
+                                                <line x1="12" y1="5" x2="12" y2="19"></line>
+                                                <polyline points="19 12 12 19 5 12"></polyline>
+                                            </svg>
+                                            <span class="ribbon-btn-text">Low Importance</span>
+                                        </button>
+                                    </div>
                                 </div>
+                                <span class="ribbon-group-label">Tags</span>
                             </div>
 
-                            <button class="email-composer-toolbar-btn" type="button" onclick="formatDoc('removeFormat')"
-                                title="Clear Formatting">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M20 20H7L3 16c-.5-.5-.5-1.3 0-1.8l10-10c.5-.5 1.3-.5 1.8 0l6 6c.5.5.5 1.3 0 1.8L12.5 20">
-                                    </path>
-                                    <line x1="22" y1="20" x2="9" y2="20"></line>
-                                </svg>
-                            </button>
-
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn" type="button" id="editorOverflowBtn"
-                                    onclick="toggleEditorDropdown('editorOverflowMenu', event)" title="More Options">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <circle cx="12" cy="12" r="1"></circle>
-                                        <circle cx="19" cy="12" r="1"></circle>
-                                        <circle cx="5" cy="12" r="1"></circle>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorOverflowMenu" style="width: 140px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="mockAction('Subscript')">Subscript</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="mockAction('Superscript')">Superscript</button>
+                            <!-- Group 9: Print -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="printEditorContent()" title="Print Draft">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <polyline points="6 9 6 2 18 2 18 9"></polyline>
+                                            <path
+                                                d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2">
+                                            </path>
+                                            <rect x="6" y="14" width="12" height="8"></rect>
+                                        </svg>
+                                        <span class="stacked-btn-text">Print</span>
+                                    </button>
                                 </div>
+                                <span class="ribbon-group-label">Print</span>
                             </div>
 
-                            <div class="email-composer-toolbar-divider"></div>
-
-                            <!-- Utilities & Attachments Group -->
-                            <button class="email-composer-toolbar-btn" type="button" onclick="triggerAttachmentSelect()"
-                                title="Attach File">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48">
-                                    </path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="insertLink()"
-                                title="Insert Link">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"></path>
-                                    <path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"></path>
-                                </svg>
-                            </button>
-
-                            <div style="position: relative;">
-                                <button class="email-composer-toolbar-btn" type="button" id="editorTemplateBtn"
-                                    onclick="toggleEditorDropdown('editorTemplateMenu', event)" title="Insert Template">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                        fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                        stroke-linejoin="round">
-                                        <path d="M12 20h9M16.5 3.5a2.12 2.12 0 0 1 3 3L7 19l-4 1 1-4Z"></path>
-                                    </svg>
-                                </button>
-                                <div class="email-composer-dropdown-menu" id="editorTemplateMenu" style="width: 150px;">
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="insertEmailTemplate('formal')">Formal Greeting</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="insertEmailTemplate('meeting')">Meeting Agenda</button>
-                                    <button class="email-composer-dropdown-item" type="button"
-                                        onclick="insertEmailTemplate('signature')">Standard Signature</button>
+                            <!-- Group 10: Options -->
+                            <div class="ribbon-group">
+                                <div class="ribbon-group-content">
+                                    <button class="email-composer-toolbar-btn stacked-btn" type="button"
+                                        onclick="mockAction('Far Overflow')" title="More Actions">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24"
+                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+                                            stroke-linecap="round" stroke-linejoin="round">
+                                            <circle cx="12" cy="12" r="2"></circle>
+                                            <circle cx="19" cy="12" r="2"></circle>
+                                            <circle cx="5" cy="12" r="2"></circle>
+                                        </svg>
+                                        <span class="stacked-btn-text">Options</span>
+                                    </button>
                                 </div>
+                                <span class="ribbon-group-label">Options</span>
                             </div>
-
-                            <button class="email-composer-toolbar-btn" type="button" id="editorDictationBtn"
-                                onclick="toggleDictation()" title="Dictation (Voice Typing)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"></path>
-                                    <path d="M19 10v1a7 7 0 0 1-14 0v-1M12 19v4M8 23h8"></path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="mockAction('Apps Grid')"
-                                title="Apps">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <rect x="3" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="3" width="7" height="7"></rect>
-                                    <rect x="14" y="14" width="7" height="7"></rect>
-                                    <rect x="3" y="14" width="7" height="7"></rect>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" id="importanceHighBtn"
-                                onclick="setImportance('high')" title="High Importance">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round"
-                                    stroke-linejoin="round" style="color: #d93025;">
-                                    <line x1="12" y1="4" x2="12" y2="15"></line>
-                                    <line x1="12" y1="19" x2="12.01" y2="19"></line>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" id="importanceLowBtn"
-                                onclick="setImportance('low')" title="Low Importance">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"
-                                    stroke-linejoin="round" style="color: #1a73e8;">
-                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                    <polyline points="19 12 12 19 5 12"></polyline>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="switchCase()"
-                                title="Change Case">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <path
-                                        d="M16 21v-4a2 2 0 0 0-4 0v4M12 18h4M4 21v-7a3 3 0 0 1 6 0v7M4 18h6M19 14h-3a2 2 0 0 0-2 2v4a2 2 0 0 0 2 2h3v-8z">
-                                    </path>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button" onclick="printEditorContent()"
-                                title="Print Draft">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <polyline points="6 9 6 2 18 2 18 9"></polyline>
-                                    <path
-                                        d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2">
-                                    </path>
-                                    <rect x="6" y="14" width="12" height="8"></rect>
-                                </svg>
-                            </button>
-                            <button class="email-composer-toolbar-btn" type="button"
-                                onclick="mockAction('Far Overflow')" title="More Actions">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-                                    fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round">
-                                    <circle cx="12" cy="12" r="1"></circle>
-                                    <circle cx="19" cy="12" r="1"></circle>
-                                    <circle cx="5" cy="12" r="1"></circle>
-                                </svg>
-                            </button>
                         </div>
+
+
+
                     </div>
 
                     <div class="mail-split-view">
@@ -2556,7 +2749,8 @@
                         <!-- Middle: Reading Pane -->
                         <div class="mail-reading-column" id="mailReadingColumn" style="display: none;">
                             <!-- Reading Content (wrapper) -->
-                            <div id="readingPaneContent" style="display: flex; flex-direction: column; height: 100%;">
+                            <div id="readingPaneContent"
+                                style="display: flex; flex-direction: column; height: 100%; min-height: 0;">
                                 <div class="reading-header">
                                     <div class="reading-email-no" id="readingEmailNo"></div>
                                     <h2 class="reading-subject" id="readingSubject"></h2>
@@ -2775,6 +2969,19 @@
                                                 <path d="M16 13h5M18 10l3 3-3 3M8 13H3M6 10L3 13l3 3"></path>
                                                 <line x1="12" y1="4" x2="12" y2="20"></line>
                                             </svg>
+                                        </button>
+
+                                        <!-- Rich Layout Toggle -->
+                                        <button class="email-composer-btn-secondary" id="toggleRibbonBtn" type="button"
+                                            onclick="toggleRibbonLayout()"
+                                            style="margin-left: 6px; display: flex; align-items: center; gap: 4px;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                                                <line x1="3" y1="9" x2="21" y2="9"></line>
+                                            </svg>
+                                            Compact
                                         </button>
 
                                         <!-- File Attachment Trigger -->
@@ -3751,11 +3958,21 @@
             </div>
             <!-- Settings Panel (top-level, independent of tabs) -->
             <div class="mail-settings-panel" id="mailSettingsPanel" style="display: none;">
-                <div class="settings-page-header">
-                    <h2>Settings</h2>
-                    <p>Manage your account, organization details, and security preferences.</p>
+                <div class="settings-workspace-header">
+                    <button class="settings-back-btn" onclick="closeSettingsPanel()">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="15 18 9 12 15 6"></polyline>
+                        </svg>
+                        Back to Dashboard
+                    </button>
+                    <div class="settings-header-titles">
+                        <h2>Settings</h2>
+                        <p>Manage your account, organization details, and security preferences.</p>
+                    </div>
                 </div>
 
+                <div class="settings-workspace-content">
                 <div class="settings-grid">
                     <section class="settings-card" id="settingsAccountInfo">
                         <h3>Account / User Information</h3>
@@ -3939,7 +4156,8 @@
                             Account</button>
                     </section>
                 </div>
-            </div>
+                </div><!-- end settings-workspace-content -->
+            </div><!-- end mailSettingsPanel -->
 
         </main>
     </div>
@@ -4611,20 +4829,8 @@
         let dashboardProjectsSearchQuery = '';
 
         // ===== Admins Panel State =====
-        const DEFAULT_SUPER_ADMIN = {
-            id: 'super-admin',
-            name: 'Hasan Ahmad',
-            email: 'hasana.hmad@safemliz.com',
-            permissions: {
-                addEmployees: false,
-                createProjects: false,
-                manageProjects: false,
-                makeAdmin: true,
-                deleteProject: false
-            }
-        };
         let adminsList = [];
-        let selectedAdminId = 'super-admin';
+        let selectedAdminId = null;
         let selectedAdminData = null;
         let adminsSearchQuery = '';
 
@@ -4636,6 +4842,11 @@
                     const user = JSON.parse(userStr);
                     headers['X-User-Id'] = user.id;
                     headers['X-Org-Id'] = user.organization_id;
+                    
+                    const headerEmailEl = document.getElementById('headerUserEmail');
+                    if (headerEmailEl && headerEmailEl.textContent && headerEmailEl.textContent !== 'Loading...') {
+                        headers['X-Active-Email'] = headerEmailEl.textContent.trim();
+                    }
                 } catch (e) { }
             }
             return headers;
@@ -4810,7 +5021,8 @@
 
             records.forEach(mail => {
                 const row = document.createElement('div');
-                row.className = `mail-row ${mail.read ? 'read' : 'unread'}`;
+                row.id = `emailRow-${mail.id}`;
+                row.className = `mail-row ${mail.read ? 'read' : 'unread'} ${mail.id === currentOpenEmailId ? 'active' : ''}`;
                 row.onclick = () => openEmailDetails(mail.id);
                 row.tabIndex = 0;
                 row.onkeydown = (e) => {
@@ -4824,7 +5036,7 @@
 
                 const senderName = mail.sender || 'Unknown';
                 const initials = senderName.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
-                
+
                 // Hash-based color generation
                 let hash = 0;
                 for (let i = 0; i < senderName.length; i++) {
@@ -4833,7 +5045,7 @@
                 const h = Math.abs(hash) % 360;
                 const avatarBg = `hsl(${h}, 70%, 90%)`;
                 const avatarColor = `hsl(${h}, 80%, 30%)`;
-                
+
                 // Decode HTML entities in preview if they exist to prevent double-escaping
                 let plainPreview = mail.preview || '';
                 if (plainPreview.includes('&#')) {
@@ -4865,7 +5077,27 @@
         let currentOpenEmailId = null;
 
         async function openEmailDetails(id) {
+            const readingPane = document.getElementById('readingPaneContent');
+            const readingBody = document.getElementById('readingBody');
+            
             try {
+                // Show loading state
+                document.getElementById('inlineComposerContent').style.display = 'none';
+                document.getElementById('mailReadingColumn').style.display = 'flex';
+                readingPane.style.display = 'flex';
+                
+                // Set temporary loading content
+                document.getElementById('readingSubject').textContent = 'Loading...';
+                document.getElementById('readingSenderName').textContent = '';
+                document.getElementById('readingSenderEmail').textContent = '';
+                document.getElementById('readingTo').textContent = '';
+                document.getElementById('readingDate').textContent = '';
+                document.getElementById('readingEmailNo').textContent = '';
+                document.getElementById('readingAvatar').textContent = '...';
+                if (readingBody) {
+                    readingBody.innerHTML = '<div style="display:flex; justify-content:center; align-items:center; padding: 2rem;"><svg class="spinner" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="animation: spin 1s linear infinite;"><line x1="12" y1="2" x2="12" y2="6"></line><line x1="12" y1="18" x2="12" y2="22"></line><line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line><line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line><line x1="2" y1="12" x2="6" y2="12"></line><line x1="18" y1="12" x2="22" y2="12"></line><line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line><line x1="16.24" y1="4.93" x2="19.07" y2="7.76"></line></svg><span style="margin-left: 10px; color: #64748B;">Fetching email details...</span></div>';
+                }
+
                 const response = await fetch('/api/emails/' + id, { headers: getHeaders() });
                 if (response.ok) {
                     const data = await response.json();
@@ -4907,8 +5139,24 @@
                         document.querySelector('.mail-main-toolbar').style.display = 'none';
                         document.getElementById('formatToolbar').style.display = 'flex';
 
-                        // Mark as read and reload
-                        renderEmailModule();
+                        // Mark as active in DOM without full reload
+                        document.querySelectorAll('.mail-row').forEach(r => r.classList.remove('active'));
+                        const row = document.getElementById(`emailRow-${mail.id}`);
+                        if (row) {
+                            row.classList.add('active');
+                            if (row.classList.contains('unread')) {
+                                row.classList.remove('unread');
+                                row.classList.add('read');
+
+                                const unreadCountEl = document.getElementById('mailCountUnread');
+                                if (unreadCountEl) {
+                                    let count = parseInt(unreadCountEl.textContent, 10);
+                                    if (!isNaN(count) && count > 0) {
+                                        unreadCountEl.textContent = count - 1;
+                                    }
+                                }
+                            }
+                        }
                         return;
                     }
 
@@ -4984,11 +5232,38 @@
                     document.querySelector('.mail-main-toolbar').style.display = 'flex';
                     document.getElementById('formatToolbar').style.display = 'none';
 
-                    // Also refresh the list to mark as read
-                    renderEmailModule();
+                    // Manually update the row state instead of full renderEmailModule()
+                    document.querySelectorAll('.mail-row').forEach(r => r.classList.remove('active'));
+                    const row = document.getElementById(`emailRow-${mail.id}`);
+                    if (row) {
+                        row.classList.add('active');
+                        if (row.classList.contains('unread')) {
+                            row.classList.remove('unread');
+                            row.classList.add('read');
+
+                            // Optionally update summary unread count
+                            const unreadCountEl = document.getElementById('mailCountUnread');
+                            if (unreadCountEl) {
+                                let count = parseInt(unreadCountEl.textContent, 10);
+                                if (!isNaN(count) && count > 0) {
+                                    unreadCountEl.textContent = count - 1;
+                                }
+                            }
+                        }
+                    }
+                } else {
+                    // Show error state gracefully
+                    document.getElementById('readingSubject').textContent = 'Error loading email';
+                    if (readingBody) {
+                        readingBody.innerHTML = '<div style="color: red; padding: 1rem;">The email could not be loaded. Please ensure you have the correct permissions.</div>';
+                    }
                 }
             } catch (e) {
                 console.error(e);
+                document.getElementById('readingSubject').textContent = 'Error';
+                if (readingBody) {
+                    readingBody.innerHTML = '<div style="color: red; padding: 1rem;">Network error occurred while fetching the email.</div>';
+                }
             }
         }
 
@@ -5466,6 +5741,31 @@
             }
         }
 
+        function toggleRibbonLayout() {
+            const toolbar = document.getElementById('formatToolbar');
+            const toggleRibbonBtn = document.getElementById('toggleRibbonBtn');
+            if (toolbar && toggleRibbonBtn) {
+                toolbar.classList.toggle('expanded-ribbon');
+                if (toolbar.classList.contains('expanded-ribbon')) {
+                    toggleRibbonBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                        </svg>
+                        Compact
+                    `;
+                } else {
+                    toggleRibbonBtn.innerHTML = `
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                            <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                            <line x1="3" y1="9" x2="21" y2="9"></line>
+                        </svg>
+                        Rich Format
+                    `;
+                }
+            }
+        }
+
         function syncEditorToTextarea() {
             const editor = document.getElementById('composeBodyEditor');
             const textarea = document.getElementById('composeBody');
@@ -5837,10 +6137,10 @@
             const row = event.target.closest('.mail-row');
             if (event.target.checked) {
                 selectedEmailIds.add(emailId);
-                if(row) row.classList.add('active');
+                if (row) row.classList.add('active');
             } else {
                 selectedEmailIds.delete(emailId);
-                if(row) row.classList.remove('active');
+                if (row) row.classList.remove('active');
             }
             updateToolbarState();
         }
@@ -5853,13 +6153,13 @@
                     const id = parseInt(cb.getAttribute('data-id'), 10);
                     if (!isNaN(id)) selectedEmailIds.add(id);
                     const row = cb.closest('.mail-row');
-                    if(row) row.classList.add('active');
+                    if (row) row.classList.add('active');
                 });
             } else {
                 allCheckboxes.forEach(cb => {
                     cb.checked = false;
                     const row = cb.closest('.mail-row');
-                    if(row) row.classList.remove('active');
+                    if (row) row.classList.remove('active');
                 });
                 selectedEmailIds.clear();
             }
@@ -6538,6 +6838,10 @@
         }
 
         function activateTopTab(tabId) {
+            // Always ensure tabs container is visible when activating any tab
+            const tabsContainer = document.querySelector('.tabs-container');
+            if (tabsContainer) tabsContainer.style.display = '';
+
             document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             const tab = document.getElementById(tabId);
             if (tab) tab.classList.add('active');
@@ -7839,38 +8143,69 @@
             if (userStr) {
                 try {
                     const user = JSON.parse(userStr);
-                    const emailElement = document.querySelector('.email-admin-email');
-                    if (emailElement) {
-                        emailElement.textContent = user.email || user.admin_name || 'admin@safemailz.com';
-                    }
+                    const mappedEmail = user.email || '';
+                    const mappedName = user.admin_name || user.email || 'Admin User';
+                    
+                    try {
+                        const emailElement = document.getElementById('sidebarAdminEmail') || document.querySelector('.email-admin-email');
+                        if (emailElement) emailElement.textContent = mappedEmail;
+                    } catch(e) {}
+                    
+                    try {
+                        const nameElement = document.getElementById('sidebarAdminName') || document.querySelector('.email-admin-name');
+                        if (nameElement) nameElement.textContent = mappedName;
+                    } catch(e) {}
 
-                    // Update Panel Title based on role
-                    const panelTitle = document.querySelector('.email-admin-info strong');
-                    if (panelTitle) {
-                        if (user.role === 'employee') {
-                            panelTitle.textContent = 'Employee Panel';
-                        } else {
-                            panelTitle.textContent = 'Admin Panel';
+                    try {
+                        const headerEmail = document.getElementById('headerUserEmail');
+                        if (headerEmail) headerEmail.textContent = mappedEmail;
+                    } catch(e) {}
+                    
+                    try {
+                        const headerName = document.getElementById('headerUserName');
+                        if (headerName) headerName.textContent = mappedName;
+                    } catch(e) {}
+                    
+                    try {
+                        const headerInitials = document.getElementById('headerUserInitials');
+                        if (headerInitials) {
+                            const nameParts = mappedName.split(' ').filter(Boolean);
+                            let initials = nameParts.length > 0 ? nameParts[0].charAt(0).toUpperCase() : 'A';
+                            if (nameParts.length > 1) {
+                                initials += nameParts[1].charAt(0).toUpperCase();
+                            }
+                            headerInitials.textContent = initials;
                         }
-                    }
+                    } catch(e) {}
 
                     // Role-based access control
-                    if (user.role === 'employee') {
-                        // Hide all tabs except Email and Settings/Profile (which is in dropdown)
-                        document.getElementById('tabEmployees').style.display = 'none';
-                        document.getElementById('tabClients').style.display = 'none';
-                        document.getElementById('tabProjects').style.display = 'none';
-                        document.getElementById('tabAdmins').style.display = 'none';
-                        document.getElementById('tabEmailIds').style.display = 'none';
-                        document.getElementById('tabTasks').style.display = 'none';
-                        document.getElementById('tabSubscription').style.display = 'none';
-
-                        // Default to Email tab
-                        document.getElementById('tabEmail').click();
-                    }
-
-                } catch (e) {
-                    console.error("Failed to parse currentUser:", e);
+                    try {
+                        if (user.role === 'employee') {
+                            const tabs = ['tabEmployees', 'tabClients', 'tabProjects', 'tabAdmins', 'tabEmailIds', 'tabTasks', 'tabSubscription'];
+                            tabs.forEach(id => {
+                                const el = document.getElementById(id);
+                                if (el) el.style.display = 'none';
+                            });
+                            const tabEmail = document.getElementById('tabEmail');
+                            if (tabEmail) tabEmail.click();
+                        } else if (user.role === 'admin' && user.permissions) {
+                            if (!user.permissions.addEmployees) {
+                                const t1 = document.getElementById('tabEmployees'); if(t1) t1.style.display = 'none';
+                                const t2 = document.getElementById('tabClients'); if(t2) t2.style.display = 'none';
+                            }
+                            if (!user.permissions.createProjects && !user.permissions.manageProjects) {
+                                const t1 = document.getElementById('tabProjects'); if(t1) t1.style.display = 'none';
+                                const t2 = document.getElementById('tabTasks'); if(t2) t2.style.display = 'none';
+                            }
+                            if (!user.permissions.makeAdmin) {
+                                const t1 = document.getElementById('tabAdmins'); if(t1) t1.style.display = 'none';
+                                const t2 = document.getElementById('tabEmailIds'); if(t2) t2.style.display = 'none';
+                                const t3 = document.getElementById('tabSubscription'); if(t3) t3.style.display = 'none';
+                            }
+                        }
+                    } catch(e) {}
+                } catch(e) {
+                    console.error("Error binding user info:", e);
                 }
             }
         });
@@ -7935,8 +8270,13 @@
             // Remove active state from all main tabs
             document.querySelectorAll('.tab, .mail-subtab, .mail-tab').forEach(t => t.classList.remove('active'));
 
-            // Show settings panel
-            document.getElementById('mailSettingsPanel').style.display = 'block';
+            // Hide tabs bar (settings replaces all content)
+            const tabsContainer = document.querySelector('.tabs-container');
+            if (tabsContainer) tabsContainer.style.display = 'none';
+
+            // Show settings panel (use flex since CSS needs flex layout)
+            const settingsPanel = document.getElementById('mailSettingsPanel');
+            settingsPanel.style.display = 'flex';
 
             // Scroll to section if provided
             if (sectionId) {
@@ -7990,6 +8330,20 @@
                 console.error('Error fetching profile:', err);
                 if (typeof showToast === 'function') showToast('Network error loading profile.');
             }
+        }
+
+        function closeSettingsPanel() {
+            // Hide the settings panel
+            document.getElementById('mailSettingsPanel').style.display = 'none';
+
+            // Restore the tabs bar
+            const tabsContainer = document.querySelector('.tabs-container');
+            if (tabsContainer) tabsContainer.style.display = '';
+
+            // Restore the last active tab - default to Email view
+            const firstTab = document.querySelector('.tab:not([style*="display: none"])') ||
+                             document.getElementById('tabEmail');
+            if (firstTab) firstTab.click();
         }
 
         async function initiateDeleteAccount() {
@@ -8263,281 +8617,7 @@
             renderDashboardProjects();
         }
 
-        // ==========================================
-        // ===== ADMINS MODULE LOGIC =====
-        // ==========================================
-        async function initAdmins() {
-            try {
-                const res = await fetch('/api/settings/admins', { headers: getHeaders() });
-                if (res.ok) {
-                    const data = await res.json();
-                    adminsList = data.admins || [];
-                    localStorage.setItem('safemailzAdmins', JSON.stringify(adminsList));
-                } else {
-                    adminsList = [];
-                }
-            } catch (err) {
-                console.error("Failed to load admins:", err);
-                adminsList = JSON.parse(localStorage.getItem('safemailzAdmins')) || [];
-            }
 
-            // Initialize super admin
-            let savedSuper = localStorage.getItem('safemailzSuperAdmin');
-            if (!savedSuper) {
-                localStorage.setItem('safemailzSuperAdmin', JSON.stringify(DEFAULT_SUPER_ADMIN));
-            }
-
-            // Default selection
-            selectedAdminId = 'super-admin';
-            reloadSelectedAdminData();
-
-            if (typeof renderAdmins === 'function') {
-                renderAdmins();
-            }
-        }
-
-        function reloadSelectedAdminData() {
-            if (selectedAdminId === 'super-admin') {
-                const superAdmin = localStorage.getItem('safemailzSuperAdmin');
-                selectedAdminData = JSON.parse(superAdmin || JSON.stringify(DEFAULT_SUPER_ADMIN));
-            } else {
-                const found = adminsList.find(a => a.id === selectedAdminId);
-                if (found) {
-                    selectedAdminData = JSON.parse(JSON.stringify(found));
-                } else {
-                    // Fallback to super admin
-                    selectedAdminId = 'super-admin';
-                    const superAdmin = localStorage.getItem('safemailzSuperAdmin');
-                    selectedAdminData = JSON.parse(superAdmin || JSON.stringify(DEFAULT_SUPER_ADMIN));
-                }
-            }
-            populateAdminForm();
-        }
-
-        function populateAdminForm() {
-            if (!selectedAdminData) return;
-            document.getElementById('adminNameInput').value = selectedAdminData.name;
-            document.getElementById('adminEmailInput').value = selectedAdminData.email;
-            updatePermissionUI();
-        }
-
-        function updatePermissionUI() {
-            if (!selectedAdminData) return;
-            const perms = selectedAdminData.permissions;
-
-            const rows = [
-                { key: 'addEmployees', cardId: 'adminCardAddEmployees', switchId: 'switchAddEmployees' },
-                { key: 'createProjects', cardId: 'adminCardCreateProjects', switchId: 'switchCreateProjects' },
-                { key: 'manageProjects', cardId: 'adminCardManageProjects', switchId: 'switchManageProjects' },
-                { key: 'makeAdmin', cardId: 'adminCardMakeAdmin', switchId: 'switchMakeAdmin' },
-                { key: 'deleteProject', cardId: 'adminCardDeleteProject', switchId: 'switchDeleteProject' }
-            ];
-
-            rows.forEach(r => {
-                const isEnabled = !!perms[r.key];
-                const card = document.getElementById(r.cardId);
-                const sw = document.getElementById(r.switchId);
-
-                if (card) {
-                    card.classList.toggle('is-enabled', isEnabled);
-                }
-                if (sw) {
-                    sw.classList.toggle('is-on', isEnabled);
-                    sw.setAttribute('aria-checked', isEnabled ? 'true' : 'false');
-                }
-            });
-        }
-
-        function clickAdminPermToggle(key) {
-            if (!selectedAdminData) return;
-            selectedAdminData.permissions[key] = !selectedAdminData.permissions[key];
-            updatePermissionUI();
-        }
-
-        function renderAdmins() {
-            const sidebarList = document.getElementById('sidebarAdminList');
-            if (!sidebarList) return;
-
-            const query = adminsSearchQuery.trim().toLowerCase();
-            const filtered = adminsList.filter(a => {
-                if (!query) return true;
-                return (a.name || '').toLowerCase().includes(query) || (a.email || '').toLowerCase().includes(query);
-            });
-
-            // Update stats
-            const statsSpan = document.getElementById('sidebarTotalAdmins');
-            if (statsSpan) statsSpan.textContent = filtered.length;
-
-            if (filtered.length === 0) {
-                sidebarList.innerHTML = `
-                    <div style="text-align: center; padding: 32px 16px; color: #666; background: #fff; border-radius: 8px; border: 1px dashed #ccc; margin-top: 10px;">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" style="margin-bottom: 12px; color: #999;">
-                            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                            <circle cx="9" cy="7" r="4"></circle>
-                            <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
-                            <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
-                        </svg>
-                        <p style="font-size: 0.9rem; margin: 0;">No admins found</p>
-                    </div>
-                `;
-                return;
-            }
-
-            sidebarList.innerHTML = filtered.map((a, index) => {
-                const isActive = a.id === selectedAdminId;
-
-                // Expiry and storage details
-                const expiryLabel = a.expiry || 'Expire in 10 days';
-                const storageText = `Storage <span>${a.storageUsed || '1.18 GB'} of ${a.storageTotal || '50 GB'}</span>`;
-
-                // Storage percent calculation
-                let percent = 5;
-                if (a.storageUsed && a.storageTotal) {
-                    const used = parseFloat(a.storageUsed);
-                    const total = parseFloat(a.storageTotal);
-                    if (!isNaN(used) && !isNaN(total) && total > 0) {
-                        percent = Math.min(100, Math.round((used / total) * 100));
-                    }
-                }
-
-                return `
-                    <div class="admin-card ${isActive ? 'active-admin' : ''}" onclick="selectAdmin('${a.id}')">
-                        <div class="admin-card-expiry">${escapeHtml(expiryLabel)}</div>
-                        <div class="admin-card-header">
-                            <span class="admin-card-name">${index + 1}. ${escapeHtml(a.name)}</span>
-                            <div style="cursor: pointer; padding: 2px; display: inline-flex; align-items: center; justify-content: center; color: #333;" onclick="event.stopPropagation(); toggleAdminKebabMenu('${a.id}', event)">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
-                            </div>
-                        </div>
-                        <div class="admin-card-storage-label">
-                            ${storageText}
-                        </div>
-                        <div class="admin-card-progress">
-                            <div class="admin-card-progress-bar" style="width: ${percent}%;"></div>
-                        </div>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function selectAdmin(id) {
-            selectedAdminId = id;
-            reloadSelectedAdminData();
-            renderAdmins();
-        }
-
-        function searchAdmins(val) {
-            adminsSearchQuery = val;
-            const input = document.getElementById('adminsSidebarSearch');
-            if (input) input.value = val;
-            renderAdmins();
-        }
-
-        function saveAdminEdits() {
-            if (!selectedAdminData) return;
-            const nameVal = document.getElementById('adminNameInput').value.trim();
-            const emailVal = document.getElementById('adminEmailInput').value.trim();
-
-            if (!nameVal || !emailVal) {
-                alert("Name and Email are required.");
-                return;
-            }
-
-            selectedAdminData.name = nameVal;
-            selectedAdminData.email = emailVal;
-
-            if (selectedAdminId === 'super-admin') {
-                localStorage.setItem('safemailzSuperAdmin', JSON.stringify(selectedAdminData));
-            } else {
-                const index = adminsList.findIndex(a => a.id === selectedAdminId);
-                if (index !== -1) {
-                    adminsList[index] = JSON.parse(JSON.stringify(selectedAdminData));
-                    localStorage.setItem('safemailzAdmins', JSON.stringify(adminsList));
-                }
-            }
-
-            alert("Changes saved successfully!");
-            renderAdmins();
-        }
-
-        function cancelAdminEdits() {
-            reloadSelectedAdminData();
-            alert("Changes discarded.");
-        }
-
-        window.adminSelectionCandidates = [];
-
-        function openAdminSelectionModal() {
-            const seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
-            const currentAdmins = JSON.parse(localStorage.getItem('safemailzAdmins')) || [];
-
-            // Filter out empty seats and existing admins
-            window.adminSelectionCandidates = seats.filter(s => {
-                if (!s || s.status === 'empty') return false;
-                const isAdmin = currentAdmins.some(a => a.email.toLowerCase() === s.email.toLowerCase());
-                return !isAdmin;
-            });
-
-            const searchInput = document.getElementById('adminSelectionSearch');
-            if (searchInput) searchInput.value = '';
-            renderAdminSelectionList(window.adminSelectionCandidates);
-
-            openModal('addAdminModal');
-        }
-
-        function filterAdminSelectionList(query) {
-            const lowerQuery = query.trim().toLowerCase();
-            const filtered = window.adminSelectionCandidates.filter(c => {
-                const nameMatch = `${c.firstName} ${c.lastName}`.toLowerCase().includes(lowerQuery);
-                const emailMatch = c.email.toLowerCase().includes(lowerQuery);
-                return nameMatch || emailMatch;
-            });
-            renderAdminSelectionList(filtered);
-        }
-
-        function renderAdminSelectionList(list) {
-            const container = document.getElementById('adminSelectionEmployeeList');
-            if (!container) return;
-
-            if (!list || list.length === 0) {
-                container.innerHTML = `<div style="text-align: center; color: #666; font-size: 0.8rem; padding: 1rem;">No eligible employees found.</div>`;
-                return;
-            }
-
-            container.innerHTML = list.map(emp => {
-                const fullName = `${emp.firstName} ${emp.lastName}`.trim();
-                return `
-                    <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border: 1px solid #E2E8F0; border-radius: 6px; cursor: pointer; transition: all 0.2s ease;"
-                         onmouseover="this.style.background='#F8FAFC'; this.style.borderColor='#1A6BA8'"
-                         onmouseout="this.style.background='transparent'; this.style.borderColor='#E2E8F0'"
-                         onclick="selectEmployeeForAdmin('${escapeHtml(emp.email)}', '${escapeHtml(fullName)}')">
-                        <div style="display: flex; flex-direction: column; gap: 0.2rem;">
-                            <span style="font-size: 0.85rem; font-weight: 600; color: #111;">${escapeHtml(fullName)}</span>
-                            <span style="font-size: 0.75rem; color: #64748B;">${escapeHtml(emp.email)}</span>
-                        </div>
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1A6BA8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
-                    </div>
-                `;
-            }).join('');
-        }
-
-        function selectEmployeeForAdmin(email, name) {
-            closeModal('addAdminModal');
-            promptRoleChange(email, 'admin', name);
-        }
-
-        function toggleAdminKebabMenu(id, event) {
-            const confirmDelete = confirm("Do you want to delete this admin?");
-            if (confirmDelete) {
-                adminsList = adminsList.filter(a => a.id !== id);
-                localStorage.setItem('safemailzAdmins', JSON.stringify(adminsList));
-                if (selectedAdminId === id) {
-                    selectedAdminId = 'super-admin';
-                    reloadSelectedAdminData();
-                }
-                renderAdmins();
-            }
-        }
 
         // ==========================================
         //       SUBSCRIPTION FLOW LOGIC & CONTROLLER
@@ -9543,56 +9623,57 @@
 
     <!-- Toolbar Activate on Editor Focus -->
     <script>
-    (function() {
-        function activateToolbar() {
-            const tb = document.getElementById('formatToolbar');
-            if (tb) tb.classList.remove('disabled-toolbar');
-        }
-
-        // Listen for clicks/focus on the compose editor
-        document.addEventListener('focusin', function(e) {
-            if (e.target && e.target.id === 'composeBodyEditor') {
-                activateToolbar();
+        (function () {
+            function activateToolbar() {
+                const tb = document.getElementById('formatToolbar');
+                if (tb) tb.classList.remove('disabled-toolbar');
             }
-        });
-        document.addEventListener('click', function(e) {
-            if (e.target && (e.target.id === 'composeBodyEditor' || e.target.closest('#composeBodyEditor'))) {
-                activateToolbar();
-            }
-        });
 
-        // Use MutationObserver to detect when formatToolbar becomes visible
-        // and reset it to disabled initially each time it's shown
-        const observer = new MutationObserver(function(mutations) {
-            mutations.forEach(function(mutation) {
-                if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
-                    const tb = mutation.target;
-                    if (tb.id === 'formatToolbar' && tb.style.display === 'flex') {
-                        // Toolbar just became visible — start as disabled
-                        // Small timeout to let display:flex render first
-                        setTimeout(function() {
-                            tb.classList.add('disabled-toolbar');
-                        }, 10);
-                    }
+            // Listen for clicks/focus on the compose editor
+            document.addEventListener('focusin', function (e) {
+                if (e.target && e.target.id === 'composeBodyEditor') {
+                    activateToolbar();
                 }
             });
-        });
+            document.addEventListener('click', function (e) {
+                if (e.target && (e.target.id === 'composeBodyEditor' || e.target.closest('#composeBodyEditor'))) {
+                    activateToolbar();
+                }
+            });
 
-        document.addEventListener('DOMContentLoaded', function() {
-            const tb = document.getElementById('formatToolbar');
-            if (tb) {
-                observer.observe(tb, { attributes: true, attributeFilter: ['style'] });
-            }
-        });
+            // Use MutationObserver to detect when formatToolbar becomes visible
+            // and reset it to disabled initially each time it's shown
+            const observer = new MutationObserver(function (mutations) {
+                mutations.forEach(function (mutation) {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'style') {
+                        const tb = mutation.target;
+                        if (tb.id === 'formatToolbar' && tb.style.display === 'flex') {
+                            // Toolbar just became visible — start as disabled
+                            // Small timeout to let display:flex render first
+                            setTimeout(function () {
+                                tb.classList.add('disabled-toolbar');
+                            }, 10);
+                        }
+                    }
+                });
+            });
 
-        // Also set up immediately if DOM already loaded
-        if (document.readyState !== 'loading') {
-            const tb = document.getElementById('formatToolbar');
-            if (tb) {
-                observer.observe(tb, { attributes: true, attributeFilter: ['style'] });
+            document.addEventListener('DOMContentLoaded', function () {
+                const tb = document.getElementById('formatToolbar');
+                if (tb) {
+                    observer.observe(tb, { attributes: true, attributeFilter: ['style'] });
+                }
+            });
+
+            // Also set up immediately if DOM already loaded
+            if (document.readyState !== 'loading') {
+                const tb = document.getElementById('formatToolbar');
+                if (tb) {
+                    observer.observe(tb, { attributes: true, attributeFilter: ['style'] });
+                }
             }
-        }
-    })();
+        })();
     </script>
 </body>
+
 </html>

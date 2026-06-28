@@ -29,10 +29,11 @@ const formatToISTDateTime = (dateString) => {
 const getUserContext = (req) => {
     const userId = req.headers['x-user-id'];
     const orgId = req.headers['x-org-id'];
+    const activeEmail = req.headers['x-active-email'];
     if (!userId || !orgId) {
         return null;
     }
-    return { userId: parseInt(userId, 10), orgId: parseInt(orgId, 10) };
+    return { userId: parseInt(userId, 10), orgId: parseInt(orgId, 10), activeEmail };
 };
 
 // GET /api/emails
@@ -155,68 +156,82 @@ router.get('/:id', (req, res) => {
 
     const emailId = req.params.id;
 
-    const query = `
-        SELECT 
-            e.id, 
-            e.email_no as emailNo, 
-            e.subject, 
-            e.body, 
-            e.created_at,
-            e.external_sender_name,
-            e.external_sender_email,
-            e.to_address,
-            e.cc,
-            e.bcc,
-            u.admin_name as sender_name,
-            u.email as sender_email,
-            er.folder,
-            er.is_read as read,
-            (SELECT u2.email FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_email,
-            (SELECT u2.admin_name FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_name
-        FROM emails e
-        JOIN email_recipients er ON e.id = er.email_id
-        LEFT JOIN users u ON e.sender_id = u.id
-        WHERE e.id = ? AND er.user_id = ?
-    `;
+    const runQuery = (targetUserId) => {
+        const query = `
+            SELECT 
+                e.id, 
+                e.email_no as emailNo, 
+                e.subject, 
+                e.body, 
+                e.created_at,
+                e.external_sender_name,
+                e.external_sender_email,
+                e.to_address,
+                e.cc,
+                e.bcc,
+                u.admin_name as sender_name,
+                u.email as sender_email,
+                er.folder,
+                er.is_read as read,
+                (SELECT u2.email FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_email,
+                (SELECT u2.admin_name FROM email_recipients er2 LEFT JOIN users u2 ON er2.user_id = u2.id WHERE er2.email_id = e.id AND er2.folder = 'inbox' LIMIT 1) as recipient_name
+            FROM emails e
+            JOIN email_recipients er ON e.id = er.email_id
+            LEFT JOIN users u ON e.sender_id = u.id
+            WHERE e.id = ? AND er.user_id = ?
+        `;
 
-    db.get(query, [emailId, context.userId], (err, row) => {
-        if (err) return res.status(500).json({ error: 'Database error' });
-        if (!row) return res.status(404).json({ error: 'Email not found' });
+        db.get(query, [emailId, targetUserId], (err, row) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            if (!row) return res.status(404).json({ error: 'Email not found' });
 
-        // Mark as read when opened
-        if (!row.read) {
-            db.run('UPDATE email_recipients SET is_read = 1 WHERE email_id = ? AND user_id = ?', [emailId, context.userId]);
-        }
+            // Mark as read when opened
+            if (!row.read) {
+                db.run('UPDATE email_recipients SET is_read = 1 WHERE email_id = ? AND user_id = ?', [emailId, targetUserId]);
+            }
 
-        let sender = '';
-        let senderEmail = '';
-        if (row.folder === 'sent') {
-            const displayName = row.recipient_name || row.to_address || row.recipient_email || 'Unknown';
-            sender = `To: ${displayName}`;
-            senderEmail = row.to_address || row.recipient_email;
-        } else {
-            const displayName = row.sender_name || row.external_sender_name || row.external_sender_email || 'Unknown Sender';
-            sender = displayName;
-            senderEmail = row.sender_email || row.external_sender_email;
-        }
+            let sender = '';
+            let senderEmail = '';
+            if (row.folder === 'sent') {
+                const displayName = row.recipient_name || row.to_address || row.recipient_email || 'Unknown';
+                sender = `To: ${displayName}`;
+                senderEmail = row.to_address || row.recipient_email;
+            } else {
+                const displayName = row.sender_name || row.external_sender_name || row.external_sender_email || 'Unknown Sender';
+                sender = displayName;
+                senderEmail = row.sender_email || row.external_sender_email;
+            }
 
-        res.json({
-            success: true,
-            email: {
-                id: row.id,
-                emailNo: row.emailNo,
-                subject: row.subject,
-                body: row.body,
-                sender: sender,
-                senderEmail: senderEmail,
-                to: row.to_address,
-                cc: row.cc,
-                bcc: row.bcc,
-                folder: row.folder,
-                date: formatToISTDateTime(row.created_at)
+            res.json({
+                success: true,
+                email: {
+                    id: row.id,
+                    emailNo: row.emailNo,
+                    subject: row.subject,
+                    body: row.body,
+                    sender: sender,
+                    senderEmail: senderEmail,
+                    to: row.to_address,
+                    cc: row.cc,
+                    bcc: row.bcc,
+                    folder: row.folder,
+                    date: formatToISTTime(row.created_at)
+                }
+            });
+        });
+    };
+
+    if (context.activeEmail) {
+        db.get('SELECT id FROM users WHERE email = ?', [context.activeEmail], (err, row) => {
+            if (!err && row) {
+                runQuery(row.id);
+            } else {
+                runQuery(context.userId);
             }
         });
-    });
+    } else {
+        runQuery(context.userId);
+    }
 });
 
 // POST /api/emails/send

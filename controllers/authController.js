@@ -62,7 +62,7 @@ const signup = async (req, res) => {
             const organization_id = orgResult.lastID;
 
             await dbRun(
-                `INSERT INTO users (organization_id, admin_name, email, password_hash, marketing_opt_in, terms_accepted) VALUES (?, ?, ?, ?, ?, ?)`,
+                `INSERT INTO users (organization_id, admin_name, email, password_hash, marketing_opt_in, terms_accepted, perm_add_employees, perm_create_projects, perm_manage_projects, perm_make_admin, perm_delete_project) VALUES (?, ?, ?, ?, ?, ?, 1, 1, 1, 1, 1)`,
                 [organization_id, admin_name, email, password_hash, marketing_opt_in ? 1 : 0, terms_accepted ? 1 : 0]
             );
 
@@ -97,7 +97,7 @@ const signin = async (req, res) => {
         const util = require('util');
         const dbGet = util.promisify(db.get.bind(db));
         
-        const user = await dbGet('SELECT * FROM users WHERE email = ?', [email]);
+        const user = await dbGet('SELECT * FROM users WHERE email = ? OR admin_name = ?', [email, email]);
         
         if (!user) {
             return res.status(400).json({ error: 'Invalid email or password.' });
@@ -116,7 +116,14 @@ const signin = async (req, res) => {
                 organization_id: user.organization_id,
                 email: user.email,
                 admin_name: user.admin_name,
-                role: user.role
+                role: user.role,
+                permissions: {
+                    addEmployees: user.perm_add_employees === 1,
+                    createProjects: user.perm_create_projects === 1,
+                    manageProjects: user.perm_manage_projects === 1,
+                    makeAdmin: user.perm_make_admin === 1,
+                    deleteProject: user.perm_delete_project === 1
+                }
             }
         });
     } catch (error) {

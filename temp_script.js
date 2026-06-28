@@ -2045,3 +2045,65 @@ document.addEventListener('DOMContentLoaded', () => {
         }, 500);
     }
 });
+
+// === ROLE-BASED PERMISSIONS UI ENFORCEMENT ===
+function applyPermissionsUI() {
+    const userStr = localStorage.getItem('currentUser');
+    if (!userStr) return;
+    try {
+        const user = JSON.parse(userStr);
+        // If not an admin, we don't enforce these dashboard tabs here (or maybe they don't see them anyway).
+        // Default to false for security if permissions object is missing
+        const perms = user.permissions || {
+            addEmployees: false,
+            createProjects: false,
+            manageProjects: false,
+            makeAdmin: false,
+            deleteProject: false
+        };
+
+        // 1. Employees Tab
+        const empTab = document.getElementById('tabEmployees');
+        if (empTab) empTab.style.display = perms.addEmployees ? '' : 'none';
+
+        const addEmpBtn = document.getElementById('btnAddEmployee');
+        if (addEmpBtn) addEmpBtn.style.display = perms.addEmployees ? '' : 'none';
+        
+        const addEmpBtn2 = document.getElementById('btnEmailIdsAddEmployee');
+        if (addEmpBtn2) addEmpBtn2.style.display = perms.addEmployees ? '' : 'none';
+
+        // 2. Projects Tab
+        const projTab = document.getElementById('tabProjects');
+        if (projTab) projTab.style.display = (perms.createProjects || perms.manageProjects || perms.deleteProject) ? '' : 'none';
+
+        const addProjBtn = document.getElementById('btnAddProject');
+        if (addProjBtn) addProjBtn.style.display = perms.createProjects ? '' : 'none';
+
+        // 3. Admins Tab
+        const adminTab = document.getElementById('tabAdmins');
+        if (adminTab) adminTab.style.display = perms.makeAdmin ? '' : 'none';
+
+        // 4. Delete Project & Manage Projects
+        if (!perms.deleteProject) {
+            const style = document.createElement('style');
+            style.innerHTML = '.delete-project-btn { display: none !important; }';
+            document.head.appendChild(style);
+        }
+        
+        if (!perms.manageProjects) {
+            const style = document.createElement('style');
+            style.innerHTML = '.edit-project-btn { display: none !important; }';
+            document.head.appendChild(style);
+        }
+
+    } catch (e) {
+        console.error("Failed to apply permissions UI:", e);
+    }
+}
+
+// Call it on load
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', applyPermissionsUI);
+} else {
+    applyPermissionsUI();
+}

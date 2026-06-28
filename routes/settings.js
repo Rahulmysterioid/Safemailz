@@ -192,11 +192,12 @@ router.put('/employee/:email/role', (req, res) => {
         return res.status(400).json({ error: 'Invalid role' });
     }
 
-    // Verify caller is admin
-    db.get('SELECT role, email FROM users WHERE id = ?', [context.userId], (err, callerRow) => {
+    // Verify caller has make_admin permission
+    db.get('SELECT role, email, perm_make_admin FROM users WHERE id = ?', [context.userId], (err, callerRow) => {
         if (err) return res.status(500).json({ error: 'Database error' });
-        if (!callerRow || callerRow.role !== 'admin') {
-            return res.status(403).json({ error: 'Only admins can change roles' });
+        // Use loose check for 1 or true
+        if (!callerRow || (callerRow.perm_make_admin != 1 && callerRow.perm_make_admin !== true)) {
+            return res.status(403).json({ error: 'You do not have permission to change roles' });
         }
 
         // Check if caller is trying to demote themselves
@@ -204,9 +205,9 @@ router.put('/employee/:email/role', (req, res) => {
             return res.status(400).json({ error: 'You cannot demote yourself' });
         }
 
-        // Update role
+        // Update role and reset permissions
         db.run(
-            'UPDATE users SET role = ? WHERE email = ? AND organization_id = ?',
+            'UPDATE users SET role = ?, perm_add_employees = 0, perm_create_projects = 0, perm_manage_projects = 0, perm_make_admin = 0, perm_delete_project = 0 WHERE email = ? AND organization_id = ?',
             [role, email, context.orgId],
             function (updateErr) {
                 if (updateErr) return res.status(500).json({ error: 'Failed to update role' });
@@ -296,31 +297,73 @@ router.get('/admins', (req, res) => {
     if (!context) return res.status(401).json({ error: 'Unauthorized' });
 
     db.all(
-        'SELECT admin_name as name, email FROM users WHERE organization_id = ? AND role = ? ORDER BY admin_name ASC',
+        'SELECT id, admin_name as name, email, perm_add_employees, perm_create_projects, perm_manage_projects, perm_make_admin, perm_delete_project FROM users WHERE organization_id = ? AND role = ? ORDER BY admin_name ASC',
         [context.orgId, 'admin'],
         (err, rows) => {
             if (err) {
                 console.error('[DB Error fetching admins]:', err);
                 return res.status(500).json({ error: 'Database error' });
             }
-            const mappedRows = rows.map((r, index) => ({
-                id: 'adm-' + index + '-' + Date.now(),
+            const mappedRows = rows.map(r => ({
+                id: r.id,
                 name: r.name,
                 email: r.email,
                 expiry: 'Expire in 10 days',
                 storageUsed: '1.18 GB',
                 storageTotal: '50 GB',
                 permissions: {
-                    addEmployees: true,
-                    createProjects: true,
-                    manageProjects: true,
-                    makeAdmin: false,
-                    deleteProject: false
+                    addEmployees: r.perm_add_employees === 1,
+                    createProjects: r.perm_create_projects === 1,
+                    manageProjects: r.perm_manage_projects === 1,
+                    makeAdmin: r.perm_make_admin === 1,
+                    deleteProject: r.perm_delete_project === 1
                 }
             }));
             res.json({ success: true, admins: mappedRows });
         }
     );
+});
+
+// PUT /api/settings/admins/:adminId/permissions
+router.put('/admins/:adminId/permissions', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { adminId } = req.params;
+    const permissions = req.body;
+
+    // Verify caller has make_admin permission
+    db.get('SELECT perm_make_admin FROM users WHERE id = ?', [context.userId], (err, caller) => {
+        if (err || !caller) return res.status(500).json({ error: 'Database error' });
+        if (caller.perm_make_admin != 1 && caller.perm_make_admin !== true) {
+             return res.status(403).json({ error: 'You do not have permission to manage admin roles.' });
+        }
+
+        const query = `
+            UPDATE users 
+            SET 
+                perm_add_employees = ?,
+                perm_create_projects = ?,
+                perm_manage_projects = ?,
+                perm_make_admin = ?,
+                perm_delete_project = ?
+            WHERE id = ? AND organization_id = ? AND role = 'admin'
+        `;
+
+        db.run(query, [
+            permissions.addEmployees ? 1 : 0,
+            permissions.createProjects ? 1 : 0,
+            permissions.manageProjects ? 1 : 0,
+            permissions.makeAdmin ? 1 : 0,
+            permissions.deleteProject ? 1 : 0,
+            adminId,
+            context.orgId
+        ], function(updateErr) {
+            if (updateErr) return res.status(500).json({ error: 'Failed to update permissions' });
+            if (this.changes === 0) return res.status(404).json({ error: 'Admin not found' });
+            res.json({ success: true, message: 'Permissions updated successfully' });
+        });
+    });
 });
 
 module.exports = router;

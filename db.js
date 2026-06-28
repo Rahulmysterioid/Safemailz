@@ -226,6 +226,13 @@ const initDb = async () => {
         await runMigration("ALTER TABLE users ADD COLUMN sync_last_sync_time DATETIME");
         await runMigration("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'admin'");
         await runMigration("ALTER TABLE users ADD COLUMN dob TEXT");
+        
+        // Role-Based Permissions
+        await runMigration("ALTER TABLE users ADD COLUMN perm_add_employees BOOLEAN DEFAULT 0");
+        await runMigration("ALTER TABLE users ADD COLUMN perm_create_projects BOOLEAN DEFAULT 0");
+        await runMigration("ALTER TABLE users ADD COLUMN perm_manage_projects BOOLEAN DEFAULT 0");
+        await runMigration("ALTER TABLE users ADD COLUMN perm_make_admin BOOLEAN DEFAULT 0");
+        await runMigration("ALTER TABLE users ADD COLUMN perm_delete_project BOOLEAN DEFAULT 0");
 
         // Migrations for emails table
         await runMigration("ALTER TABLE emails ADD COLUMN external_sender_name TEXT");
