@@ -9035,9 +9035,12 @@
                     // Role-based access control
                     try {
                         const userRole = user.role ? user.role.trim().toLowerCase() : '';
+                        const hasAdminPermissions = user.permissions && (user.permissions.makeAdmin || user.permissions.addEmployees || user.permissions.createProjects || user.permissions.manageProjects);
+                        const isAdmin = userRole === 'admin' || userRole === 'org_owner' || hasAdminPermissions;
+
                         const adminTabs = ['tabEmployees', 'tabClients', 'tabProjects', 'tabAdmins', 'tabEmailIds', 'tabTasks', 'tabSubscription'];
                         
-                        if (userRole === 'admin' || userRole === 'org_owner') {
+                        if (isAdmin) {
                             // Unhide admin tabs
                             adminTabs.forEach(id => {
                                 const el = document.getElementById(id);
