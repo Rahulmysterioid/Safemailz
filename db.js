@@ -150,6 +150,20 @@ const initDb = async () => {
             )
         `);
 
+        // Create email attachments table
+        await runQuery(`
+            CREATE TABLE IF NOT EXISTS email_attachments (
+                id INTEGER PRIMARY KEY AUTOINCREMENT,
+                email_id INTEGER NOT NULL,
+                filename TEXT NOT NULL,
+                content_type TEXT NOT NULL,
+                size INTEGER,
+                data TEXT,
+                created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (email_id) REFERENCES emails(id)
+            )
+        `);
+
         // Create email recipients table
         await runQuery(`
             CREATE TABLE IF NOT EXISTS email_recipients (

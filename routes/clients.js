@@ -59,6 +59,36 @@ router.post('/', (req, res) => {
     );
 });
 
+// PUT /api/clients/:id
+// Update an existing client
+router.put('/:id', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const { id } = req.params;
+    const numericId = id.startsWith('c-') ? id.substring(2) : id;
+    const { displayName, name, email, phone, address } = req.body;
+    
+    if (!displayName || !name || !email) {
+        return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    db.run(
+        'UPDATE clients SET display_name = ?, name = ?, email = ?, phone = ?, address = ? WHERE id = ? AND organization_id = ?',
+        [displayName, name, email, phone || '', address || '', numericId, context.orgId],
+        function (err) {
+            if (err) {
+                console.error('[DB Error updating client]:', err);
+                return res.status(500).json({ error: 'Failed to update client' });
+            }
+            if (this.changes === 0) {
+                return res.status(404).json({ error: 'Client not found or unauthorized' });
+            }
+            res.json({ success: true, message: 'Client updated successfully' });
+        }
+    );
+});
+
 // DELETE /api/clients/:id
 // Delete a client
 router.delete('/:id', (req, res) => {

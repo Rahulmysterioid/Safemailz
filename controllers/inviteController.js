@@ -51,9 +51,16 @@ const sendInvite = async (req, res) => {
     }
 
     // Check if the user is already registered
-    db.get('SELECT id FROM users WHERE email = ?', [email], (err, row) => {
+    db.get('SELECT id, organization_id FROM users WHERE email = ?', [email], (err, row) => {
         if (err) return res.status(500).json({ error: 'Database error' });
-        if (row) return res.status(400).json({ error: 'User is already registered.' });
+        
+        if (row) {
+            if (row.organization_id == orgId) {
+                return res.json({ success: true, message: 'This user is already an employee in your organization.', alreadyExists: true });
+            } else {
+                return res.status(400).json({ error: 'User is already registered with another organization.' });
+            }
+        }
 
         // Generate a secure token
         const token = crypto.randomBytes(32).toString('hex');

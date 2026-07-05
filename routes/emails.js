@@ -2,8 +2,19 @@ const express = require('express');
 const { db } = require('../db');
 const nodemailer = require('nodemailer');
 const { getValidAccessToken } = require('../controllers/syncController');
+const puppeteer = require('puppeteer');
+const Tesseract = require('tesseract.js');
+const { PDFDocument, rgb } = require('pdf-lib');
 
 const router = express.Router();
+
+const globalDownloadProgress = new Map();
+
+// GET /api/emails/progress/:jobId
+router.get('/progress/:jobId', (req, res) => {
+    const progress = globalDownloadProgress.get(req.params.jobId) || 0;
+    res.json({ progress });
+});
 
 // Helper to encode to base64url for Gmail API
 function toBase64Url(str) {
@@ -35,6 +46,39 @@ const getUserContext = (req) => {
     }
     return { userId: parseInt(userId, 10), orgId: parseInt(orgId, 10), activeEmail };
 };
+
+// Masking utility for hiding emails and phone numbers from employees
+function maskContactDetails(text) {
+    if (!text) return text;
+    // Mask emails (e.g., raxxxx@xxxxx.com)
+    let masked = text.replace(/([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})/g, (match, local, domain, ext) => {
+        const localMasked = local.length <= 2 ? local : local.substring(0, 2) + 'x'.repeat(local.length - 2);
+        const domainMasked = 'x'.repeat(domain.length);
+        return `${localMasked}@${domainMasked}.${ext}`;
+    });
+    // Mask phones (keep +countryCode and first few digits, mask the rest)
+    masked = masked.replace(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g, (match) => {
+        let digitsCount = 0;
+        let result = '';
+        for (let i = 0; i < match.length; i++) {
+            let char = match[i];
+            if (/\d/.test(char)) {
+                if (digitsCount < 4) {
+                    result += char; 
+                } else {
+                    result += 'x';
+                }
+                digitsCount++;
+            } else if (char === '+') {
+                result += char;
+            } else {
+                result += char; 
+            }
+        }
+        return result;
+    });
+    return masked;
+}
 
 // GET /api/emails
 router.get('/', (req, res) => {
@@ -84,17 +128,21 @@ router.get('/', (req, res) => {
 
     query += ' ORDER BY e.created_at DESC';
 
-    db.all(`SELECT folder, COUNT(*) as count FROM email_recipients WHERE user_id = ? AND is_deleted = 0 GROUP BY folder`, [context.userId], (err, countRows) => {
-        let counts = { inbox: 0, sent: 0, drafts: 0, deleted: 0, junk: 0, archive: 0, notes: 0, conversation: 0 };
-        if (!err && countRows) {
-            countRows.forEach(r => counts[r.folder] = r.count);
-        }
+    db.get('SELECT role FROM users WHERE id = ?', [context.userId], (err, userRow) => {
+        if (err || !userRow) return res.status(500).json({ error: 'Failed to authenticate user role' });
+        const isEmployee = userRow.role === 'employee';
 
-        db.all(query, params, (err, rows) => {
-            if (err) {
-                console.error(err);
-                return res.status(500).json({ error: 'Database error' });
+        db.all(`SELECT folder, COUNT(*) as count FROM email_recipients WHERE user_id = ? AND is_deleted = 0 GROUP BY folder`, [context.userId], (err, countRows) => {
+            let counts = { inbox: 0, sent: 0, drafts: 0, deleted: 0, junk: 0, archive: 0, notes: 0, conversation: 0 };
+            if (!err && countRows) {
+                countRows.forEach(r => counts[r.folder] = r.count);
             }
+
+            db.all(query, params, (err, rows) => {
+                if (err) {
+                    console.error(err);
+                    return res.status(500).json({ error: 'Database error' });
+                }
 
         // Apply search in memory for simplicity
         let emails = rows.map(row => {
@@ -111,6 +159,16 @@ router.get('/', (req, res) => {
                 senderEmail = row.sender_email || row.external_sender_email;
             }
 
+            let subject = row.subject;
+            let preview = row.preview || row.subject;
+            let emailNo = row.emailNo;
+            
+            // Masking for employees receiving from clients
+            if (isEmployee && row.folder !== 'sent' && row.external_sender_email) {
+                subject = maskContactDetails(subject);
+                preview = maskContactDetails(preview);
+            }
+
             return {
                 id: row.email_id,
                 recipient_id: row.recipient_id,
@@ -119,13 +177,13 @@ router.get('/', (req, res) => {
                 to: row.to_address,
                 cc: row.cc,
                 bcc: row.bcc,
-                subject: row.subject,
-                preview: row.preview || row.subject,
+                subject: subject,
+                preview: preview,
                 folder: row.folder,
                 read: !!row.read,
                 replied: !!row.replied,
                 action: !!row.action,
-                emailNo: row.emailNo,
+                emailNo: emailNo,
                 date: formatToISTTime(row.created_at)
             };
         });
@@ -146,6 +204,7 @@ router.get('/', (req, res) => {
             emails
         });
         });
+    });
     });
 });
 
@@ -202,21 +261,40 @@ router.get('/:id', (req, res) => {
                 senderEmail = row.sender_email || row.external_sender_email;
             }
 
-            res.json({
-                success: true,
-                email: {
-                    id: row.id,
-                    emailNo: row.emailNo,
-                    subject: row.subject,
-                    body: row.body,
-                    sender: sender,
-                    senderEmail: senderEmail,
-                    to: row.to_address,
-                    cc: row.cc,
-                    bcc: row.bcc,
-                    folder: row.folder,
-                    date: formatToISTTime(row.created_at)
+            db.get('SELECT role FROM users WHERE id = ?', [context.userId], (err, userRow) => {
+                if (err || !userRow) return res.status(500).json({ error: 'Failed to authenticate user role' });
+                const isEmployee = userRow.role === 'employee';
+
+                let subject = row.subject;
+                let body = row.body;
+
+                // Apply masking for employees
+                if (isEmployee && row.folder !== 'sent' && row.external_sender_email) {
+                    subject = maskContactDetails(subject);
+                    body = maskContactDetails(body);
                 }
+
+                db.all('SELECT id, filename, content_type as contentType, size FROM email_attachments WHERE email_id = ?', [emailId], (err, attachments) => {
+                    if (err) console.error("Error fetching attachments:", err);
+                    
+                    res.json({
+                        success: true,
+                        email: {
+                            id: row.id,
+                            emailNo: row.emailNo,
+                            subject: subject,
+                            body: body,
+                            sender: sender,
+                            senderEmail: senderEmail,
+                            to: row.to_address,
+                            cc: row.cc,
+                            bcc: row.bcc,
+                            folder: row.folder,
+                            date: formatToISTTime(row.created_at),
+                            attachments: attachments || []
+                        }
+                    });
+                });
             });
         });
     };
@@ -549,6 +627,228 @@ router.post('/:id/comments', (req, res) => {
             res.json({ success: true, commentId: this.lastID });
         });
     });
+});
+
+// GET /api/emails/:id/attachments/:attachmentId
+router.get('/:id/attachments/:attachmentId', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    const emailId = req.params.id;
+    const attachmentId = req.params.attachmentId;
+    const jobId = req.query.jobId;
+
+// Enhanced masking logic for attachments
+function maskAttachmentText(text) {
+    if (!text) return text;
+    // Mask emails (e.g., raxxxx@xxxxx.com)
+    let masked = text.replace(/([a-zA-Z0-9._%+-]+)@([a-zA-Z0-9.-]+)\.([a-zA-Z]{2,})/g, (match, local, domain, ext) => {
+        const localMasked = local.length <= 2 ? local : local.substring(0, 2) + 'x'.repeat(local.length - 2);
+        const domainMasked = 'x'.repeat(domain.length);
+        return `${localMasked}@${domainMasked}.${ext}`;
+    });
+    // Mask phones (keep +countryCode and first few digits, mask the rest)
+    masked = masked.replace(/(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g, (match) => {
+        let digitsCount = 0;
+        let result = '';
+        for (let i = 0; i < match.length; i++) {
+            let char = match[i];
+            if (/\d/.test(char)) {
+                if (digitsCount < 4) {
+                    result += char; 
+                } else {
+                    result += 'x';
+                }
+                digitsCount++;
+            } else if (char === '+') {
+                result += char;
+            } else {
+                result += char; 
+            }
+        }
+        return result;
+    });
+    return masked;
+}
+
+// Function to process attachment data
+async function processAttachmentData(buffer, filename, mimeType, isRecipient, jobId) {
+    if (!isRecipient) return { buffer, mimeType, filename }; 
+
+    // Process based on mimeType
+    if (mimeType.includes('text/') || mimeType === 'text/csv' || mimeType.includes('xml') || mimeType === 'application/json') {
+        let text = buffer.toString('utf8');
+        text = maskAttachmentText(text);
+        return { buffer: Buffer.from(text, 'utf8'), mimeType, filename };
+    }
+    
+    if (mimeType === 'application/pdf') {
+        try {
+            console.log('Starting OCR Redaction for PDF...');
+            const browser = await puppeteer.launch({ headless: true, args: ['--no-sandbox', '--disable-setuid-sandbox'] });
+            const pdfDoc = await PDFDocument.load(buffer);
+            const pages = pdfDoc.getPages();
+            
+            const base64Pdf = buffer.toString('base64');
+            const page = await browser.newPage();
+            await page.setContent(`
+                <!DOCTYPE html>
+                <html>
+                <head>
+                    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+                </head>
+                <body>
+                    <canvas id="pdf-canvas"></canvas>
+                    <script>
+                        window.pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+                        window.renderPage = async (base64, pageNum) => {
+                            const pdfData = atob(base64);
+                            const array = new Uint8Array(pdfData.length);
+                            for (let i = 0; i < pdfData.length; i++) {
+                                array[i] = pdfData.charCodeAt(i);
+                            }
+                            const pdf = await window.pdfjsLib.getDocument({data: array}).promise;
+                            const page = await pdf.getPage(pageNum);
+                            
+                            const scale = 2.0; 
+                            const viewport = page.getViewport({scale: scale});
+                            
+                            const canvas = document.getElementById('pdf-canvas');
+                            const context = canvas.getContext('2d');
+                            canvas.height = viewport.height;
+                            canvas.width = viewport.width;
+                            
+                            await page.render({ canvasContext: context, viewport: viewport }).promise;
+                            
+                            return {
+                                dataUrl: canvas.toDataURL('image/png'),
+                                scale: scale,
+                                pdfWidth: viewport.width / scale,
+                                pdfHeight: viewport.height / scale
+                            };
+                        };
+                    </script>
+                </body>
+                </html>
+            `);
+
+            const worker = await Tesseract.createWorker('eng');
+            
+            const emailRegex = /[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g;
+            const phoneRegex = /(?:\+?\d{1,3}[-.\s]?)?\(?\d{2,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}/g;
+
+            for (let i = 0; i < pages.length; i++) {
+                if (jobId) globalDownloadProgress.set(jobId, Math.round((i / pages.length) * 100));
+                
+                const pageNum = i + 1;
+                const pdfPage = pages[i];
+                
+                const renderData = await page.evaluate(async (b64, num) => {
+                    return await window.renderPage(b64, num);
+                }, base64Pdf, pageNum);
+                
+                const imgBuffer = Buffer.from(renderData.dataUrl.split(',')[1], 'base64');
+                const { data } = await worker.recognize(imgBuffer, {}, { blocks: true });
+                
+                if (!data.blocks) continue;
+                
+                let words = [];
+                data.blocks.forEach(b => b.paragraphs.forEach(p => p.lines.forEach(l => l.words.forEach(w => words.push(w)))));
+                
+                words.forEach(word => {
+                    let text = word.text.trim();
+                    if (emailRegex.test(text) || phoneRegex.test(text)) {
+                        if (text.replace(/\\D/g, '').length < 8 && !text.includes('@')) return;
+                        
+                        const scale = renderData.scale;
+                        const boxX = word.bbox.x0 / scale;
+                        const boxY = renderData.pdfHeight - (word.bbox.y1 / scale);
+                        const boxWidth = (word.bbox.x1 - word.bbox.x0) / scale;
+                        const boxHeight = (word.bbox.y1 - word.bbox.y0) / scale;
+                        
+                        pdfPage.drawRectangle({
+                            x: boxX - 2,
+                            y: boxY - 2,
+                            width: boxWidth + 4,
+                            height: boxHeight + 4,
+                            color: rgb(0, 0, 0),
+                        });
+                    }
+                });
+            }
+
+            await worker.terminate();
+            await browser.close();
+            
+            if (jobId) {
+                globalDownloadProgress.set(jobId, 100);
+                setTimeout(() => globalDownloadProgress.delete(jobId), 10000);
+            }
+
+            const pdfBytes = await pdfDoc.save();
+            return { buffer: Buffer.from(pdfBytes), mimeType, filename };
+        } catch (e) {
+            console.error('OCR Redaction error', e);
+            // Fallback to original buffer if OCR crashes
+            return { buffer, mimeType, filename };
+        }
+    }
+    
+    return { buffer, mimeType, filename };
+}
+
+    const runDownload = (targetUserId) => {
+        db.get('SELECT sender_id FROM emails WHERE id = ?', [emailId], (err, emailRow) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            if (!emailRow) return res.status(404).json({ error: 'Email not found' });
+            
+            const isSender = emailRow.sender_id === targetUserId;
+            
+            db.get('SELECT 1 FROM email_recipients WHERE email_id = ? AND user_id = ?', [emailId, targetUserId], (err, recipientRow) => {
+                if (err) return res.status(500).json({ error: 'Database error' });
+                
+                const isRecipient = !!recipientRow;
+                
+                if (!isSender && !isRecipient) {
+                    return res.status(403).json({ error: 'Access denied' });
+                }
+
+                db.get('SELECT filename, content_type, data FROM email_attachments WHERE id = ? AND email_id = ?', [attachmentId, emailId], async (err, att) => {
+                    if (err) return res.status(500).json({ error: 'Database error' });
+                    if (!att) return res.status(404).json({ error: 'Attachment not found' });
+
+                    try {
+                        const originalBuffer = Buffer.from(att.data, 'base64');
+                        const processed = await processAttachmentData(
+                            originalBuffer, 
+                            att.filename, 
+                            att.content_type || 'application/octet-stream', 
+                            isRecipient && !isSender,
+                            jobId
+                        );
+                        
+                        res.setHeader('Content-Type', processed.mimeType);
+                        res.setHeader('Content-Disposition', `attachment; filename="${processed.filename}"`);
+                        res.send(processed.buffer);
+                    } catch (e) {
+                        res.status(500).json({ error: 'Failed to process attachment data' });
+                    }
+                });
+            });
+        });
+    };
+
+    if (context.activeEmail) {
+        db.get('SELECT id FROM users WHERE email = ?', [context.activeEmail], (err, row) => {
+            if (!err && row) {
+                runDownload(row.id);
+            } else {
+                runDownload(context.userId);
+            }
+        });
+    } else {
+        runDownload(context.userId);
+    }
 });
 
 module.exports = router;

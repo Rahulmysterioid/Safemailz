@@ -192,11 +192,11 @@ router.put('/employee/:email/role', (req, res) => {
         return res.status(400).json({ error: 'Invalid role' });
     }
 
-    // Verify caller has make_admin permission
+    // Verify caller has make_admin permission or is an admin/org_owner
     db.get('SELECT role, email, perm_make_admin FROM users WHERE id = ?', [context.userId], (err, callerRow) => {
         if (err) return res.status(500).json({ error: 'Database error' });
         // Use loose check for 1 or true
-        if (!callerRow || (callerRow.perm_make_admin != 1 && callerRow.perm_make_admin !== true)) {
+        if (!callerRow || (callerRow.role !== 'admin' && callerRow.role !== 'org_owner' && callerRow.perm_make_admin != 1 && callerRow.perm_make_admin !== true)) {
             return res.status(403).json({ error: 'You do not have permission to change roles' });
         }
 
@@ -205,18 +205,25 @@ router.put('/employee/:email/role', (req, res) => {
             return res.status(400).json({ error: 'You cannot demote yourself' });
         }
 
-        // Update role and reset permissions
-        db.run(
-            'UPDATE users SET role = ?, perm_add_employees = 0, perm_create_projects = 0, perm_manage_projects = 0, perm_make_admin = 0, perm_delete_project = 0 WHERE email = ? AND organization_id = ?',
-            [role, email, context.orgId],
-            function (updateErr) {
-                if (updateErr) return res.status(500).json({ error: 'Failed to update role' });
-                if (this.changes === 0) {
-                    return res.status(404).json({ error: 'Employee not found in your organization' });
-                }
-                res.json({ success: true, message: `Role updated to ${role}` });
+        // Verify target user is not an org_owner
+        db.get('SELECT role FROM users WHERE email = ? AND organization_id = ?', [email, context.orgId], (err, targetRow) => {
+            if (err) return res.status(500).json({ error: 'Database error' });
+            if (!targetRow) return res.status(404).json({ error: 'Employee not found in your organization' });
+            if (targetRow.role === 'org_owner') {
+                return res.status(403).json({ error: 'Cannot change the role of the Organization Owner' });
             }
-        );
+
+            // Update role and set permissions based on role
+            const perms = role === 'admin' ? 1 : 0;
+            db.run(
+                'UPDATE users SET role = ?, perm_add_employees = ?, perm_create_projects = ?, perm_manage_projects = ?, perm_make_admin = ?, perm_delete_project = ? WHERE email = ? AND organization_id = ?',
+                [role, perms, perms, perms, perms, perms, email, context.orgId],
+                function (updateErr) {
+                    if (updateErr) return res.status(500).json({ error: 'Failed to update role' });
+                    res.json({ success: true, message: `Role updated to ${role}` });
+                }
+            );
+        });
     });
 });
 
@@ -324,6 +331,24 @@ router.get('/admins', (req, res) => {
     );
 });
 
+// GET /api/settings/employees - Fetch all users in the organization
+router.get('/employees', (req, res) => {
+    const context = getUserContext(req);
+    if (!context) return res.status(401).json({ error: 'Unauthorized' });
+
+    db.all(
+        'SELECT id, admin_name as name, email, role, created_at FROM users WHERE organization_id = ? AND role = ? ORDER BY created_at ASC',
+        [context.orgId, 'employee'],
+        (err, rows) => {
+            if (err) {
+                console.error('[DB Error fetching employees]:', err);
+                return res.status(500).json({ error: 'Database error' });
+            }
+            res.json({ success: true, employees: rows });
+        }
+    );
+});
+
 // PUT /api/settings/admins/:adminId/permissions
 router.put('/admins/:adminId/permissions', (req, res) => {
     const context = getUserContext(req);
@@ -332,11 +357,11 @@ router.put('/admins/:adminId/permissions', (req, res) => {
     const { adminId } = req.params;
     const permissions = req.body;
 
-    // Verify caller has make_admin permission
-    db.get('SELECT perm_make_admin FROM users WHERE id = ?', [context.userId], (err, caller) => {
-        if (err || !caller) return res.status(500).json({ error: 'Database error' });
-        if (caller.perm_make_admin != 1 && caller.perm_make_admin !== true) {
-             return res.status(403).json({ error: 'You do not have permission to manage admin roles.' });
+    // Verify caller is admin or has make_admin permission
+    db.get('SELECT role, perm_make_admin FROM users WHERE id = ?', [context.userId], (err, caller) => {
+        if (err) return res.status(500).json({ error: 'Database error' });
+        if (!caller || (caller.role !== 'admin' && caller.perm_make_admin != 1 && caller.perm_make_admin !== true)) {
+            return res.status(403).json({ error: 'You do not have permission to change permissions' });
         }
 
         const query = `

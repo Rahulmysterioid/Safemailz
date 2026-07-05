@@ -62,7 +62,7 @@ const signup = async (req, res) => {
             const organization_id = orgResult.lastID;
 
             await dbRun(
-                `INSERT INTO users (organization_id, admin_name, email, password_hash, marketing_opt_in, terms_accepted, perm_add_employees, perm_create_projects, perm_manage_projects, perm_make_admin, perm_delete_project) VALUES (?, ?, ?, ?, ?, ?, 1, 1, 1, 1, 1)`,
+                `INSERT INTO users (organization_id, admin_name, email, password_hash, marketing_opt_in, terms_accepted, role, perm_add_employees, perm_create_projects, perm_manage_projects, perm_make_admin, perm_delete_project) VALUES (?, ?, ?, ?, ?, ?, 'org_owner', 1, 1, 1, 1, 1)`,
                 [organization_id, admin_name, email, password_hash, marketing_opt_in ? 1 : 0, terms_accepted ? 1 : 0]
             );
 

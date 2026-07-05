@@ -245,6 +245,14 @@
             font-weight: 600;
         }
 
+        .email-folder-list li.active:hover {
+            background-color: var(--surface-hover) !important;
+        }
+
+        .email-folder-list li:hover .folder-badge {
+            display: none !important;
+        }
+
         .folder-badge {
             background-color: var(--badge-bg) !important;
             color: var(--badge-text) !important;
@@ -726,6 +734,292 @@
             margin: 4px 8px !important;
             width: auto !important;
         }
+
+        /* Attachment Progress Bar */
+        .attach-progress-container {
+            display: none;
+            width: 100%;
+            height: 4px;
+            background: #e2e8f0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 8px;
+        }
+
+        .attach-progress-bar {
+            height: 100%;
+            width: 0%;
+            background: linear-gradient(90deg, #3b82f6, #8b5cf6, #ec4899);
+            background-size: 200% 200%;
+            animation: gradientMove 2s ease infinite;
+            transition: width 0.3s ease;
+        }
+
+        .attach-progress-text {
+            font-size: 11px;
+            color: #64748b;
+            text-align: right;
+            margin-top: 4px;
+            display: none;
+        }
+
+        @keyframes gradientMove {
+            0% {
+                background-position: 0% 50%;
+            }
+
+            50% {
+                background-position: 100% 50%;
+            }
+
+            100% {
+                background-position: 0% 50%;
+            }
+        }
+
+        /* Folder Overflow Dropdown */
+        .folder-more-btn {
+            display: none;
+            margin-left: auto;
+            padding: 4px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .email-folder-list li:hover .folder-more-btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .folder-more-btn:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .folder-more-btn svg {
+            width: 14px;
+            height: 14px;
+            color: var(--text-secondary);
+        }
+
+        .folder-dropdown-menu {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            min-width: 240px;
+            z-index: 9999;
+            display: none;
+            flex-direction: column;
+            padding: 6px 0;
+            font-size: 13px;
+            color: var(--text-primary);
+        }
+
+        .folder-dropdown-menu.show {
+            display: flex;
+        }
+
+        .folder-dropdown-item {
+            padding: 8px 16px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            transition: background 0.1s;
+        }
+
+        .folder-dropdown-item:hover {
+            background-color: var(--surface-hover);
+        }
+
+        .folder-dropdown-item.disabled {
+            color: #94a3b8;
+            cursor: not-allowed;
+        }
+
+        .folder-dropdown-item.disabled:hover {
+            background-color: transparent;
+        }
+
+        .folder-dropdown-item svg {
+            width: 16px;
+            height: 16px;
+            flex-shrink: 0;
+            color: #64748b;
+        }
+
+        .folder-dropdown-separator {
+            height: 1px;
+            background-color: var(--border-light);
+            margin: 4px 0;
+        }
+
+        .color-palette-menu {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid var(--border-light);
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            width: 180px;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 8px;
+            color: var(--text-primary);
+        }
+
+        .color-palette-menu.show {
+            display: flex;
+        }
+
+        .color-palette-auto {
+            padding: 6px 8px;
+            cursor: pointer;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 8px;
+            border: 1px solid transparent;
+            transition: background 0.1s;
+        }
+
+        .color-palette-auto:hover {
+            background-color: var(--surface-hover);
+            border-color: var(--border-light);
+        }
+
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 6px;
+        }
+
+        .color-swatch {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            border: 2px solid transparent;
+            transition: transform 0.1s;
+        }
+
+        .color-swatch:hover {
+            transform: scale(1.1);
+        }
+        .email-context-menu {
+            position: absolute;
+            background: #ffffff;
+            border: 1px solid var(--border-light, #e2e8f0);
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            width: 220px;
+            z-index: 10000;
+            display: none;
+            flex-direction: column;
+            padding: 4px 0;
+            color: #252423;
+            font-size: 13px;
+        }
+
+        .email-context-menu.show {
+            display: flex;
+        }
+
+        .email-context-item {
+            display: flex;
+            align-items: center;
+            padding: 6px 12px;
+            cursor: pointer;
+            gap: 12px;
+            position: relative;
+            user-select: none;
+        }
+
+        .email-context-item:hover {
+            background-color: #f3f2f1;
+        }
+
+        .email-context-item.disabled {
+            color: #a19f9d;
+            cursor: default;
+        }
+
+        .email-context-item.disabled:hover {
+            background-color: transparent;
+        }
+
+        .email-context-icon {
+            width: 16px;
+            height: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #605e5c;
+        }
+
+        .email-context-item.disabled .email-context-icon {
+            color: #a19f9d;
+        }
+
+        .email-context-label {
+            flex: 1;
+        }
+
+        .email-context-submenu-arrow {
+            width: 12px;
+            height: 12px;
+            color: #605e5c;
+        }
+
+        .email-context-separator {
+            height: 1px;
+            background-color: #edebe9;
+            margin: 4px 0;
+        }
+
+        .email-context-submenu-container {
+            display: none;
+            position: absolute;
+            top: -5px;
+            left: 100%;
+            background: #ffffff;
+            border: 1px solid var(--border-light, #e2e8f0);
+            border-radius: 4px;
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            min-width: 180px;
+            padding: 4px 0;
+            z-index: 10001;
+            flex-direction: column;
+        }
+
+        .email-context-item:hover > .email-context-submenu-container {
+            display: flex;
+        }
+
+        .mail-categories {
+            display: flex;
+            gap: 4px;
+            margin-top: 6px;
+            flex-wrap: wrap;
+        }
+
+        .mail-category-tag {
+            font-size: 11px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            font-weight: 600;
+        }
+
+        .category-blue { background-color: #cce3f5; color: #005a9e; }
+        .category-green { background-color: #dff6dd; color: #107c10; }
+        .category-orange { background-color: #fce1c6; color: #d83b01; }
+        .category-purple { background-color: #e6e0f8; color: #5c2d91; }
+        .category-red { background-color: #fde7e9; color: #a4262c; }
+        .category-yellow { background-color: #fef0cd; color: #8a6a00; }
     </style>
 </head>
 
@@ -804,8 +1098,12 @@
         <aside class="email-sidebar" id="emailSidebar" style="display: none;">
             <div class="email-admin-panel">
                 <div class="email-admin-info">
-                    <strong id="sidebarAdminName" class="email-admin-name" style="display:block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</strong>
-                    <span id="sidebarAdminEmail" class="email-admin-email" style="display:block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+                    <strong id="sidebarAdminName" class="email-admin-name"
+                        style="display:block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">...</strong>
+                    <span id="sidebarAdminEmail" class="email-admin-email"
+                        style="display:block; max-width: 150px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;"></span>
+                    <span id="sidebarAdminRoleBadge"
+                        style="display:none; font-size: 10px; font-weight: bold; background-color: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; margin-top: 4px; width: fit-content; text-transform: capitalize;"></span>
                 </div>
                 <button class="btn-switch-account" onclick="mockAction('Switch account')">
                     <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
@@ -848,14 +1146,7 @@
                         Inbox
                         <span class="folder-badge" id="badgeInbox" style="display:none;">0</span>
                     </li>
-                    <li class="create-folder">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <line x1="12" y1="5" x2="12" y2="19"></line>
-                            <line x1="5" y1="12" x2="19" y2="12"></line>
-                        </svg>
-                        Create Folder
-                    </li>
+
                     <li class="email-folder" data-email-filter="folder:sent" onclick="switchEmailFolder('folder:sent')">
                         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none"
                             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
@@ -1013,10 +1304,13 @@
                     AD
                 </div>
                 <div style="display: flex; flex-direction: column;">
-                    <span id="headerUserName" style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Admin User</span>
-                    <span id="headerUserEmail" style="font-size: 12px; color: var(--text-secondary);">admin@safemailz.com</span>
+                    <span id="headerUserName"
+                        style="font-size: 14px; font-weight: 600; color: var(--text-primary);">Admin User</span>
+                    <span id="headerUserEmail"
+                        style="font-size: 12px; color: var(--text-secondary);">admin@safemailz.com</span>
                 </div>
             </div>
+            <script src="adminLogic.js"></script>
             <script>
                 // Immediately bind profile info from localStorage
                 (function bindUserProfile() {
@@ -1026,11 +1320,29 @@
                         const user = JSON.parse(userStr);
                         const name = user.admin_name || user.email || 'Admin';
                         const email = user.email || '';
+                        const role = user.role || '';
 
                         const sn = document.getElementById('sidebarAdminName');
                         if (sn) sn.textContent = name;
                         const se = document.getElementById('sidebarAdminEmail');
                         if (se) se.textContent = email;
+
+                        const sr = document.getElementById('sidebarAdminRoleBadge');
+                        if (sr) {
+                            if (role) {
+                                sr.style.display = 'block';
+                                sr.textContent = role;
+                                if (role.toLowerCase() === 'employee') {
+                                    sr.style.backgroundColor = '#64748b'; // Gray for employee
+                                } else {
+                                    sr.style.backgroundColor = 'var(--primary)'; // Blue for admin
+                                }
+                            } else if (user.permissions && user.permissions.makeAdmin) {
+                                sr.style.display = 'block';
+                                sr.textContent = 'Admin';
+                                sr.style.backgroundColor = 'var(--primary)';
+                            }
+                        }
 
                         const hn = document.getElementById('headerUserName');
                         if (hn) hn.textContent = name;
@@ -1041,7 +1353,7 @@
                             const parts = name.split(' ').filter(Boolean);
                             hi.textContent = (parts[0]?.[0] || 'A').toUpperCase() + (parts[1]?.[0] || '').toUpperCase();
                         }
-                    } catch(e) {}
+                    } catch (e) { }
                 })();
 
                 function toggleSidebarSection(id, element) {
@@ -1123,7 +1435,7 @@
 
         <!-- ===== Clients Sidebar ===== -->
         <aside class="sidebar" id="clientsSidebar" style="display: none;">
-            <button class="btn-add-employee" id="btnAddClient" onclick="openModal('addClientModal')">
+            <button class="btn-add-employee" id="btnAddClient" onclick="openAddClientModal()">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none"
                     stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                     <line x1="12" y1="5" x2="12" y2="19"></line>
@@ -2754,6 +3066,7 @@
                                 <div class="reading-header">
                                     <div class="reading-email-no" id="readingEmailNo"></div>
                                     <h2 class="reading-subject" id="readingSubject"></h2>
+                                    <div id="readingCategories" class="mail-categories" style="margin-top: 8px; margin-bottom: 8px;"></div>
                                 </div>
                                 <div class="reading-meta">
                                     <div class="reading-sender-avatar" id="readingAvatar"></div>
@@ -3228,83 +3541,6 @@
                     <!-- Employees List Cards Container -->
                     <div id="subEmployeesCardsContainer"
                         style="display: flex; flex-direction: column; gap: 1.25rem; width: 100%; max-width: 1000px; margin: 0 auto;">
-                        <!-- Yash Thakor -->
-                        <div class="sub-employee-card" data-emp-name="Yash thakor">
-                            <div class="sub-card-header">
-                                <h3 class="sub-card-name">1. Yash thakor</h3>
-                                <span class="sub-tag-purple">Ending in 20 days</span>
-                            </div>
-                            <div class="sub-card-storage-label">Storage</div>
-                            <div class="sub-card-progress">
-                                <div class="sub-card-progress-bar" style="width: 60%;"></div>
-                            </div>
-                            <div class="sub-card-storage-text">5 GB of 5 GB Used</div>
-                            <div class="sub-card-actions">
-                                <button class="btn-sub-buy" onclick="subBuyStorage('Yash thakor')">Buy storage</button>
-                                <button class="btn-sub-renew" onclick="subRenewEmployee('Yash thakor')">Renew</button>
-                            </div>
-                        </div>
-
-                        <!-- Nouman Azam -->
-                        <div class="sub-employee-card" data-emp-name="Nouman Azam">
-                            <div class="sub-card-header">
-                                <h3 class="sub-card-name">2. Nouman Azam</h3>
-                                <div style="display: flex; gap: 0.4rem;">
-                                    <span class="sub-tag-blue">Admin</span>
-                                    <span class="sub-tag-pink">Freee</span>
-                                </div>
-                            </div>
-                            <div class="sub-card-storage-label">Storage</div>
-                            <div class="sub-card-progress">
-                                <div class="sub-card-progress-bar" style="width: 75%;"></div>
-                            </div>
-                            <div class="sub-card-storage-text">5 GB of 5 GB Used</div>
-                            <div class="sub-card-actions">
-                                <button class="btn-sub-buy" onclick="subBuyStorage('Nouman Azam')">Buy storage</button>
-                                <button class="btn-sub-renew" onclick="subRenewEmployee('Nouman Azam')">Renew</button>
-                            </div>
-                        </div>
-
-                        <!-- Muzamila khan -->
-                        <div class="sub-employee-card" data-emp-name="Muzamila khan">
-                            <div class="sub-card-header">
-                                <h3 class="sub-card-name">3. Muzamila khan</h3>
-                                <div style="display: flex; gap: 0.4rem;">
-                                    <span class="sub-tag-blue">Admin</span>
-                                    <span class="sub-tag-pink">Freee</span>
-                                </div>
-                            </div>
-                            <div class="sub-card-storage-label">Storage</div>
-                            <div class="sub-card-progress">
-                                <div class="sub-card-progress-bar" style="width: 75%;"></div>
-                            </div>
-                            <div class="sub-card-storage-text">5 GB of 5 GB Used</div>
-                            <div class="sub-card-actions">
-                                <button class="btn-sub-buy" onclick="subBuyStorage('Muzamila khan')">Buy
-                                    storage</button>
-                                <button class="btn-sub-renew" onclick="subRenewEmployee('Muzamila khan')">Renew</button>
-                            </div>
-                        </div>
-
-                        <!-- sayam uddin -->
-                        <div class="sub-employee-card" data-emp-name="sayam uddin">
-                            <div class="sub-card-header">
-                                <h3 class="sub-card-name">4. sayam uddin</h3>
-                                <div style="display: flex; gap: 0.4rem;">
-                                    <span class="sub-tag-blue">Admin</span>
-                                    <span class="sub-tag-pink">Freee</span>
-                                </div>
-                            </div>
-                            <div class="sub-card-storage-label">Storage</div>
-                            <div class="sub-card-progress">
-                                <div class="sub-card-progress-bar" style="width: 75%;"></div>
-                            </div>
-                            <div class="sub-card-storage-text">5 GB of 5 GB Used</div>
-                            <div class="sub-card-actions">
-                                <button class="btn-sub-buy" onclick="subBuyStorage('sayam uddin')">Buy storage</button>
-                                <button class="btn-sub-renew" onclick="subRenewEmployee('sayam uddin')">Renew</button>
-                            </div>
-                        </div>
                     </div>
                 </div>
 
@@ -3973,189 +4209,207 @@
                 </div>
 
                 <div class="settings-workspace-content">
-                <div class="settings-grid">
-                    <section class="settings-card" id="settingsAccountInfo">
-                        <h3>Account / User Information</h3>
-                        <div class="settings-details">
-                            <div class="settings-row"><span>Admin Name</span><strong id="settingsUserName">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Email Address</span><strong
-                                    id="settingsUserEmail">-</strong></div>
-                            <div class="settings-row"><span>User ID</span><strong id="settingsUserId">-</strong></div>
-                            <div class="settings-row"><span>Role</span><strong id="settingsUserRole">-</strong></div>
-                            <div class="settings-row"><span>Status</span><strong id="settingsUserStatus">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Joined Date</span><strong id="settingsUserJoined">-</strong>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="settings-card" id="settingsOrgInfo">
-                        <h3>Organization Information</h3>
-                        <div class="settings-details">
-                            <div class="settings-row"><span>Organization Name</span><strong
-                                    id="settingsOrgName">-</strong></div>
-                            <div class="settings-row"><span>Organization ID</span><strong id="settingsOrgId">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Organization Size</span><strong
-                                    id="settingsOrgSize">-</strong></div>
-                            <div class="settings-row"><span>Backup Email</span><strong id="settingsOrgBackup">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Joined Date</span><strong id="settingsOrgJoined">-</strong>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="settings-card settings-full-width" id="settingsSignupDetails">
-                        <h3>Signup Details</h3>
-                        <p style="color:#888; font-size:0.8rem; margin:0 0 1rem;">All details collected during account
-                            registration.</p>
-                        <div class="settings-details">
-                            <div class="settings-row"><span>Organization Name</span><strong
-                                    id="signupOrgName">-</strong></div>
-                            <div class="settings-row"><span>Admin Name</span><strong id="signupAdminName">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Email Address</span><strong id="signupEmail">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Organization Size</span><strong
-                                    id="signupOrgSize">-</strong></div>
-                            <div class="settings-row"><span>Backup Email</span><strong id="signupBackupEmail">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Marketing Opt-in</span><strong
-                                    id="signupMarketing">-</strong></div>
-                            <div class="settings-row"><span>Terms Accepted</span><strong id="signupTerms">-</strong>
-                            </div>
-                            <div class="settings-row"><span>Account Created</span><strong
-                                    id="signupCreatedAt">-</strong></div>
-                        </div>
-                    </section>
-
-                    <section class="settings-card settings-full-width" id="settingsAccountSettings">
-                        <h3>Account Settings</h3>
-                        <div class="settings-details">
-                            <div class="settings-row" style="padding: 0.8rem 0;">
-                                <span><strong style="color:#111; font-size:0.95rem;">Email
-                                        Notifications</strong><br><small style="color:#888; font-size:0.75rem;">Receive
-                                        an email when new team members are added or permissions change.</small></span>
-                                <button class="toggle-switch is-on" type="button" role="switch" aria-checked="true"
-                                    onclick="this.classList.toggle('is-on'); this.setAttribute('aria-checked', this.classList.contains('is-on'))"></button>
-                            </div>
-                            <div class="settings-row" style="padding: 0.8rem 0;">
-                                <span><strong style="color:#111; font-size:0.95rem;">Marketing
-                                        Communications</strong><br><small style="color:#888; font-size:0.75rem;">Receive
-                                        product updates, newsletters, and promotional content.</small></span>
-                                <button class="toggle-switch" type="button" role="switch" aria-checked="false"
-                                    onclick="this.classList.toggle('is-on'); this.setAttribute('aria-checked', this.classList.contains('is-on'))"></button>
-                            </div>
-                            <div class="settings-row" style="padding: 0.8rem 0;">
-                                <span><strong style="color:#111; font-size:0.95rem;">Two-Factor Authentication
-                                        (2FA)</strong><br><small style="color:#888; font-size:0.75rem;">Add an extra
-                                        layer of security to your account.</small></span>
-                                <button class="toggle-switch" type="button" role="switch" aria-checked="false"
-                                    onclick="this.classList.toggle('is-on'); this.setAttribute('aria-checked', this.classList.contains('is-on'))"></button>
-                            </div>
-                        </div>
-                    </section>
-
-                    <section class="settings-card settings-full-width" id="settingsPassword">
-                        <h3>Security / Change Password</h3>
-                        <div id="passwordAlert" class="alert-box" style="display: none;"></div>
-                        <form id="changePasswordForm" onsubmit="event.preventDefault(); handleChangePassword();">
-                            <div class="settings-form-row">
-                                <label for="currentPassword">Current Password</label>
-                                <input type="password" id="currentPassword" required>
-                            </div>
-                            <div class="settings-form-row">
-                                <label for="newPassword">New Password</label>
-                                <input type="password" id="newPassword" required>
-                            </div>
-                            <div class="settings-form-row">
-                                <label for="confirmPassword">Confirm New Password</label>
-                                <input type="password" id="confirmPassword" required>
-                            </div>
-                            <button type="submit" class="btn-modal btn-modal-proceed" style="margin-top: 1rem;">Update
-                                Password</button>
-                        </form>
-                    </section>
-
-                    <section class="settings-card settings-full-width" id="settingsLiveSync">
-                        <div class="email-sync-card" id="emailSyncCard"
-                            style="background: #fff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 1.5rem;">
-                            <h2 style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #1E293B;">
-                                Live Email Sync</h2>
-                            <p style="font-size: 0.875rem; color: #64748B; margin-bottom: 1.5rem;">Connect your signup
-                                email provider to automatically sync and manage your external emails directly from
-                                Safemailz.</p>
-
-                            <div id="syncLoadingState"
-                                style="display: flex; align-items: center; gap: 0.5rem; color: #64748B; font-size: 0.875rem;">
-                                <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none"
-                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                                    stroke-linejoin="round" style="animation: spin 1s linear infinite;">
-                                    <line x1="12" y1="2" x2="12" y2="6"></line>
-                                    <line x1="12" y1="18" x2="12" y2="22"></line>
-                                    <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
-                                    <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
-                                    <line x1="2" y1="12" x2="6" y2="12"></line>
-                                    <line x1="18" y1="12" x2="22" y2="12"></line>
-                                    <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
-                                    <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
-                                </svg>
-                                Checking sync status...
-                            </div>
-
-                            <div id="syncConnectState"
-                                style="display: none; align-items: center; justify-content: space-between; background: #F8FAFC; border: 1px dashed #CBD5E1; padding: 1.5rem; border-radius: 8px;">
-                                <div>
-                                    <h3 id="syncProviderTitle"
-                                        style="font-size: 1rem; font-weight: 600; color: #334155; margin-bottom: 0.25rem;">
-                                        Connect Provider</h3>
-                                    <p id="syncProviderDesc" style="font-size: 0.8125rem; color: #64748B;">Click below
-                                        to securely authenticate.</p>
+                    <div class="settings-grid">
+                        <section class="settings-card" id="settingsAccountInfo">
+                            <h3>Account / User Information</h3>
+                            <div class="settings-details">
+                                <div class="settings-row"><span>Admin Name</span><strong
+                                        id="settingsUserName">-</strong>
                                 </div>
-                                <button id="btnConnectProvider" class="btn btn-primary" onclick="initiateSyncOAuth()"
-                                    style="padding: 0.5rem 1.25rem;">Connect</button>
+                                <div class="settings-row"><span>Email Address</span><strong
+                                        id="settingsUserEmail">-</strong></div>
+                                <div class="settings-row"><span>User ID</span><strong id="settingsUserId">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Role</span><strong id="settingsUserRole">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Status</span><strong id="settingsUserStatus">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Joined Date</span><strong
+                                        id="settingsUserJoined">-</strong>
+                                </div>
                             </div>
+                        </section>
 
-                            <div id="syncActiveState"
-                                style="display: none; align-items: center; justify-content: space-between; background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 8px;">
-                                <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <div
-                                        style="background: #DCFCE7; color: #16A34A; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                                        <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
-                                            viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                            stroke-linecap="round" stroke-linejoin="round">
-                                            <polyline points="20 6 9 17 4 12"></polyline>
-                                        </svg>
-                                    </div>
+                        <section class="settings-card" id="settingsOrgInfo">
+                            <h3>Organization Information</h3>
+                            <div class="settings-details">
+                                <div class="settings-row"><span>Organization Name</span><strong
+                                        id="settingsOrgName">-</strong></div>
+                                <div class="settings-row"><span>Organization ID</span><strong
+                                        id="settingsOrgId">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Organization Size</span><strong
+                                        id="settingsOrgSize">-</strong></div>
+                                <div class="settings-row"><span>Backup Email</span><strong
+                                        id="settingsOrgBackup">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Joined Date</span><strong
+                                        id="settingsOrgJoined">-</strong>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-card settings-full-width" id="settingsSignupDetails">
+                            <h3>Signup Details</h3>
+                            <p style="color:#888; font-size:0.8rem; margin:0 0 1rem;">All details collected during
+                                account
+                                registration.</p>
+                            <div class="settings-details">
+                                <div class="settings-row"><span>Organization Name</span><strong
+                                        id="signupOrgName">-</strong></div>
+                                <div class="settings-row"><span>Admin Name</span><strong id="signupAdminName">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Email Address</span><strong id="signupEmail">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Organization Size</span><strong
+                                        id="signupOrgSize">-</strong></div>
+                                <div class="settings-row"><span>Backup Email</span><strong
+                                        id="signupBackupEmail">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Marketing Opt-in</span><strong
+                                        id="signupMarketing">-</strong></div>
+                                <div class="settings-row"><span>Terms Accepted</span><strong id="signupTerms">-</strong>
+                                </div>
+                                <div class="settings-row"><span>Account Created</span><strong
+                                        id="signupCreatedAt">-</strong></div>
+                            </div>
+                        </section>
+
+                        <section class="settings-card settings-full-width" id="settingsAccountSettings">
+                            <h3>Account Settings</h3>
+                            <div class="settings-details">
+                                <div class="settings-row" style="padding: 0.8rem 0;">
+                                    <span><strong style="color:#111; font-size:0.95rem;">Email
+                                            Notifications</strong><br><small
+                                            style="color:#888; font-size:0.75rem;">Receive
+                                            an email when new team members are added or permissions
+                                            change.</small></span>
+                                    <button class="toggle-switch is-on" type="button" role="switch" aria-checked="true"
+                                        onclick="this.classList.toggle('is-on'); this.setAttribute('aria-checked', this.classList.contains('is-on'))"></button>
+                                </div>
+                                <div class="settings-row" style="padding: 0.8rem 0;">
+                                    <span><strong style="color:#111; font-size:0.95rem;">Marketing
+                                            Communications</strong><br><small
+                                            style="color:#888; font-size:0.75rem;">Receive
+                                            product updates, newsletters, and promotional content.</small></span>
+                                    <button class="toggle-switch" type="button" role="switch" aria-checked="false"
+                                        onclick="this.classList.toggle('is-on'); this.setAttribute('aria-checked', this.classList.contains('is-on'))"></button>
+                                </div>
+                                <div class="settings-row" style="padding: 0.8rem 0;">
+                                    <span><strong style="color:#111; font-size:0.95rem;">Two-Factor Authentication
+                                            (2FA)</strong><br><small style="color:#888; font-size:0.75rem;">Add an extra
+                                            layer of security to your account.</small></span>
+                                    <button class="toggle-switch" type="button" role="switch" aria-checked="false"
+                                        onclick="this.classList.toggle('is-on'); this.setAttribute('aria-checked', this.classList.contains('is-on'))"></button>
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="settings-card settings-full-width" id="settingsPassword">
+                            <h3>Security / Change Password</h3>
+                            <div id="passwordAlert" class="alert-box" style="display: none;"></div>
+                            <form id="changePasswordForm" onsubmit="event.preventDefault(); handleChangePassword();">
+                                <div class="settings-form-row">
+                                    <label for="currentPassword">Current Password</label>
+                                    <input type="password" id="currentPassword" required>
+                                </div>
+                                <div class="settings-form-row">
+                                    <label for="newPassword">New Password</label>
+                                    <input type="password" id="newPassword" required>
+                                </div>
+                                <div class="settings-form-row">
+                                    <label for="confirmPassword">Confirm New Password</label>
+                                    <input type="password" id="confirmPassword" required>
+                                </div>
+                                <button type="submit" class="btn-modal btn-modal-proceed"
+                                    style="margin-top: 1rem;">Update
+                                    Password</button>
+                            </form>
+                        </section>
+
+                        <section class="settings-card settings-full-width" id="settingsLiveSync">
+                            <div class="email-sync-card" id="emailSyncCard"
+                                style="background: #fff; border: 1px solid #E2E8F0; border-radius: 8px; padding: 1.5rem;">
+                                <h2
+                                    style="font-size: 1.25rem; font-weight: 700; margin-bottom: 0.5rem; color: #1E293B;">
+                                    Live Email Sync</h2>
+                                <p style="font-size: 0.875rem; color: #64748B; margin-bottom: 1.5rem;">Connect your
+                                    signup
+                                    email provider to automatically sync and manage your external emails directly from
+                                    Safemailz.</p>
+
+                                <div id="syncLoadingState"
+                                    style="display: flex; align-items: center; gap: 0.5rem; color: #64748B; font-size: 0.875rem;">
+                                    <svg class="spinner" width="16" height="16" viewBox="0 0 24 24" fill="none"
+                                        stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                        stroke-linejoin="round" style="animation: spin 1s linear infinite;">
+                                        <line x1="12" y1="2" x2="12" y2="6"></line>
+                                        <line x1="12" y1="18" x2="12" y2="22"></line>
+                                        <line x1="4.93" y1="4.93" x2="7.76" y2="7.76"></line>
+                                        <line x1="16.24" y1="16.24" x2="19.07" y2="19.07"></line>
+                                        <line x1="2" y1="12" x2="6" y2="12"></line>
+                                        <line x1="18" y1="12" x2="22" y2="12"></line>
+                                        <line x1="4.93" y1="19.07" x2="7.76" y2="16.24"></line>
+                                        <line x1="16.24" y1="7.76" x2="19.07" y2="4.93"></line>
+                                    </svg>
+                                    Checking sync status...
+                                </div>
+
+                                <div id="syncConnectState"
+                                    style="display: none; align-items: center; justify-content: space-between; background: #F8FAFC; border: 1px dashed #CBD5E1; padding: 1.5rem; border-radius: 8px;">
                                     <div>
-                                        <div style="font-weight: 600; color: #166534; font-size: 0.875rem;">Sync Active
-                                            (<span id="activeSyncProviderName">Google</span>)</div>
-                                        <div style="font-size: 0.75rem; color: #15803D;">Last synced: <span
-                                                id="lastSyncTimeLabel">Just now</span></div>
+                                        <h3 id="syncProviderTitle"
+                                            style="font-size: 1rem; font-weight: 600; color: #334155; margin-bottom: 0.25rem;">
+                                            Connect Provider</h3>
+                                        <p id="syncProviderDesc" style="font-size: 0.8125rem; color: #64748B;">Click
+                                            below
+                                            to securely authenticate.</p>
+                                    </div>
+                                    <button id="btnConnectProvider" class="btn btn-primary"
+                                        onclick="initiateSyncOAuth()" style="padding: 0.5rem 1.25rem;">Connect</button>
+                                </div>
+
+                                <div id="syncActiveState"
+                                    style="display: none; align-items: center; justify-content: space-between; background: #F0FDF4; border: 1px solid #BBF7D0; padding: 1rem; border-radius: 8px;">
+                                    <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                        <div
+                                            style="background: #DCFCE7; color: #16A34A; width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center;">
+                                            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18"
+                                                viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                                                stroke-linecap="round" stroke-linejoin="round">
+                                                <polyline points="20 6 9 17 4 12"></polyline>
+                                            </svg>
+                                        </div>
+                                        <div>
+                                            <div style="font-weight: 600; color: #166534; font-size: 0.875rem;">Sync
+                                                Active
+                                                (<span id="activeSyncProviderName">Google</span>)</div>
+                                            <div style="font-size: 0.75rem; color: #15803D;">Last synced: <span
+                                                    id="lastSyncTimeLabel">Just now</span></div>
+                                        </div>
+                                    </div>
+                                    <div style="display: flex; gap: 0.5rem;">
+                                        <button type="button" id="btnForceSync" onclick="forceSyncRefresh()"
+                                            style="background: transparent; border: 1px solid #16A34A; color: #16A34A; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">Sync
+                                            Now</button>
+                                        <button type="button" id="btnDisconnectSync" onclick="disconnectSync()"
+                                            style="background: transparent; border: 1px solid #DC2626; color: #DC2626; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">Disconnect</button>
                                     </div>
                                 </div>
-                                <div style="display: flex; gap: 0.5rem;">
-                                    <button type="button" id="btnForceSync" onclick="forceSyncRefresh()"
-                                        style="background: transparent; border: 1px solid #16A34A; color: #16A34A; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">Sync
-                                        Now</button>
-                                    <button type="button" id="btnDisconnectSync" onclick="disconnectSync()"
-                                        style="background: transparent; border: 1px solid #DC2626; color: #DC2626; padding: 0.375rem 0.75rem; border-radius: 4px; font-size: 0.75rem; font-weight: 500; cursor: pointer; transition: all 0.2s;">Disconnect</button>
-                                </div>
                             </div>
-                        </div>
-                    </section>
+                        </section>
 
-                    <section class="settings-card settings-full-width" id="settingsDangerZone"
-                        style="border: 1px solid #FCA5A5; background-color: #FEF2F2;">
-                        <h3 style="color: #DC2626;">Danger Zone</h3>
-                        <p style="color: #991B1B; font-size: 0.875rem; margin-bottom: 1.5rem;">Permanently delete your
-                            account and all associated data. This action cannot be undone.</p>
-                        <button type="button" class="btn btn-danger" onclick="initiateDeleteAccount()"
-                            style="background-color: #DC2626; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer;">Delete
-                            Account</button>
-                    </section>
-                </div>
+                        <section class="settings-card settings-full-width" id="settingsDangerZone"
+                            style="border: 1px solid #FCA5A5; background-color: #FEF2F2;">
+                            <h3 style="color: #DC2626;">Danger Zone</h3>
+                            <p style="color: #991B1B; font-size: 0.875rem; margin-bottom: 1.5rem;">Permanently delete
+                                your
+                                account and all associated data. This action cannot be undone.</p>
+                            <button type="button" class="btn btn-danger" onclick="initiateDeleteAccount()"
+                                style="background-color: #DC2626; color: white; border: none; padding: 0.75rem 1.5rem; border-radius: 6px; font-weight: 600; cursor: pointer;">Delete
+                                Account</button>
+                        </section>
+                    </div>
                 </div><!-- end settings-workspace-content -->
             </div><!-- end mailSettingsPanel -->
 
@@ -4316,14 +4570,11 @@
 
             <button class="btn-payment" id="btnProceedPayment" onclick="processPayment()">Proceed Payment</button>
         </div>
-    </div>
-
-    <!-- ===== MODAL: Add Client ===== -->
+    </div> <!-- ===== MODAL: Add Client ===== -->
     <div class="modal-overlay" id="addClientModal" role="dialog" aria-modal="true" aria-labelledby="addClientTitle">
         <div class="modal-card form-modal-content"
             style="max-width: 580px; padding: 1.75rem 1.6rem 1.55rem; border-radius: 7px; background: #fff; box-shadow: 0 18px 44px rgba(0, 0, 0, 0.16);">
-            <div
-                style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1.5px solid #EEF0F2; padding-bottom: 0.75rem; margin-bottom: 1.25rem;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
                 <h2 id="addClientTitle"
                     style="font-size: 0.95rem; font-weight: 700; color: #111; margin: 0; font-family: 'Inter', sans-serif;">
                     Enter clients details</h2>
@@ -4370,15 +4621,206 @@
                         style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; font-size: 1.2rem; cursor: pointer; font-weight: 400;">+</span>
                 </div>
             </div>
-
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
                 <button class="btn-modal" onclick="closeModal('addClientModal')"
                     style="height: 38px; padding: 0 1.5rem; background: transparent; border: 1px solid #1A6BA8; color: #1A6BA8; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">Cancle</button>
-                <button class="btn-modal" onclick="saveNewClient()"
-                    style="height: 38px; padding: 0 1.5rem; background: #1A6BA8; border: none; color: #fff; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">save</button>
+                <button id="saveClientBtn" class="btn-modal" onclick="saveNewClient()"
+                    style="height: 38px; padding: 0 1.5rem; background: #1A6BA8; color: #fff; border: none; border-radius: 6px; font-size: 0.8rem; font-weight: 600; cursor: pointer; font-family: 'Inter', sans-serif;">Save</button>
             </div>
         </div>
     </div>
+
+    <!-- ===== Project Action Menu (Dropdown) ===== -->
+    <div id="projectActionMenu" class="project-action-menu">
+        <!-- Main Menu -->
+        <div id="projectActionMenuMain">
+            <div class="project-action-menu-item" onclick="handleProjectEdit()">Edit</div>
+            <div class="project-action-menu-item primary" onclick="handleProjectStatusOpen()">Change project status
+            </div>
+            <div class="project-action-menu-item" onclick="handleProjectDelete()">Delete</div>
+        </div>
+        <!-- Status Submenu -->
+        <div id="projectActionMenuStatus" style="display: none;">
+            <div class="project-action-submenu-header" onclick="handleProjectStatusBack()">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <line x1="18" y1="6" x2="6" y2="18"></line>
+                    <line x1="6" y1="6" x2="18" y2="18"></line>
+                </svg>
+                Back
+            </div>
+            <div class="project-action-menu-item status-opt" onclick="updateProjectStatus('Completed')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Project completed
+            </div>
+            <div class="project-action-menu-item status-opt" onclick="updateProjectStatus('Client gone')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polygon points="7.86 2 16.14 2 22 7.86 22 16.14 16.14 22 7.86 22 2 16.14 2 7.86 7.86 2"></polygon>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Client gone
+            </div>
+            <div class="project-action-menu-item status-opt" onclick="updateProjectStatus('Budget issue')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                </svg>
+                Budget issue
+            </div>
+            <div class="project-action-menu-item status-opt"
+                onclick="updateProjectStatus('Moved to in house solution')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="3" y1="9" x2="21" y2="9"></line>
+                    <line x1="9" y1="21" x2="9" y2="9"></line>
+                </svg>
+                Moved to in house solution
+            </div>
+            <div class="project-action-menu-item status-opt"
+                onclick="updateProjectStatus('Switch to another provider')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="1 4 1 10 7 10"></polyline>
+                    <polyline points="23 20 23 14 17 14"></polyline>
+                    <path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10M23 14l-4.64 4.36A9 9 0 0 1 3.51 15"></path>
+                </svg>
+                Switch to another provider
+            </div>
+            <div class="project-action-menu-item status-opt"
+                onclick="updateProjectStatus('No longer requirements issue')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <polyline points="14 2 14 8 20 8"></polyline>
+                    <line x1="12" y1="18" x2="12" y2="12"></line>
+                    <line x1="9" y1="15" x2="15" y2="15"></line>
+                </svg>
+                No longar requirements issue
+            </div>
+            <div class="project-action-menu-item status-opt" onclick="updateProjectStatus('Trial ended')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                </svg>
+                Trial ended
+            </div>
+            <div class="project-action-menu-item status-opt" onclick="updateProjectStatus('Service paused')">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="10" y1="15" x2="10" y2="9"></line>
+                    <line x1="14" y1="15" x2="14" y2="9"></line>
+                </svg>
+                Service paused
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentActionProjectId = null;
+
+        function openProjectActionMenu(event, projectId, currentStatus) {
+            event.stopPropagation();
+            currentActionProjectId = projectId;
+
+            const menu = document.getElementById('projectActionMenu');
+            const main = document.getElementById('projectActionMenuMain');
+            const statusSub = document.getElementById('projectActionMenuStatus');
+
+            // Reset to main view
+            main.style.display = 'block';
+            statusSub.style.display = 'none';
+
+            // Highlight active status if any
+            document.querySelectorAll('#projectActionMenuStatus .status-opt').forEach(opt => {
+                if (opt.textContent.trim().toLowerCase() === (currentStatus || '').toLowerCase()) {
+                    opt.classList.add('active');
+                } else {
+                    opt.classList.remove('active');
+                }
+            });
+
+            // Position the menu
+            menu.classList.add('active');
+            const rect = event.currentTarget.getBoundingClientRect();
+            let topPos = rect.bottom + window.scrollY;
+            let leftPos = rect.right - 250 + window.scrollX; // 250px is menu width
+
+            // Prevent overflowing bottom/right
+            if (leftPos < 10) leftPos = 10;
+
+            menu.style.top = topPos + 'px';
+            menu.style.left = leftPos + 'px';
+        }
+
+        function handleProjectEdit() {
+            closeProjectActionMenu();
+            if (currentActionProjectId) {
+                // Placeholder for Edit flow
+                alert('Edit project flow opened for project: ' + currentActionProjectId);
+            }
+        }
+
+        function handleProjectDelete() {
+            closeProjectActionMenu();
+            if (currentActionProjectId) {
+                // Placeholder for Delete flow
+                alert('Delete confirmation flow opened for project: ' + currentActionProjectId);
+            }
+        }
+
+        function handleProjectStatusOpen() {
+            document.getElementById('projectActionMenuMain').style.display = 'none';
+            document.getElementById('projectActionMenuStatus').style.display = 'block';
+        }
+
+        function handleProjectStatusBack() {
+            document.getElementById('projectActionMenuStatus').style.display = 'none';
+            document.getElementById('projectActionMenuMain').style.display = 'block';
+        }
+
+        function updateProjectStatus(newStatus) {
+            closeProjectActionMenu();
+            if (!currentActionProjectId) return;
+
+            // Update in local state
+            const projIndex = dashboardProjectsList.findIndex(p => String(p.id) === String(currentActionProjectId));
+            if (projIndex > -1) {
+                dashboardProjectsList[projIndex].status = newStatus;
+                localStorage.setItem('safemailzProjects', JSON.stringify(dashboardProjectsList));
+                // Re-render instantly
+                if (typeof renderDashboardProjects === 'function') {
+                    renderDashboardProjects();
+                }
+            }
+        }
+
+        function closeProjectActionMenu() {
+            const menu = document.getElementById('projectActionMenu');
+            if (menu) {
+                menu.classList.remove('active');
+            }
+        }
+
+        // Close when clicking outside
+        window.addEventListener('click', function (e) {
+            const menu = document.getElementById('projectActionMenu');
+            if (menu && menu.classList.contains('active')) {
+                if (!menu.contains(e.target)) {
+                    closeProjectActionMenu();
+                }
+            }
+        });
+    </script>
 
     <!-- ===== MODAL: Add Project ===== -->
     <div class="modal-overlay" id="addProjectModal" role="dialog" aria-modal="true" aria-labelledby="addProjectTitle">
@@ -4414,7 +4856,7 @@
                         style="flex: 1; height: 41px; border: 1px solid #C8CDD3; border-radius: 7px; background: #fff; color: #111; font-size: 0.78rem; outline: none; padding: 0 0.75rem; font-family: 'Inter', sans-serif;">
                         <option value="">Select client</option>
                     </select>
-                    <a href="#" onclick="openModal('addClientModal'); return false;"
+                    <a href="#" onclick="openAddClientModal(); return false;"
                         style="color: #1A6BA8; font-size: 0.78rem; font-weight: 600; text-decoration: none; display: flex; align-items: center; gap: 0.25rem; white-space: nowrap;">
                         <span style="font-size: 1.1rem; line-height: 1; font-weight: 400;">+</span> Add Client
                     </a>
@@ -4842,7 +5284,7 @@
                     const user = JSON.parse(userStr);
                     headers['X-User-Id'] = user.id;
                     headers['X-Org-Id'] = user.organization_id;
-                    
+
                     const headerEmailEl = document.getElementById('headerUserEmail');
                     if (headerEmailEl && headerEmailEl.textContent && headerEmailEl.textContent !== 'Loading...') {
                         headers['X-Active-Email'] = headerEmailEl.textContent.trim();
@@ -5024,6 +5466,11 @@
                 row.id = `emailRow-${mail.id}`;
                 row.className = `mail-row ${mail.read ? 'read' : 'unread'} ${mail.id === currentOpenEmailId ? 'active' : ''}`;
                 row.onclick = () => openEmailDetails(mail.id);
+                row.addEventListener('contextmenu', (e) => {
+                    if (typeof openEmailContextMenu === 'function') {
+                        openEmailContextMenu(e, mail);
+                    }
+                });
                 row.tabIndex = 0;
                 row.onkeydown = (e) => {
                     if (e.key === 'Enter' || e.key === ' ') {
@@ -5054,6 +5501,18 @@
                     plainPreview = tempDiv.textContent || tempDiv.innerText || '';
                 }
 
+                let categoriesHtml = '';
+                try {
+                    let categories = JSON.parse(localStorage.getItem('emailCategories') || '{}');
+                    if (categories[mail.id] && categories[mail.id].length > 0) {
+                        categoriesHtml = '<div class="mail-categories">';
+                        categories[mail.id].forEach(c => {
+                            categoriesHtml += `<span class="mail-category-tag category-${c}">${c.charAt(0).toUpperCase() + c.slice(1)} category</span>`;
+                        });
+                        categoriesHtml += '</div>';
+                    }
+                } catch(e) {}
+
                 row.innerHTML = `
                     <div class="mail-from-cell">
                         <input type="checkbox" class="email-select-cb" style="margin-top: 6px;" data-id="${mail.id}" onclick="event.stopPropagation(); toggleEmailSelection(event, '${mail.id}')">
@@ -5065,6 +5524,7 @@
                             </div>
                             <div class="mail-subject">${escapeHtml(mail.subject || 'No Subject')}</div>
                             <div class="mail-preview">${escapeHtml(plainPreview)}</div>
+                            ${categoriesHtml}
                         </div>
                     </div>
                 `;
@@ -5079,13 +5539,13 @@
         async function openEmailDetails(id) {
             const readingPane = document.getElementById('readingPaneContent');
             const readingBody = document.getElementById('readingBody');
-            
+
             try {
                 // Show loading state
                 document.getElementById('inlineComposerContent').style.display = 'none';
                 document.getElementById('mailReadingColumn').style.display = 'flex';
                 readingPane.style.display = 'flex';
-                
+
                 // Set temporary loading content
                 document.getElementById('readingSubject').textContent = 'Loading...';
                 document.getElementById('readingSenderName').textContent = '';
@@ -5164,6 +5624,23 @@
 
                     document.getElementById('readingEmailNo').textContent = "Email No: " + mail.emailNo;
                     document.getElementById('readingSubject').textContent = mail.subject;
+                    
+                    const readingCats = document.getElementById('readingCategories');
+                    if (readingCats) {
+                        readingCats.innerHTML = '';
+                        try {
+                            let categories = JSON.parse(localStorage.getItem('emailCategories') || '{}');
+                            if (categories[mail.id] && categories[mail.id].length > 0) {
+                                categories[mail.id].forEach(c => {
+                                    const tag = document.createElement('span');
+                                    tag.className = `mail-category-tag category-${c}`;
+                                    tag.textContent = c.charAt(0).toUpperCase() + c.slice(1) + ' category';
+                                    readingCats.appendChild(tag);
+                                });
+                            }
+                        } catch(e) {}
+                    }
+
                     document.getElementById('readingSenderName').textContent = mail.sender;
                     document.getElementById('readingSenderEmail').textContent = mail.senderEmail;
 
@@ -5193,8 +5670,7 @@
                     document.getElementById('readingBody').innerHTML = cleanBody;
 
                     // Extract and display attachments in reading pane
-                    const attachMatch = mail.body ? mail.body.match(/<!--attachments:(.*?)-->/) : null;
-                    const attachments = attachMatch ? JSON.parse(attachMatch[1]) : [];
+                    const attachments = mail.attachments || [];
 
                     const attachContainer = document.getElementById('readingAttachmentsContainer');
                     const attachList = document.getElementById('readingAttachmentsList');
@@ -5203,14 +5679,91 @@
                         if (attachments && attachments.length > 0) {
                             attachList.innerHTML = '';
                             attachments.forEach(file => {
-                                const card = document.createElement('div');
+                                const card = document.createElement('a');
                                 card.className = 'reading-attachment-card';
-                                card.onclick = () => downloadMockFile(file.name, file.size, file.type);
+                                card.href = '#';
+                                card.onclick = async (e) => {
+                                    e.preventDefault();
+
+                                    const progContainer = document.getElementById(`prog-container-${file.id}`);
+                                    const progBar = document.getElementById(`prog-bar-${file.id}`);
+                                    const progText = document.getElementById(`prog-text-${file.id}`);
+
+                                    if (progContainer) progContainer.style.display = 'block';
+                                    if (progText) {
+                                        progText.style.display = 'block';
+                                        progText.textContent = file.filename.toLowerCase().endsWith('.pdf') ? 'Initializing AI Redaction...' : 'Downloading...';
+                                    }
+
+                                    const jobId = Math.random().toString(36).substring(7);
+                                    let progressInterval = null;
+
+                                    if (file.filename.toLowerCase().endsWith('.pdf')) {
+                                        progressInterval = setInterval(async () => {
+                                            try {
+                                                const res = await fetch('/api/emails/progress/' + jobId, { headers: getHeaders() });
+                                                if (res.ok) {
+                                                    const data = await res.json();
+                                                    if (progBar) progBar.style.width = data.progress + '%';
+                                                    if (progText) progText.textContent = data.progress + '% (Processing)';
+                                                }
+                                            } catch (err) { }
+                                        }, 1000);
+                                    }
+
+                                    try {
+                                        const url = '/api/emails/' + mail.id + '/attachments/' + file.id + '?jobId=' + jobId;
+                                        const headers = getHeaders();
+                                        const response = await fetch(url, { headers });
+                                        if (!response.ok) throw new Error('Download failed');
+                                        const blob = await response.blob();
+
+                                        if (progressInterval) clearInterval(progressInterval);
+                                        if (progBar) progBar.style.width = '100%';
+                                        if (progText) progText.textContent = '100% (Done)';
+
+                                        setTimeout(() => {
+                                            if (progContainer) progContainer.style.display = 'none';
+                                            if (progText) progText.style.display = 'none';
+                                            if (progBar) progBar.style.width = '0%';
+                                        }, 2000);
+
+                                        const objectUrl = window.URL.createObjectURL(blob);
+                                        const a = document.createElement('a');
+                                        a.style.display = 'none';
+                                        a.href = objectUrl;
+                                        a.download = file.filename;
+                                        document.body.appendChild(a);
+                                        a.click();
+                                        window.URL.revokeObjectURL(objectUrl);
+                                        a.remove();
+                                    } catch (error) {
+                                        if (progressInterval) clearInterval(progressInterval);
+                                        if (progText) progText.textContent = 'Error';
+                                        console.error('Attachment download failed:', error);
+                                        alert('Failed to download attachment. Please try again.');
+                                    }
+                                };
+                                card.style.cursor = 'pointer';
+                                card.style.textDecoration = 'none';
+                                card.style.color = 'inherit';
+
+                                // Format size properly
+                                let sizeStr = file.size + ' B';
+                                if (file.size > 1024 * 1024) sizeStr = (file.size / (1024 * 1024)).toFixed(2) + ' MB';
+                                else if (file.size > 1024) sizeStr = (file.size / 1024).toFixed(2) + ' KB';
+
                                 card.innerHTML = `
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                                    <div class="reading-attachment-info">
-                                        <span class="reading-attachment-name">${escapeHtml(file.name)}</span>
-                                        <span class="reading-attachment-size">${file.size}</span>
+                                    <div style="display: flex; align-items: flex-start; width: 100%;">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#64748B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink: 0; margin-top: 2px;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
+                                        <div class="reading-attachment-info" style="flex-grow: 1; padding-left: 8px;">
+                                            <span class="reading-attachment-name">${escapeHtml(file.filename)}</span>
+                                            <span class="reading-attachment-size">${sizeStr}</span>
+                                            <div class="attach-progress-container" id="prog-container-${file.id}">
+                                                <div class="attach-progress-bar" id="prog-bar-${file.id}"></div>
+                                            </div>
+                                            <div class="attach-progress-text" id="prog-text-${file.id}">0%</div>
+                                        </div>
                                     </div>
                                 `;
                                 attachList.appendChild(card);
@@ -7705,9 +8258,18 @@
                 sidebarList.appendChild(div);
             }
 
+            // Calculate real active employees
+            const filledCount = seats.filter(s => s && s.status === 'filled').length;
+
             // Hide empty state in sidebar
             document.getElementById('sidebarEmptyState').style.display = 'none';
-            document.getElementById('sidebarTotalEmployees').textContent = count;
+            document.getElementById('sidebarTotalEmployees').textContent = filledCount;
+
+            // Also dynamically update the Subscription tab sidebar count if it is open
+            const totalSubEmpText = document.getElementById('sidebarTotalEmailIdsEmployees');
+            if (totalSubEmpText) {
+                totalSubEmpText.textContent = filledCount.toString();
+            }
         }
 
         // Dropdown Logic
@@ -7826,6 +8388,7 @@
 
                 const data = await response.json();
                 if (response.ok) {
+                    let successMessage = data.message || 'Invite sent successfully!';
                     if (data.inviteUrl) {
                         try {
                             await navigator.clipboard.writeText(data.inviteUrl);
@@ -7833,24 +8396,43 @@
                         } catch (e) {
                             prompt('Employee added! Copy the invite link below:', data.inviteUrl);
                         }
+                    } else if (data.alreadyExists) {
+                        alert(successMessage);
                     } else {
-                        alert('Invite sent successfully!');
+                        alert(successMessage);
                     }
 
-                    let seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
-                    if (selectedSeatIndex !== null && seats[selectedSeatIndex]) {
-                        seats[selectedSeatIndex] = {
-                            status: 'filled',
-                            firstName,
-                            lastName,
-                            email
-                        };
-                        localStorage.setItem('purchasedSeats', JSON.stringify(seats));
+                    // Optimistically add to purchasedSeats (for new un-registered users)
+                    if (!data.alreadyExists) {
+                        let seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+                        if (selectedSeatIndex !== null && seats[selectedSeatIndex]) {
+                            // If it's a new user, they won't be returned by the DB sync yet, so we put them here
+                            seats[selectedSeatIndex] = {
+                                status: 'filled',
+                                firstName,
+                                lastName,
+                                email,
+                                isOptimistic: true
+                            };
+                            localStorage.setItem('purchasedSeats', JSON.stringify(seats));
+                        }
                     }
+
+                    // Re-sync employees from backend to correctly map existing users or updates
+                    await syncEmployeesFromBackend(currentQuantity);
 
                     document.getElementById('addEmployeeFormModal').classList.remove('active');
-                    populateEmployeeList(currentQuantity);
-                    selectEmployee(selectedSeatIndex);
+
+                    // Find the employee we just added/linked to select them
+                    let updatedSeats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+                    // Look for email match
+                    let newIndex = updatedSeats.findIndex(s => s && s.status === 'filled' && s.email && s.email.toLowerCase() === email.toLowerCase());
+
+                    if (newIndex !== -1) {
+                        selectEmployee(newIndex);
+                    } else if (selectedSeatIndex !== null) {
+                        selectEmployee(selectedSeatIndex);
+                    }
                 } else {
                     alert(data.error || 'Failed to send invite.');
                 }
@@ -7916,26 +8498,32 @@
                         seats[index] = seat;
                         localStorage.setItem('purchasedSeats', JSON.stringify(seats));
 
-                        const isEmployeeAdmin = seat.role === 'admin';
+                        const isEmployeeAdmin = seat.role === 'admin' || seat.role === 'org_owner';
                         const currentRoleTitle = document.getElementById('currentRoleDisplayTitle');
                         const currentRoleDesc = document.getElementById('currentRoleDisplayDesc');
                         const btnRoleUpgrade = document.getElementById('btnRoleUpgrade');
 
                         if (currentRoleTitle && currentRoleDesc && btnRoleUpgrade) {
-                            if (isEmployeeAdmin) {
+                            if (seat.role === 'org_owner') {
+                                currentRoleTitle.textContent = 'Current Role: ORG Owner';
+                                currentRoleDesc.textContent = 'This user is the organization owner and has absolute administrative access.';
+                                btnRoleUpgrade.style.display = 'none'; // Cannot demote ORG Owner
+                            } else if (seat.role === 'admin') {
                                 currentRoleTitle.textContent = 'Current Role: Admin';
                                 currentRoleDesc.textContent = 'This user has full administrative access.';
                                 btnRoleUpgrade.textContent = 'Demote to Employee';
                                 btnRoleUpgrade.className = 'btn-outline-red';
                                 btnRoleUpgrade.style.borderColor = '#e11d48';
                                 btnRoleUpgrade.style.color = '#e11d48';
+                                btnRoleUpgrade.style.display = 'flex';
                             } else {
                                 currentRoleTitle.textContent = 'Current Role: Employee';
-                                currentRoleDesc.textContent = 'This user has limited access.';
+                                currentRoleDesc.textContent = 'This user has limited access based on permissions.';
                                 btnRoleUpgrade.textContent = 'Grant Admin Access';
                                 btnRoleUpgrade.className = 'btn-outline-blue';
                                 btnRoleUpgrade.style.borderColor = '';
                                 btnRoleUpgrade.style.color = '';
+                                btnRoleUpgrade.style.display = 'flex';
                             }
                         }
                     }
@@ -7953,6 +8541,84 @@
         });
 
         // ===== Clients JS Logic =====
+        let currentEditClientIndex = null;
+
+        function openAddClientModal() {
+            currentEditClientIndex = null;
+            document.getElementById('addClientTitle').textContent = 'Enter clients details';
+            const saveBtn = document.getElementById('saveClientBtn');
+            if (saveBtn) saveBtn.textContent = 'Save';
+
+            document.getElementById('newClientName').value = '';
+            document.getElementById('newClientAddress').value = '';
+            document.getElementById('newClientEmail').value = '';
+            document.getElementById('newClientPhone').value = '';
+            openModal('addClientModal');
+        }
+
+        function toggleClientDropdown(event, index) {
+            event.stopPropagation();
+            // Close all first
+            document.querySelectorAll('.client-dropdown').forEach(el => el.style.display = 'none');
+            const dropdown = document.getElementById(`clientDropdown-${index}`);
+            if (dropdown) dropdown.style.display = 'block';
+        }
+
+        window.addEventListener('click', function (e) {
+            if (!e.target.closest('.client-card-kebab')) {
+                document.querySelectorAll('.client-dropdown').forEach(el => el.style.display = 'none');
+            }
+        });
+
+        function editClient(event, index) {
+            event.stopPropagation();
+            document.getElementById(`clientDropdown-${index}`).style.display = 'none';
+
+            const client = clientsList[index];
+            if (!client) return;
+
+            currentEditClientIndex = index;
+            document.getElementById('newClientName').value = client.name || '';
+            document.getElementById('newClientAddress').value = client.address || '';
+            document.getElementById('newClientEmail').value = client.email || '';
+            document.getElementById('newClientPhone').value = client.phone || '';
+
+            document.getElementById('addClientTitle').textContent = 'Edit client details';
+            const saveBtn = document.getElementById('saveClientBtn');
+            if (saveBtn) saveBtn.textContent = 'Save Changes';
+
+            openModal('addClientModal');
+        }
+
+        async function deleteClient(event, index) {
+            event.stopPropagation();
+            document.getElementById(`clientDropdown-${index}`).style.display = 'none';
+
+            const client = clientsList[index];
+            if (!client) return;
+
+            if (!confirm(`Are you sure you want to delete ${client.name}?`)) return;
+
+            try {
+                const response = await fetch('/api/clients/' + encodeURIComponent(client.id), {
+                    method: 'DELETE',
+                    headers: getHeaders()
+                });
+
+                if (response.ok) {
+                    clientsList.splice(index, 1);
+                    localStorage.setItem('safemailzClients', JSON.stringify(clientsList));
+                    renderClients();
+                } else {
+                    const data = await response.json();
+                    alert(data.error || 'Failed to delete client');
+                }
+            } catch (error) {
+                console.error("Error deleting client:", error);
+                alert('Server error deleting client');
+            }
+        }
+
         async function initClients() {
             try {
                 const res = await fetch('/api/clients', { headers: getHeaders() });
@@ -8016,8 +8682,18 @@
                     <div class="client-card">
                         <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.25rem;">
                             <h3 style="font-size: 1.05rem; font-weight: 700; color: #333; margin: 0;">${index + 1}. ${escapeHtml(c.displayName || c.name)}</h3>
-                            <div class="client-card-kebab" style="cursor: pointer; padding: 4px;">
+                            <div class="client-card-kebab" style="position: relative; cursor: pointer; padding: 4px;" onclick="toggleClientDropdown(event, ${index})">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="color: #333;"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
+                                <div class="client-dropdown" id="clientDropdown-${index}" style="display: none; position: absolute; right: 0; top: 100%; background: white; border: 1px solid #E2E8F0; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 100; min-width: 140px; text-align: left; overflow: hidden; padding: 8px 0; font-family: inherit;">
+                                    <div onclick="editClient(event, ${index})" style="padding: 10px 16px; cursor: pointer; font-size: 0.95rem; color: #555; display: flex; align-items: center; gap: 10px; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><path d="M12 20h9"></path><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path></svg>
+                                        Edit
+                                    </div>
+                                    <div onclick="deleteClient(event, ${index})" style="padding: 10px 16px; cursor: pointer; font-size: 0.95rem; color: #555; display: flex; align-items: center; gap: 10px; transition: background 0.2s;" onmouseover="this.style.background='#F8FAFC'" onmouseout="this.style.background='transparent'">
+                                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#666" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" style="width: 16px; height: 16px;"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                                        Delete
+                                    </div>
+                                </div>
                             </div>
                         </div>
                         <div class="client-fields-grid">
@@ -8070,6 +8746,49 @@
             }
 
             try {
+                if (currentEditClientIndex !== null) {
+                    // Update existing client
+                    const client = clientsList[currentEditClientIndex];
+                    const response = await fetch('/api/clients/' + encodeURIComponent(client.id), {
+                        method: 'PUT',
+                        headers: getHeaders(),
+                        body: JSON.stringify({
+                            displayName: name,
+                            name: name,
+                            email: email || '',
+                            address: address || '',
+                            phone: phone || ''
+                        })
+                    });
+
+                    const data = await response.json();
+                    if (response.ok && data.success) {
+                        clientsList[currentEditClientIndex] = {
+                            ...client,
+                            displayName: name,
+                            name: name,
+                            email: email || '',
+                            address: address || '',
+                            phone: phone || ''
+                        };
+                        localStorage.setItem('safemailzClients', JSON.stringify(clientsList));
+
+                        // Clear fields and reset
+                        document.getElementById('newClientName').value = '';
+                        document.getElementById('newClientAddress').value = '';
+                        document.getElementById('newClientEmail').value = '';
+                        document.getElementById('newClientPhone').value = '';
+                        currentEditClientIndex = null;
+
+                        closeModal('addClientModal');
+                        renderClients();
+                    } else {
+                        alert(data.error || 'Failed to update client');
+                    }
+                    return;
+                }
+
+                // Create new client
                 const response = await fetch('/api/clients', {
                     method: 'POST',
                     headers: getHeaders(),
@@ -8113,13 +8832,67 @@
             }
         }
 
+        async function syncEmployeesFromBackend(currentQuantity) {
+            try {
+                const response = await fetch('/api/settings/employees?t=' + new Date().getTime(), {
+                    headers: typeof getHeaders === 'function' ? getHeaders() : {},
+                    cache: 'no-store'
+                });
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success && data.employees) {
+                        let seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+
+                        // Extract any optimistically added users
+                        let dbEmails = data.employees.map(e => e.email.toLowerCase());
+                        let optimistics = seats.filter(s => s && s.status === 'filled' && s.email && s.isOptimistic && !dbEmails.includes(s.email.toLowerCase()));
+
+                        // Reset all seats
+                        seats = [];
+                        while (seats.length < currentQuantity) {
+                            seats.push({ status: 'empty', firstName: '', lastName: '', email: '' });
+                        }
+
+                        // Fill with DB users
+                        let nextSlot = 0;
+                        data.employees.forEach((emp) => {
+                            if (nextSlot < seats.length) {
+                                seats[nextSlot] = {
+                                    status: 'filled',
+                                    firstName: emp.name ? emp.name.split(' ')[0] : 'User',
+                                    lastName: emp.name && emp.name.split(' ').length > 1 ? emp.name.split(' ').slice(1).join(' ') : '',
+                                    email: emp.email,
+                                    role: emp.role
+                                };
+                                nextSlot++;
+                            }
+                        });
+
+                        // Fill remaining slots with optimistics
+                        optimistics.forEach(opt => {
+                            if (nextSlot < seats.length) {
+                                seats[nextSlot] = opt;
+                                nextSlot++;
+                            }
+                        });
+
+                        localStorage.setItem('purchasedSeats', JSON.stringify(seats));
+                    }
+                }
+            } catch (e) { console.error('Error fetching employees:', e); }
+
+            populateEmployeeList(currentQuantity);
+        }
+
         // On page load, restore purchased state
-        document.addEventListener('DOMContentLoaded', () => {
+        document.addEventListener('DOMContentLoaded', async () => {
             renderEmailModule();
             const savedQuantity = localStorage.getItem('purchasedQuantity');
             if (savedQuantity && parseInt(savedQuantity) > 0) {
                 currentQuantity = parseInt(savedQuantity);
-                populateEmployeeList(currentQuantity);
+
+                // Sync real employees from backend into purchasedSeats
+                await syncEmployeesFromBackend(currentQuantity);
             }
 
             // Initialize Clients
@@ -8145,27 +8918,27 @@
                     const user = JSON.parse(userStr);
                     const mappedEmail = user.email || '';
                     const mappedName = user.admin_name || user.email || 'Admin User';
-                    
+
                     try {
                         const emailElement = document.getElementById('sidebarAdminEmail') || document.querySelector('.email-admin-email');
                         if (emailElement) emailElement.textContent = mappedEmail;
-                    } catch(e) {}
-                    
+                    } catch (e) { }
+
                     try {
                         const nameElement = document.getElementById('sidebarAdminName') || document.querySelector('.email-admin-name');
                         if (nameElement) nameElement.textContent = mappedName;
-                    } catch(e) {}
+                    } catch (e) { }
 
                     try {
                         const headerEmail = document.getElementById('headerUserEmail');
                         if (headerEmail) headerEmail.textContent = mappedEmail;
-                    } catch(e) {}
-                    
+                    } catch (e) { }
+
                     try {
                         const headerName = document.getElementById('headerUserName');
                         if (headerName) headerName.textContent = mappedName;
-                    } catch(e) {}
-                    
+                    } catch (e) { }
+
                     try {
                         const headerInitials = document.getElementById('headerUserInitials');
                         if (headerInitials) {
@@ -8176,7 +8949,7 @@
                             }
                             headerInitials.textContent = initials;
                         }
-                    } catch(e) {}
+                    } catch (e) { }
 
                     // Role-based access control
                     try {
@@ -8190,21 +8963,25 @@
                             if (tabEmail) tabEmail.click();
                         } else if (user.role === 'admin' && user.permissions) {
                             if (!user.permissions.addEmployees) {
-                                const t1 = document.getElementById('tabEmployees'); if(t1) t1.style.display = 'none';
-                                const t2 = document.getElementById('tabClients'); if(t2) t2.style.display = 'none';
+                                const t1 = document.getElementById('tabEmployees'); if (t1) t1.style.display = 'none';
+                                const t2 = document.getElementById('tabClients'); if (t2) t2.style.display = 'none';
                             }
                             if (!user.permissions.createProjects && !user.permissions.manageProjects) {
-                                const t1 = document.getElementById('tabProjects'); if(t1) t1.style.display = 'none';
-                                const t2 = document.getElementById('tabTasks'); if(t2) t2.style.display = 'none';
+                                const t1 = document.getElementById('tabProjects'); if (t1) t1.style.display = 'none';
+                                const t2 = document.getElementById('tabTasks'); if (t2) t2.style.display = 'none';
+                            }
+                            if (!user.permissions.createProjects) {
+                                const btnAddProj = document.getElementById('btnAddProject');
+                                if (btnAddProj) btnAddProj.style.display = 'none';
                             }
                             if (!user.permissions.makeAdmin) {
-                                const t1 = document.getElementById('tabAdmins'); if(t1) t1.style.display = 'none';
-                                const t2 = document.getElementById('tabEmailIds'); if(t2) t2.style.display = 'none';
-                                const t3 = document.getElementById('tabSubscription'); if(t3) t3.style.display = 'none';
+                                const t1 = document.getElementById('tabAdmins'); if (t1) t1.style.display = 'none';
+                                const t2 = document.getElementById('tabEmailIds'); if (t2) t2.style.display = 'none';
+                                const t3 = document.getElementById('tabSubscription'); if (t3) t3.style.display = 'none';
                             }
                         }
-                    } catch(e) {}
-                } catch(e) {
+                    } catch (e) { }
+                } catch (e) {
                     console.error("Error binding user info:", e);
                 }
             }
@@ -8342,7 +9119,7 @@
 
             // Restore the last active tab - default to Email view
             const firstTab = document.querySelector('.tab:not([style*="display: none"])') ||
-                             document.getElementById('tabEmail');
+                document.getElementById('tabEmail');
             if (firstTab) firstTab.click();
         }
 
@@ -8500,7 +9277,7 @@
                                     <h3 class="project-card-title-text">${idx + 1}. ${escapeHtml(p.projectName)}</h3>
                                     <span class="project-status-badge ${escapeHtml(p.status.toLowerCase().replace(' ', '-'))}">${escapeHtml(p.status)}</span>
                                 </div>
-                                <div style="color: #64748B; cursor: pointer; font-size: 1.25rem; font-weight: bold; line-height: 1;">
+                                <div style="color: #64748B; cursor: pointer; font-size: 1.25rem; font-weight: bold; line-height: 1;" onclick="openProjectActionMenu(event, '${escapeHtml(p.id)}', '${escapeHtml(p.status)}')">
                                     <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="12" cy="5" r="1"></circle><circle cx="12" cy="19" r="1"></circle></svg>
                                 </div>
                             </div>
@@ -8549,6 +9326,20 @@
         }
 
         function openAddProjectModal() {
+            // Check permissions dynamically
+            try {
+                const userStr = localStorage.getItem('currentUser');
+                if (userStr) {
+                    const user = JSON.parse(userStr);
+                    if (user.role === 'admin' && user.permissions && !user.permissions.createProjects) {
+                        alert("You do not have permission to create projects.");
+                        return;
+                    }
+                }
+            } catch (e) {
+                console.error("Error checking permissions:", e);
+            }
+
             // Populate clients dropdown from clientsList
             const clientSelect = document.getElementById('addProjClient');
             if (clientSelect) {
@@ -8645,9 +9436,13 @@
                     emailIdsSidebar.style.display = 'flex';
                     const totalEmpText = document.getElementById('sidebarTotalEmailIdsEmployees');
                     if (totalEmpText) {
-                        totalEmpText.textContent = '4';
+                        const seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+                        const realCount = seats.filter(s => s && s.status === 'filled').length;
+                        totalEmpText.textContent = realCount.toString();
                     }
                 }
+                // Actually render the employees for the subscription list!
+                renderSubscriptionEmployees();
             } else {
                 if (emailIdsSidebar) emailIdsSidebar.style.display = 'none';
             }
@@ -8664,6 +9459,53 @@
                     card.style.display = 'none';
                 }
             });
+        }
+
+        function renderSubscriptionEmployees() {
+            const container = document.getElementById('subEmployeesCardsContainer');
+            if (!container) return;
+
+            const seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
+            const realEmployees = seats.filter(s => s && s.status === 'filled');
+
+            if (realEmployees.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 2rem;">No active employee subscriptions found.</div>';
+                return;
+            }
+
+            container.innerHTML = realEmployees.map((emp, index) => {
+                const fullName = `${emp.firstName || ''} ${emp.lastName || ''}`.trim() || 'Employee';
+                const role = emp.role || 'employee';
+
+                let tagsHtml = '';
+                if (role === 'admin') {
+                    tagsHtml = `<span class="sub-tag-blue">Admin</span><span class="sub-tag-pink">Free</span>`;
+                } else if (role === 'org_owner') {
+                    tagsHtml = `<span class="sub-tag-purple">ORG Owner</span><span class="sub-tag-pink">Free</span>`;
+                } else {
+                    tagsHtml = `<span class="sub-tag-purple">Ending in 30 days</span>`;
+                }
+
+                return `
+                <div class="sub-employee-card" data-emp-name="${fullName}">
+                    <div class="sub-card-header">
+                        <h3 class="sub-card-name">${index + 1}. ${fullName}</h3>
+                        <div style="display: flex; gap: 0.4rem;">
+                            ${tagsHtml}
+                        </div>
+                    </div>
+                    <div class="sub-card-storage-label">Storage</div>
+                    <div class="sub-card-progress">
+                        <div class="sub-card-progress-bar" style="width: 50%;"></div>
+                    </div>
+                    <div class="sub-card-storage-text">2.5 GB of 5 GB Used</div>
+                    <div class="sub-card-actions">
+                        <button class="btn-sub-buy" onclick="subBuyStorage('${fullName}')">Buy storage</button>
+                        <button class="btn-sub-renew" onclick="subRenewEmployee('${fullName}')">Renew</button>
+                    </div>
+                </div>
+                `;
+            }).join('');
         }
 
         function subRenewEmployee(name) {
@@ -9430,6 +10272,12 @@
                 const seats = JSON.parse(localStorage.getItem('purchasedSeats')) || [];
                 const seat = seats[currentProfileIndex];
                 if (!seat || !seat.email) return;
+
+                if (seat.role === 'org_owner') {
+                    alert("You cannot change the role of the Organization Owner.");
+                    return;
+                }
+
                 targetEmail = seat.email;
                 targetName = seat.firstName || targetEmail.split('@')[0];
                 isCurrentlyAdmin = seat.role === 'admin';
@@ -9673,6 +10521,799 @@
                 }
             }
         })();
+    </script>
+    <!-- Folder Context Menu -->
+    <div class="folder-dropdown-menu" id="folderContextMenu"></div>
+
+    <!-- Email Context Menu -->
+    <div class="email-context-menu" id="emailContextMenu"></div>
+
+    <script>
+        document.addEventListener('click', (e) => {
+            const emailContextMenu = document.getElementById('emailContextMenu');
+            if (emailContextMenu && !emailContextMenu.contains(e.target)) {
+                emailContextMenu.classList.remove('show');
+            }
+        });
+
+        document.addEventListener('keydown', (e) => {
+            const emailContextMenu = document.getElementById('emailContextMenu');
+            if (e.key === 'Escape' && emailContextMenu) emailContextMenu.classList.remove('show');
+        });
+
+        window.openEmailContextMenu = function (e, mail) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            const emailContextMenu = document.getElementById('emailContextMenu');
+            
+            let customFolders = [];
+            try {
+                customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
+            } catch(e) {}
+            
+            const childFolders = customFolders.filter(f => f.parentId === mail.folder || f.parentId === 'folder:' + mail.folder);
+            const foldersListItems = childFolders.map(f => ({
+                id: f.id,
+                name: f.name
+            }));
+
+            const arrowIcon = '<svg class="email-context-submenu-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
+
+            const renderSubmenu = (items) => {
+                if (!items || items.length === 0) {
+                    return '<div class="email-context-submenu-container"><div class="email-context-item disabled"><div class="email-context-label" style="padding-left: 12px; color: #a19f9d;">No subfolders</div></div></div>';
+                }
+                return '<div class="email-context-submenu-container">' + items.map(item => `
+                    <div class="email-context-item ${item.disabled ? 'disabled' : ''}" onclick="${item.disabled ? '' : item.actionStr}">
+                        <div class="email-context-icon">${item.icon || ''}</div>
+                        <div class="email-context-label">${item.label}</div>
+                    </div>
+                `).join('') + '</div>';
+            };
+
+            const options = [
+                {
+                    label: 'Reply',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>',
+                    action: () => { openReplyModal(mail); }
+                },
+                {
+                    label: 'Reply all',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="7 17 2 12 7 7"></polyline><polyline points="13 17 8 12 13 7"></polyline><path d="M22 18v-2a4 4 0 0 0-4-4H8"></path></svg>',
+                    action: () => { openReplyModal(mail, true); }
+                },
+                {
+                    label: 'Forward',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 17 20 12 15 7"></polyline><path d="M4 18v-2a4 4 0 0 1 4-4h12"></path></svg>',
+                    action: () => { if (typeof showToast === 'function') showToast('Forward functionality simulated.'); }
+                },
+                { divider: true },
+                {
+                    label: 'Delete',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
+                    action: () => { 
+                        mail.folder = 'deleted';
+                        document.getElementById('emailRow-' + mail.id)?.remove();
+                        if (typeof showToast === 'function') showToast('Email moved to Deleted Items.');
+                    }
+                },
+                {
+                    label: 'Archive',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>',
+                    action: () => { 
+                        mail.folder = 'archive';
+                        document.getElementById('emailRow-' + mail.id)?.remove();
+                        if (typeof showToast === 'function') showToast('Email archived.');
+                    }
+                },
+                { divider: true },
+                {
+                    label: 'Move',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu(foldersListItems.map(f => ({
+                        label: f.name,
+                        actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); moveEmail('${mail.id}', '${f.id}'); })()`
+                    })))
+                },
+                {
+                    label: 'Copy',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu(foldersListItems.map(f => ({
+                        label: f.name,
+                        actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); copyEmail('${mail.id}', '${f.id}'); })()`
+                    })))
+                },
+                { divider: true },
+                {
+                    label: mail.read ? 'Mark as unread' : 'Mark as read',
+                    icon: mail.read ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"></path><polyline points="22,6 12,13 2,6"></polyline><polyline points="16 21 18 23 22 19"></polyline></svg>',
+                    action: () => { 
+                        mail.read = !mail.read; 
+                        const row = document.getElementById('emailRow-' + mail.id);
+                        if (row) {
+                            row.classList.toggle('read', mail.read);
+                            row.classList.toggle('unread', !mail.read);
+                        }
+                    }
+                },
+                { divider: true },
+                {
+                    label: 'Pin',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="17" x2="12" y2="22"></line><path d="M5 17h14v-1.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.68V6a3 3 0 0 0-3-3 3 3 0 0 0-3 3v4.68a2 2 0 0 1-1.11 1.87l-1.78.89A2 2 0 0 0 5 15.24Z"></path></svg>',
+                    action: () => { if (typeof showToast === 'function') showToast('Email pinned.'); }
+                },
+                {
+                    label: 'Categorize',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+                    hasSubmenu: true,
+                    submenuContent: `
+                        <div class="email-context-submenu-container" style="width: 220px; padding-top: 0;">
+                            <div style="padding: 8px 12px; border-bottom: 1px solid #edebe9; margin-bottom: 4px;">
+                                <input type="text" placeholder="Search for a category" style="width: 100%; box-sizing: border-box; padding: 4px 8px; font-size: 13px; border: 1px solid #c8c6c4; border-radius: 2px;">
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', 'blue');">
+                                <div class="email-context-icon" style="color: #0078d4;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                <div class="email-context-label">Blue category</div>
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', 'green');">
+                                <div class="email-context-icon" style="color: #107c10;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                <div class="email-context-label">Green category</div>
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', 'orange');">
+                                <div class="email-context-icon" style="color: #d83b01;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                <div class="email-context-label">Orange category</div>
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', 'purple');">
+                                <div class="email-context-icon" style="color: #5c2d91;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                <div class="email-context-label">Purple category</div>
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', 'red');">
+                                <div class="email-context-icon" style="color: #a4262c;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                <div class="email-context-label">Red category</div>
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', 'yellow');">
+                                <div class="email-context-icon" style="color: #8a6a00;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                <div class="email-context-label">Yellow category</div>
+                            </div>
+                            <div class="email-context-separator"></div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); if (typeof showToast === 'function') showToast('New category creation simulated');">
+                                <div class="email-context-label" style="padding-left: 28px;">New category</div>
+                            </div>
+                            <div class="email-context-separator"></div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); setCategory('${mail.id}', null);">
+                                <div class="email-context-label" style="padding-left: 28px;">Clear all categories</div>
+                            </div>
+                            <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); if (typeof showToast === 'function') showToast('Manage categories simulated');">
+                                <div class="email-context-label" style="padding-left: 28px;">Manage categories</div>
+                            </div>
+                        </div>
+                    `
+                },
+                {
+                    label: 'Flag',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>',
+                    action: () => { if (typeof showToast === 'function') showToast('Email flagged.'); }
+                },
+                {
+                    label: 'Snooze',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Later today', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); snoozeEmail('${mail.id}', 'Later today'); })()` },
+                        { label: 'Tomorrow', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); snoozeEmail('${mail.id}', 'Tomorrow'); })()` },
+                        { label: 'This weekend', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); snoozeEmail('${mail.id}', 'This weekend'); })()` },
+                        { label: 'Next week', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); snoozeEmail('${mail.id}', 'Next week'); })()` }
+                    ])
+                },
+                {
+                    label: 'Rules',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><line x1="9" y1="3" x2="9" y2="21"></line></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Create rule...', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Rule created.'); })()` }
+                    ])
+                },
+                { divider: true },
+                {
+                    label: 'Report',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Report phishing', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Email reported as phishing.'); })()` },
+                        { label: 'Report junk', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Email reported as junk.'); })()` }
+                    ])
+                },
+                {
+                    label: 'Block',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Block sender', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Sender blocked.'); })()` }
+                    ])
+                },
+                {
+                    label: 'Ignore',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a10 10 0 1 0 10 10H12V2z"></path><path d="M22 12A10 10 0 0 0 12 2v10z"></path></svg>',
+                    action: () => { if (typeof showToast === 'function') showToast('Conversation ignored.'); }
+                },
+                { divider: true },
+                {
+                    label: 'Save as',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path><polyline points="17 21 17 13 7 13 7 21"></polyline><polyline points="7 3 7 8 15 8"></polyline></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Save as PDF', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Saving as PDF...'); })()` },
+                        { label: 'Save attachments', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Saving attachments...'); })()` }
+                    ])
+                },
+                {
+                    label: 'Find related',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Messages from sender', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Finding related messages...'); })()` }
+                    ])
+                },
+                {
+                    label: 'View',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'View message details', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Viewing details...'); })()` }
+                    ])
+                },
+                {
+                    label: 'Advanced actions',
+                    icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>',
+                    hasSubmenu: true,
+                    submenuContent: renderSubmenu([
+                        { label: 'Create meeting', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Meeting creation started...'); })()` }
+                    ])
+                }
+            ];
+
+            emailContextMenu.innerHTML = options.map((opt, i) => {
+                if (opt.divider) return '<div class="email-context-separator"></div>';
+                
+                let submenuHtml = '';
+                if (opt.hasSubmenu) {
+                    submenuHtml = opt.submenuContent || '';
+                }
+                
+                return `
+                    <div class="email-context-item ${opt.disabled ? 'disabled' : ''}" data-idx="${i}">
+                        <div class="email-context-icon">${opt.icon || ''}</div>
+                        <div class="email-context-label">${opt.label}</div>
+                        ${opt.hasSubmenu ? arrowIcon : ''}
+                        ${submenuHtml}
+                    </div>
+                `;
+            }).join('');
+
+            // Add click listeners to items
+            emailContextMenu.querySelectorAll('.email-context-item').forEach(item => {
+                item.addEventListener('click', (ev) => {
+                    const idx = item.getAttribute('data-idx');
+                    if (idx !== null && options[idx] && options[idx].action && !options[idx].disabled) {
+                        options[idx].action();
+                        emailContextMenu.classList.remove('show');
+                    }
+                    if (options[idx] && options[idx].hasSubmenu) {
+                        ev.stopPropagation(); // prevent closing immediately if it's a submenu parent
+                    }
+                });
+            });
+
+            // Positioning
+            emailContextMenu.style.display = 'block'; // temp to get dimensions
+            const menuWidth = 220; // from CSS
+            const menuHeight = emailContextMenu.offsetHeight;
+            emailContextMenu.style.display = '';
+
+            let x = e.pageX;
+            let y = e.pageY;
+
+            // Ensure it doesn't go off-screen
+            if (x + menuWidth > window.innerWidth) x = window.innerWidth - menuWidth - 5;
+            if (y + menuHeight > window.innerHeight) y = window.innerHeight - menuHeight - 5;
+
+            emailContextMenu.style.left = x + 'px';
+            emailContextMenu.style.top = y + 'px';
+            emailContextMenu.classList.add('show');
+        };
+
+        // Helper functions for context menu actions
+        window.moveEmail = async function(mailId, folderId) {
+            try {
+                const targetFolder = folderId.startsWith('folder:') ? folderId.split(':')[1] : folderId;
+                const response = await fetch('/api/emails/' + mailId + '/status', {
+                    method: 'PUT',
+                    headers: getHeaders(),
+                    body: JSON.stringify({ folder: targetFolder })
+                });
+                if (response.ok) {
+                    const row = document.getElementById('emailRow-' + mailId);
+                    if (row) row.remove();
+                    if (typeof currentOpenEmailId !== 'undefined' && currentOpenEmailId === mailId) {
+                        const col = document.getElementById('mailReadingColumn');
+                        if (col) col.style.display = 'none';
+                        currentOpenEmailId = null;
+                    }
+                    if (typeof showToast === 'function') showToast('Email moved.');
+                } else {
+                    if (typeof showToast === 'function') showToast('Failed to move email.');
+                }
+            } catch (e) {
+                console.error(e);
+                if (typeof showToast === 'function') showToast('Failed to move email.');
+            }
+        };
+
+        window.copyEmail = function(mailId, folderId) {
+            if (typeof showToast === 'function') showToast('Email copied (simulated).');
+        };
+
+        window.setCategory = function(mailId, categoryColor) {
+            let categories = JSON.parse(localStorage.getItem('emailCategories') || '{}');
+            if (categoryColor) {
+                if (!categories[mailId]) categories[mailId] = [];
+                if (!categories[mailId].includes(categoryColor)) {
+                    categories[mailId].push(categoryColor);
+                }
+            } else {
+                categories[mailId] = [];
+            }
+            localStorage.setItem('emailCategories', JSON.stringify(categories));
+
+            const row = document.getElementById('emailRow-' + mailId);
+            if (row) {
+                row.style.borderLeft = '';
+                
+                let catsContainer = row.querySelector('.mail-categories');
+                if (!catsContainer) {
+                    catsContainer = document.createElement('div');
+                    catsContainer.className = 'mail-categories';
+                    const preview = row.querySelector('.mail-preview');
+                    if (preview) {
+                        preview.parentNode.insertBefore(catsContainer, preview.nextSibling);
+                    }
+                }
+                
+                catsContainer.innerHTML = '';
+                if (categories[mailId] && categories[mailId].length > 0) {
+                    categories[mailId].forEach(c => {
+                        const tag = document.createElement('span');
+                        tag.className = `mail-category-tag category-${c}`;
+                        tag.textContent = c.charAt(0).toUpperCase() + c.slice(1) + ' category';
+                        catsContainer.appendChild(tag);
+                    });
+                }
+            }
+
+            // Also update the reading pane if this email is currently open
+            if (typeof currentOpenEmailId !== 'undefined' && currentOpenEmailId === mailId) {
+                const readingCats = document.getElementById('readingCategories');
+                if (readingCats) {
+                    readingCats.innerHTML = '';
+                    if (categories[mailId] && categories[mailId].length > 0) {
+                        categories[mailId].forEach(c => {
+                            const tag = document.createElement('span');
+                            tag.className = `mail-category-tag category-${c}`;
+                            tag.textContent = c.charAt(0).toUpperCase() + c.slice(1) + ' category';
+                            readingCats.appendChild(tag);
+                        });
+                    }
+                }
+            }
+        };
+
+        window.snoozeEmail = function(mailId, time) {
+            const row = document.getElementById('emailRow-' + mailId);
+            if (row) row.remove();
+            if (typeof showToast === 'function') showToast(`Email snoozed until ${time}.`);
+        };
+    </script>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            try {
+                let customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
+                if (customFolders && customFolders.length > 0) {
+                    const foldersList = document.getElementById('foldersList');
+                    if (foldersList) {
+                        const renderFolder = (folder) => {
+                            let parentEl = foldersList.querySelector(`[data-email-filter="${folder.parentId}"]`);
+                            if (!parentEl) parentEl = foldersList.querySelector(`[data-email-filter="folder:inbox"]`);
+                            if (parentEl) {
+                                const li = document.createElement('li');
+                                li.className = 'email-folder';
+                                li.style.setProperty('padding-left', (folder.paddingLeft || 27) + 'px', 'important');
+                                li.dataset.emailFilter = folder.id;
+                                li.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> ' + folder.name;
+                                li.onclick = () => switchEmailFolder(li.dataset.emailFilter);
+                                parentEl.after(li);
+                            }
+                        };
+                        customFolders.forEach(folder => renderFolder(folder));
+                    }
+                }
+            } catch (e) {
+                console.error("Error loading custom folders:", e);
+            }
+
+            const folders = document.querySelectorAll('.email-folder-list li');
+            folders.forEach(folder => {
+                if (folder.classList.contains('create-folder')) return;
+
+                const btn = document.createElement('div');
+                btn.className = 'folder-more-btn';
+                btn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>`;
+
+                folder.style.display = 'flex';
+                folder.style.alignItems = 'center';
+
+                const badge = folder.querySelector('.folder-badge');
+                if (badge) {
+                    folder.insertBefore(btn, badge.nextSibling);
+                } else {
+                    folder.appendChild(btn);
+                }
+
+                btn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    openFolderContextMenu(e, folder);
+                });
+            });
+
+            const contextMenu = document.getElementById('folderContextMenu');
+
+            document.addEventListener('click', (e) => {
+                if (!contextMenu.contains(e.target)) {
+                    contextMenu.classList.remove('show');
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape') contextMenu.classList.remove('show');
+            });
+
+            window.openFolderContextMenu = function (e, folderEl) {
+                const folderId = folderEl.getAttribute('data-email-filter') || 'folder';
+                let folderName = '';
+                folderEl.childNodes.forEach(n => { if (n.nodeType === 3) folderName += n.textContent; });
+                folderName = folderName.trim();
+
+                const options = [
+                    {
+                        label: 'Create new subfolder', icon: '<path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path><line x1="12" y1="11" x2="12" y2="17"></line><line x1="9" y1="14" x2="15" y2="14"></line>', action: () => {
+                            let parentPadding = 16;
+                            if (folderEl.style.paddingLeft) {
+                                parentPadding = parseInt(folderEl.style.paddingLeft);
+                            } else {
+                                // try computed style if no inline style
+                                const comp = window.getComputedStyle(folderEl).paddingLeft;
+                                if (comp) parentPadding = parseInt(comp) || 16;
+                            }
+                            const childPadding = parentPadding + 11;
+
+                            const inputLi = document.createElement('li');
+                            inputLi.className = 'email-folder subfolder-input-row';
+                            inputLi.style.setProperty('padding-left', childPadding + 'px', 'important');
+                            inputLi.style.display = 'flex';
+                            inputLi.style.alignItems = 'center';
+                            inputLi.style.gap = '8px';
+                            inputLi.style.backgroundColor = 'transparent';
+                            inputLi.style.borderLeft = '3px solid transparent';
+
+                            inputLi.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <input type="text" class="subfolder-inline-input" style="flex:1; padding:4px 6px; border:1px solid var(--border-accent); border-radius:4px; outline:none; font-size:13px; min-width:0; background:#fff; color:var(--text-primary);" placeholder="Name">
+                            <svg class="subfolder-confirm-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg class="subfolder-cancel-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                        `;
+
+                            folderEl.after(inputLi);
+                            const input = inputLi.querySelector('input');
+                            input.focus();
+
+                            const finalize = (name) => {
+                                name = name.trim();
+                                if (name) {
+                                    const li = document.createElement('li');
+                                    li.className = 'email-folder';
+                                    li.style.setProperty('padding-left', childPadding + 'px', 'important');
+                                    li.dataset.emailFilter = 'folder:' + name.toLowerCase();
+                                    li.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg> ' + name;
+                                    li.onclick = () => switchEmailFolder(li.dataset.emailFilter);
+
+                                    const btn = document.createElement('div');
+                                    btn.className = 'folder-more-btn';
+                                    btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>';
+                                    li.style.display = 'flex';
+                                    li.style.alignItems = 'center';
+                                    li.appendChild(btn);
+                                    btn.addEventListener('click', (ev) => { ev.stopPropagation(); openFolderContextMenu(ev, li); });
+
+                                    inputLi.replaceWith(li);
+                                    
+                                    try {
+                                        let customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
+                                        customFolders.push({
+                                            id: li.dataset.emailFilter,
+                                            name: name,
+                                            parentId: folderId,
+                                            paddingLeft: childPadding
+                                        });
+                                        localStorage.setItem(getEmployeeStoreKey('customFolders'), JSON.stringify(customFolders));
+                                    } catch (e) { console.error("Error saving folder:", e); }
+                                } else {
+                                    inputLi.remove();
+                                }
+                            };
+
+                            inputLi.querySelector('.subfolder-confirm-btn').onclick = (ev) => { ev.stopPropagation(); finalize(input.value); };
+                            inputLi.querySelector('.subfolder-cancel-btn').onclick = (ev) => { ev.stopPropagation(); inputLi.remove(); };
+
+                            input.onkeydown = (ev) => {
+                                if (ev.key === 'Enter') finalize(input.value);
+                                if (ev.key === 'Escape') inputLi.remove();
+                            };
+                            input.onclick = (ev) => ev.stopPropagation();
+                        }
+                    },
+                    {
+                        label: 'Rename', icon: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>', disabled: ['folder:inbox', 'folder:sent', 'folder:drafts', 'folder:deleted', 'folder:junk', 'folder:archive', 'folder:notes', 'folder:conversation'].includes(folderId), action: () => {
+                            const inputLi = document.createElement('li');
+                            inputLi.className = 'email-folder subfolder-input-row';
+                            
+                            let parentPadding = 16;
+                            if (folderEl.style.paddingLeft) {
+                                parentPadding = parseInt(folderEl.style.paddingLeft);
+                            } else {
+                                const comp = window.getComputedStyle(folderEl).paddingLeft;
+                                if (comp) parentPadding = parseInt(comp) || 16;
+                            }
+                            inputLi.style.setProperty('padding-left', parentPadding + 'px', 'important');
+                            inputLi.style.display = 'flex';
+                            inputLi.style.alignItems = 'center';
+                            inputLi.style.gap = '8px';
+                            inputLi.style.backgroundColor = 'transparent';
+                            inputLi.style.borderLeft = '3px solid transparent';
+
+                            inputLi.innerHTML = `
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <input type="text" class="subfolder-inline-input" style="flex:1; padding:4px 6px; border:1px solid var(--border-accent); border-radius:4px; outline:none; font-size:13px; min-width:0; background:#fff; color:var(--text-primary);" value="${folderName}">
+                            <svg class="rename-confirm-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg class="rename-cancel-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            `;
+
+                            folderEl.after(inputLi);
+                            const originalDisplay = folderEl.style.display;
+                            folderEl.style.display = 'none';
+                            
+                            const input = inputLi.querySelector('input');
+                            input.focus();
+                            input.select();
+
+                            const finalize = (name) => {
+                                name = (name || '').trim();
+                                if (name && name !== folderName) {
+                                    folderEl.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.trim().length > 0) n.textContent = ' ' + name + ' '; });
+                                    
+                                    const oldId = folderEl.dataset.emailFilter;
+                                    const newId = 'folder:' + name.toLowerCase();
+                                    folderEl.dataset.emailFilter = newId;
+                                    folderEl.onclick = () => switchEmailFolder(newId);
+
+                                    try {
+                                        let customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
+                                        const fIdx = customFolders.findIndex(f => f.id === oldId);
+                                        if (fIdx > -1) {
+                                            customFolders[fIdx].id = newId;
+                                            customFolders[fIdx].name = name;
+                                            localStorage.setItem(getEmployeeStoreKey('customFolders'), JSON.stringify(customFolders));
+                                        }
+                                    } catch (e) { console.error("Error renaming folder:", e); }
+                                }
+                                inputLi.remove();
+                                folderEl.style.display = originalDisplay;
+                            };
+
+                            inputLi.querySelector('.rename-confirm-btn').onclick = (ev) => { ev.stopPropagation(); finalize(input.value); };
+                            inputLi.querySelector('.rename-cancel-btn').onclick = (ev) => { ev.stopPropagation(); finalize(null); };
+
+                            input.onkeydown = (ev) => {
+                                if (ev.key === 'Enter') finalize(input.value);
+                                if (ev.key === 'Escape') finalize(null);
+                            };
+                            input.onclick = (ev) => ev.stopPropagation();
+                        }
+                    },
+                    {
+                        label: 'Change color', keepMenuOpen: true, icon: '<circle cx="13.5" cy="6.5" r=".5"></circle><circle cx="17.5" cy="10.5" r=".5"></circle><circle cx="8.5" cy="7.5" r=".5"></circle><circle cx="6.5" cy="12.5" r=".5"></circle><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10c1.38 0 2.5-1.12 2.5-2.5 0-.61-.23-1.16-.59-1.59-.32-.39-.51-.83-.51-1.31 0-1.24 1.01-2.25 2.25-2.25h2.85c2.76 0 5-2.24 5-5 0-4.42-4.03-8-9-8z"></path>', hasSubmenu: true, action: (ev, itemEl) => {
+                            let palette = document.getElementById('colorPaletteMenu');
+                            if (!palette) {
+                                palette = document.createElement('div');
+                                palette.id = 'colorPaletteMenu';
+                                palette.className = 'color-palette-menu';
+                                palette.innerHTML = `
+                                <div class="color-palette-auto" data-color="auto">Automatic</div>
+                                <div class="color-grid">
+                                    <div class="color-swatch" style="background-color: #ef4444;" data-color="#ef4444"></div>
+                                    <div class="color-swatch" style="background-color: #f97316;" data-color="#f97316"></div>
+                                    <div class="color-swatch" style="background-color: #f59e0b;" data-color="#f59e0b"></div>
+                                    <div class="color-swatch" style="background-color: #84cc16;" data-color="#84cc16"></div>
+                                    <div class="color-swatch" style="background-color: #22c55e;" data-color="#22c55e"></div>
+                                    <div class="color-swatch" style="background-color: #10b981;" data-color="#10b981"></div>
+                                    <div class="color-swatch" style="background-color: #06b6d4;" data-color="#06b6d4"></div>
+                                    <div class="color-swatch" style="background-color: #3b82f6;" data-color="#3b82f6"></div>
+                                    <div class="color-swatch" style="background-color: #6366f1;" data-color="#6366f1"></div>
+                                    <div class="color-swatch" style="background-color: #8b5cf6;" data-color="#8b5cf6"></div>
+                                    <div class="color-swatch" style="background-color: #d946ef;" data-color="#d946ef"></div>
+                                    <div class="color-swatch" style="background-color: #f43f5e;" data-color="#f43f5e"></div>
+                                    <div class="color-swatch" style="background-color: #64748b;" data-color="#64748b"></div>
+                                    <div class="color-swatch" style="background-color: #52525b;" data-color="#52525b"></div>
+                                    <div class="color-swatch" style="background-color: #1e293b;" data-color="#1e293b"></div>
+                                </div>
+                            `;
+                                document.body.appendChild(palette);
+                            }
+
+                            const closePalette = (e) => {
+                                if (!palette.contains(e.target) && !itemEl.contains(e.target)) {
+                                    palette.classList.remove('show');
+                                    document.removeEventListener('click', closePalette);
+                                }
+                            };
+
+                            setTimeout(() => document.addEventListener('click', closePalette), 10);
+
+                            const rect = itemEl.getBoundingClientRect();
+                            palette.style.top = (rect.top + window.scrollY) + 'px';
+                            palette.style.left = (rect.right + window.scrollX + 5) + 'px';
+                            palette.classList.add('show');
+
+                            const menuRect = palette.getBoundingClientRect();
+                            if (menuRect.right > window.innerWidth) {
+                                palette.style.left = (rect.left + window.scrollX - menuRect.width - 5) + 'px';
+                            }
+
+                            palette.onclick = (e) => {
+                                const swatch = e.target.closest('.color-swatch, .color-palette-auto');
+                                if (swatch) {
+                                    e.stopPropagation();
+                                    const color = swatch.getAttribute('data-color');
+                                    if (color === 'auto') {
+                                        folderEl.style.color = '';
+                                        const svg = folderEl.querySelector('svg:first-child');
+                                        if (svg) svg.style.color = '';
+                                    } else {
+                                        folderEl.style.color = color;
+                                        const svg = folderEl.querySelector('svg:first-child');
+                                        if (svg) svg.style.color = color;
+                                    }
+                                    palette.classList.remove('show');
+                                    document.getElementById('folderContextMenu').classList.remove('show');
+                                    document.removeEventListener('click', closePalette);
+                                }
+                            };
+                        }
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'Move', icon: '<polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line>', disabled: ['folder:inbox'].includes(folderId), action: () => {
+                            const target = prompt('Enter name of folder to move to:');
+                            if (target && typeof showToast === 'function') showToast(folderName + ' moved to ' + target + '.');
+                        }
+                    },
+                    {
+                        label: 'Delete', icon: '<polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>', disabled: ['folder:inbox', 'folder:sent', 'folder:drafts', 'folder:deleted', 'folder:junk', 'folder:archive', 'folder:notes', 'folder:conversation'].includes(folderId), action: () => {
+                            if (confirm('Are you sure you want to delete ' + folderName + '?')) {
+                                folderEl.remove();
+                                
+                                try {
+                                    let customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
+                                    customFolders = customFolders.filter(f => f.id !== folderId);
+                                    
+                                    const recursiveDelete = (parentId) => {
+                                        const children = customFolders.filter(f => f.parentId === parentId);
+                                        children.forEach(c => {
+                                            customFolders = customFolders.filter(f => f.id !== c.id);
+                                            const childEl = document.querySelector(`[data-email-filter="${c.id}"]`);
+                                            if (childEl) childEl.remove();
+                                            recursiveDelete(c.id);
+                                        });
+                                    };
+                                    recursiveDelete(folderId);
+                                    
+                                    localStorage.setItem(getEmployeeStoreKey('customFolders'), JSON.stringify(customFolders));
+                                } catch (e) { console.error("Error deleting folder:", e); }
+                                
+                                if (typeof showToast === 'function') showToast(folderName + ' deleted.');
+                            }
+                        }
+                    },
+                    {
+                        label: 'Empty', icon: '<path d="M3 6h18"></path><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"></path><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line>', disabled: !['folder:deleted', 'folder:junk'].includes(folderId), action: () => {
+                            if (confirm('Are you sure you want to permanently delete all items in ' + folderName + '?')) {
+                                if (typeof showToast === 'function') showToast('Folder ' + folderName + ' has been emptied.');
+                                const badge = folderEl.querySelector('.folder-badge');
+                                if (badge) { badge.textContent = '0'; badge.style.display = 'none'; }
+                            }
+                        }
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'Mark all as read', icon: '<polyline points="20 6 9 17 4 12"></polyline>', action: () => {
+                            if (typeof showToast === 'function') showToast('All items in ' + folderName + ' marked as read.');
+                        }
+                    },
+                    {
+                        label: 'Remove from Favorites', icon: '<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>', action: () => {
+                            folderEl.style.display = 'none';
+                            if (typeof showToast === 'function') showToast(folderName + ' removed from favorites.');
+                        }
+                    },
+                    { type: 'separator' },
+                    {
+                        label: 'Move up', icon: '<line x1="12" y1="19" x2="12" y2="5"></line><polyline points="5 12 12 5 19 12"></polyline>', action: () => {
+                            const prev = folderEl.previousElementSibling;
+                            if (prev && !prev.classList.contains('email-sidebar-title') && !prev.classList.contains('create-folder')) {
+                                folderEl.parentNode.insertBefore(folderEl, prev);
+                            }
+                        }
+                    },
+                    {
+                        label: 'Move down', icon: '<line x1="12" y1="5" x2="12" y2="19"></line><polyline points="19 12 12 19 5 12"></polyline>', action: () => {
+                            const next = folderEl.nextElementSibling;
+                            if (next) folderEl.parentNode.insertBefore(next, folderEl);
+                        }
+                    },
+                    { type: 'separator' },
+                    { label: 'Open in new window', icon: '<path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path><polyline points="15 3 21 3 21 9"></polyline><line x1="10" y1="14" x2="21" y2="3"></line>', action: () => window.open(window.location.href, '_blank') },
+                ];
+
+                contextMenu.innerHTML = options.map(opt => {
+                    if (opt.type === 'separator') return '<div class="folder-dropdown-separator"></div>';
+
+                    const cls = opt.disabled ? 'folder-dropdown-item disabled' : 'folder-dropdown-item';
+                    const icon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${opt.icon}</svg>`;
+                    const arrow = opt.hasSubmenu ? `<svg style="margin-left:auto; width:14px; height:14px;" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>` : '';
+
+                    return `<div class="${cls}" data-action="${opt.label}">${icon}<span>${opt.label}</span>${arrow}</div>`;
+                }).join('');
+
+                const items = contextMenu.querySelectorAll('.folder-dropdown-item:not(.disabled)');
+                items.forEach(item => {
+                    item.addEventListener('click', (ev) => {
+                        ev.stopPropagation();
+                        const actionLabel = item.getAttribute('data-action');
+                        const opt = options.find(o => o.label === actionLabel);
+                        if (!(opt && opt.keepMenuOpen)) {
+                            contextMenu.classList.remove('show');
+                        }
+                        if (opt && opt.action) opt.action(ev, item);
+                    });
+                });
+
+                const btnRect = e.target.closest('.folder-more-btn').getBoundingClientRect();
+                contextMenu.style.top = (btnRect.top + window.scrollY) + 'px';
+                contextMenu.style.left = (btnRect.right + window.scrollX + 5) + 'px';
+
+                contextMenu.classList.add('show');
+
+                const menuRect = contextMenu.getBoundingClientRect();
+                if (menuRect.bottom > window.innerHeight) {
+                    contextMenu.style.top = (btnRect.bottom + window.scrollY - menuRect.height) + 'px';
+                }
+                if (menuRect.right > window.innerWidth) {
+                    contextMenu.style.left = (btnRect.left + window.scrollX - menuRect.width - 5) + 'px';
+                }
+            };
+        });
     </script>
 </body>
 

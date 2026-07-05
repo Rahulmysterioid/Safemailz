@@ -39,6 +39,26 @@ function getGmailBody(payload) {
     return '';
 }
 
+// Extract attachments recursively from Google Payload
+function extractGoogleAttachments(payload) {
+    let attachments = [];
+    if (!payload) return attachments;
+    
+    if (payload.filename && payload.body && payload.body.attachmentId) {
+        attachments.push({
+            filename: payload.filename,
+            mimeType: payload.mimeType,
+            attachmentId: payload.body.attachmentId
+        });
+    }
+    if (payload.parts) {
+        for (const part of payload.parts) {
+            attachments = attachments.concat(extractGoogleAttachments(part));
+        }
+    }
+    return attachments;
+}
+
 // -----------------------------------------------------------------------------------
 // OAUTH CALLBACKS
 // -----------------------------------------------------------------------------------
@@ -298,6 +318,29 @@ async function syncGoogleEmails(user, accessToken) {
                         [insertResult.lastID, user.id, user.organization_id, isRead]
                     );
 
+                    const gAttachments = extractGoogleAttachments(msgData.payload);
+                    for (const att of gAttachments) {
+                        try {
+                            const attRes = await fetch(`https://gmail.googleapis.com/gmail/v1/users/me/messages/${msg.id}/attachments/${att.attachmentId}`, {
+                                headers: { 'Authorization': `Bearer ${accessToken}` }
+                            });
+                            if (attRes.ok) {
+                                const attData = await attRes.json();
+                                if (attData.data) {
+                                    let base64Data = attData.data.replace(/-/g, '+').replace(/_/g, '/');
+                                    // Use length of base64 data to approximate size if not provided
+                                    let size = attData.size || Math.floor((base64Data.length * 3) / 4);
+                                    await dbRun(
+                                        `INSERT INTO email_attachments (email_id, filename, content_type, size, data) VALUES (?, ?, ?, ?, ?)`,
+                                        [insertResult.lastID, att.filename, att.mimeType, size, base64Data]
+                                    );
+                                }
+                            }
+                        } catch (attErr) {
+                            console.error('Error fetching Google attachment:', attErr);
+                        }
+                    }
+
                 } catch (msgErr) {
                     console.error("Error processing single message", msg.id, msgErr);
                 }
@@ -319,7 +362,7 @@ async function syncMicrosoftEmails(user, accessToken) {
     });
 
     try {
-        const listResponse = await fetch('https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages?$top=50&$select=id,sender,subject,bodyPreview,body,receivedDateTime,isRead', {
+        const listResponse = await fetch('https://graph.microsoft.com/v1.0/me/mailFolders/Inbox/messages?$top=50&$select=id,sender,subject,bodyPreview,body,receivedDateTime,isRead,hasAttachments', {
             headers: { 'Authorization': `Bearer ${accessToken}` }
         });
         const listData = await listResponse.json();
@@ -362,6 +405,30 @@ async function syncMicrosoftEmails(user, accessToken) {
                         `INSERT INTO email_recipients (email_id, user_id, organization_id, folder, is_read) VALUES (?, ?, ?, 'inbox', ?)`,
                         [insertResult.lastID, user.id, user.organization_id, msg.isRead ? 1 : 0]
                     );
+
+                    if (msg.hasAttachments) {
+                        try {
+                            const attRes = await fetch(`https://graph.microsoft.com/v1.0/me/messages/${msg.id}/attachments`, {
+                                headers: { 'Authorization': `Bearer ${accessToken}` }
+                            });
+                            if (attRes.ok) {
+                                const attData = await attRes.json();
+                                if (attData.value && attData.value.length > 0) {
+                                    for (const att of attData.value) {
+                                        // Ignore item attachments or handle them as needed; focusing on file attachments
+                                        if (att['@odata.type'] === '#microsoft.graph.fileAttachment' && att.contentBytes) {
+                                            await dbRun(
+                                                `INSERT INTO email_attachments (email_id, filename, content_type, size, data) VALUES (?, ?, ?, ?, ?)`,
+                                                [insertResult.lastID, att.name, att.contentType, att.size, att.contentBytes]
+                                            );
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (attErr) {
+                            console.error('Error fetching MS attachment:', attErr);
+                        }
+                    }
                 } catch (msgErr) {
                     console.error("Error processing MS message", msg.id, msgErr);
                 }
