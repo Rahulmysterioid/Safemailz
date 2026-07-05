@@ -908,6 +908,7 @@
         .color-swatch:hover {
             transform: scale(1.1);
         }
+
         .email-context-menu {
             position: absolute;
             background: #ffffff;
@@ -994,7 +995,7 @@
             flex-direction: column;
         }
 
-        .email-context-item:hover > .email-context-submenu-container {
+        .email-context-item:hover>.email-context-submenu-container {
             display: flex;
         }
 
@@ -1014,12 +1015,49 @@
             font-weight: 600;
         }
 
-        .category-blue { background-color: #cce3f5; color: #005a9e; }
-        .category-green { background-color: #dff6dd; color: #107c10; }
-        .category-orange { background-color: #fce1c6; color: #d83b01; }
-        .category-purple { background-color: #e6e0f8; color: #5c2d91; }
-        .category-red { background-color: #fde7e9; color: #a4262c; }
-        .category-yellow { background-color: #fef0cd; color: #8a6a00; }
+        .category-blue {
+            background-color: #cce3f5;
+            color: #005a9e;
+        }
+
+        .category-green {
+            background-color: #dff6dd;
+            color: #107c10;
+        }
+
+        .category-orange {
+            background-color: #fce1c6;
+            color: #d83b01;
+        }
+
+        .category-purple {
+            background-color: #e6e0f8;
+            color: #5c2d91;
+        }
+
+        .category-red {
+            background-color: #fde7e9;
+            color: #a4262c;
+        }
+
+        .category-yellow {
+            background-color: #fef0cd;
+            color: #8a6a00;
+        }
+        .subfolder-inline-input:focus, .subfolder-inline-input:focus-visible {
+            box-shadow: none !important;
+            border-color: var(--primary) !important;
+            outline: none !important;
+        }
+        .subfolder-action-btn {
+            cursor: pointer;
+            flex-shrink: 0;
+            color: #94a3b8;
+            transition: color 0.2s;
+            margin: 0 2px;
+        }
+        .subfolder-action-btn.confirm:hover { color: #10b981; }
+        .subfolder-action-btn.cancel:hover { color: #ef4444; }
     </style>
 </head>
 
@@ -3066,7 +3104,8 @@
                                 <div class="reading-header">
                                     <div class="reading-email-no" id="readingEmailNo"></div>
                                     <h2 class="reading-subject" id="readingSubject"></h2>
-                                    <div id="readingCategories" class="mail-categories" style="margin-top: 8px; margin-bottom: 8px;"></div>
+                                    <div id="readingCategories" class="mail-categories"
+                                        style="margin-top: 8px; margin-bottom: 8px;"></div>
                                 </div>
                                 <div class="reading-meta">
                                     <div class="reading-sender-avatar" id="readingAvatar"></div>
@@ -4602,11 +4641,9 @@
                 style="display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1rem;">
                 <label for="newClientEmail" style="color: #111; font-size: 0.72rem; font-weight: 700;">Client Email
                     ID</label>
-                <div style="position: relative; width: 100%;">
+                <div style="width: 100%;">
                     <input type="text" id="newClientEmail" placeholder="Enter email"
-                        style="width: 100%; height: 41px; border: 1px solid #C8CDD3; border-radius: 7px; background: #fff; color: #111; font-size: 0.78rem; outline: none; padding: 0 2.5rem 0 0.75rem; font-family: 'Inter', sans-serif;">
-                    <span
-                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; font-size: 1.2rem; cursor: pointer; font-weight: 400;">+</span>
+                        style="width: 100%; height: 41px; border: 1px solid #C8CDD3; border-radius: 7px; background: #fff; color: #111; font-size: 0.78rem; outline: none; padding: 0 0.75rem; font-family: 'Inter', sans-serif;">
                 </div>
             </div>
 
@@ -4614,11 +4651,9 @@
                 style="display: flex; flex-direction: column; gap: 0.45rem; margin-bottom: 1.5rem;">
                 <label for="newClientPhone" style="color: #111; font-size: 0.72rem; font-weight: 700;">Phone
                     number</label>
-                <div style="position: relative; width: 100%;">
+                <div style="width: 100%;">
                     <input type="text" id="newClientPhone" placeholder="Enter phone number"
-                        style="width: 100%; height: 41px; border: 1px solid #C8CDD3; border-radius: 7px; background: #fff; color: #111; font-size: 0.78rem; outline: none; padding: 0 2.5rem 0 0.75rem; font-family: 'Inter', sans-serif;">
-                    <span
-                        style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; font-size: 1.2rem; cursor: pointer; font-weight: 400;">+</span>
+                        style="width: 100%; height: 41px; border: 1px solid #C8CDD3; border-radius: 7px; background: #fff; color: #111; font-size: 0.78rem; outline: none; padding: 0 0.75rem; font-family: 'Inter', sans-serif;">
                 </div>
             </div>
             <div style="display: flex; justify-content: flex-end; gap: 0.75rem; margin-top: 1.5rem;">
@@ -5442,6 +5477,33 @@
             });
         }
 
+        function getClientDisplayForEmployee(mail) {
+            let isEmpView = window.isEmployeeContext;
+            if (!isEmpView) {
+                try {
+                    const user = JSON.parse(localStorage.getItem('currentUser'));
+                    if (user && user.role === 'employee') isEmpView = true;
+                } catch (e) { }
+            }
+
+            if (!isEmpView) {
+                return { name: mail.sender || 'Unknown', email: mail.senderEmail || '' };
+            }
+            const senderEmail = (mail.senderEmail || '').toLowerCase().trim();
+            if (!senderEmail) return { name: mail.sender || 'Unknown', email: '' };
+
+            const clientMatch = clientsList.find(c => (c.email || '').toLowerCase().trim() === senderEmail);
+
+            if (clientMatch) {
+                const displayName = clientMatch.displayName || clientMatch.name || mail.sender || 'Unknown';
+                const displayId = clientMatch.clientId || 'Unknown Client ID';
+                return { name: displayName, email: displayId };
+            }
+
+            // Non-client sender -> do not affect
+            return { name: mail.sender || 'Unknown', email: mail.senderEmail || '' };
+        }
+
         function renderEmailList(records) {
             const body = document.getElementById('emailListBody');
             const empty = document.getElementById('mailEmptyState');
@@ -5479,9 +5541,12 @@
                     }
                 };
                 row.setAttribute('role', 'button');
-                row.setAttribute('aria-label', `Email from ${mail.sender || 'Unknown'}, subject: ${mail.subject || 'No subject'}`);
 
-                const senderName = mail.sender || 'Unknown';
+                const senderDisplay = getClientDisplayForEmployee(mail);
+                const senderName = senderDisplay.name;
+
+                row.setAttribute('aria-label', `Email from ${senderName}, subject: ${mail.subject || 'No subject'}`);
+
                 const initials = senderName.split(' ').map(part => part[0]).join('').slice(0, 2).toUpperCase();
 
                 // Hash-based color generation
@@ -5511,7 +5576,7 @@
                         });
                         categoriesHtml += '</div>';
                     }
-                } catch(e) {}
+                } catch (e) { }
 
                 row.innerHTML = `
                     <div class="mail-from-cell">
@@ -5519,7 +5584,7 @@
                         <span class="mail-avatar" style="background-color: ${avatarBg}; color: ${avatarColor};">${escapeHtml(initials)}</span>
                         <div class="mail-content">
                             <div class="mail-header-row">
-                                <div class="mail-sender">${escapeHtml(mail.sender || 'Unknown')}</div>
+                                <div class="mail-sender">${escapeHtml(senderName)}</div>
                                 <div class="mail-date">${escapeHtml(mail.date)}</div>
                             </div>
                             <div class="mail-subject">${escapeHtml(mail.subject || 'No Subject')}</div>
@@ -5624,7 +5689,7 @@
 
                     document.getElementById('readingEmailNo').textContent = "Email No: " + mail.emailNo;
                     document.getElementById('readingSubject').textContent = mail.subject;
-                    
+
                     const readingCats = document.getElementById('readingCategories');
                     if (readingCats) {
                         readingCats.innerHTML = '';
@@ -5638,11 +5703,12 @@
                                     readingCats.appendChild(tag);
                                 });
                             }
-                        } catch(e) {}
+                        } catch (e) { }
                     }
 
-                    document.getElementById('readingSenderName').textContent = mail.sender;
-                    document.getElementById('readingSenderEmail').textContent = mail.senderEmail;
+                    const senderDisplay = getClientDisplayForEmployee(mail);
+                    document.getElementById('readingSenderName').textContent = senderDisplay.name;
+                    document.getElementById('readingSenderEmail').textContent = senderDisplay.email;
 
                     if (mail.folder === 'sent') {
                         document.getElementById('readingTo').textContent = "To: " + (mail.to || "Unknown");
@@ -8697,15 +8763,18 @@
                             </div>
                         </div>
                         <div class="client-fields-grid">
+                            <div class="client-field-group" style="grid-column: 1 / -1; display: flex; align-items: center; justify-content: space-between; background: #f8fafc; padding: 12px; border-radius: 6px; border: 1px dashed #cbd5e1; margin-bottom: 8px;">
+                                <label style="margin: 0; font-weight: 600; color: #475569;">Client ID</label>
+                                <span style="font-family: monospace; font-size: 0.95rem; color: #0f172a; font-weight: 500;">${escapeHtml(c.clientId || '')}</span>
+                            </div>
                             <div class="client-field-group">
                                 <label>${nameLabel}</label>
                                 <input type="text" value="${escapeHtml(c.name)}" readonly>
                             </div>
                             <div class="client-field-group">
                                 <label>Client Email ID</label>
-                                <div style="position: relative; width: 100%;">
+                                <div style="width: 100%;">
                                     <input type="text" value="${escapeHtml(c.email)}" readonly>
-                                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; font-size: 1.2rem; cursor: pointer; font-weight: 400;">+</span>
                                 </div>
                             </div>
                             <div class="client-field-group">
@@ -8714,9 +8783,8 @@
                             </div>
                             <div class="client-field-group">
                                 <label>Phone number</label>
-                                <div style="position: relative; width: 100%;">
+                                <div style="width: 100%;">
                                     <input type="text" value="${escapeHtml(c.phone)}" readonly>
-                                    <span style="position: absolute; right: 12px; top: 50%; transform: translateY(-50%); color: #888; font-size: 1.2rem; cursor: pointer; font-weight: 400;">+</span>
                                 </div>
                             </div>
                         </div>
@@ -8788,6 +8856,17 @@
                     return;
                 }
 
+                // Generate a unique client ID
+                let generatedClientId = '';
+                const baseName = name.replace(/\s+/g, ' ').trim();
+                while (true) {
+                    const randomNum = Math.floor(10000 + Math.random() * 90000);
+                    generatedClientId = baseName + '-Client-' + randomNum;
+                    if (!clientsList.some(c => c.clientId === generatedClientId)) {
+                        break;
+                    }
+                }
+
                 // Create new client
                 const response = await fetch('/api/clients', {
                     method: 'POST',
@@ -8797,7 +8876,8 @@
                         name: name,
                         email: email || '',
                         address: address || '',
-                        phone: phone || ''
+                        phone: phone || '',
+                        clientId: generatedClientId
                     })
                 });
 
@@ -8806,6 +8886,7 @@
                     // Update UI gracefully
                     const newClient = {
                         id: data.id,
+                        clientId: data.clientId || generatedClientId,
                         displayName: name,
                         name: name,
                         email: email,
@@ -10546,12 +10627,12 @@
             e.stopPropagation();
 
             const emailContextMenu = document.getElementById('emailContextMenu');
-            
+
             let customFolders = [];
             try {
                 customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
-            } catch(e) {}
-            
+            } catch (e) { }
+
             const childFolders = customFolders.filter(f => f.parentId === mail.folder || f.parentId === 'folder:' + mail.folder);
             const foldersListItems = childFolders.map(f => ({
                 id: f.id,
@@ -10592,7 +10673,7 @@
                 {
                     label: 'Delete',
                     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>',
-                    action: () => { 
+                    action: () => {
                         mail.folder = 'deleted';
                         document.getElementById('emailRow-' + mail.id)?.remove();
                         if (typeof showToast === 'function') showToast('Email moved to Deleted Items.');
@@ -10601,7 +10682,7 @@
                 {
                     label: 'Archive',
                     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="21 8 21 21 3 21 3 8"></polyline><rect x="1" y="3" width="22" height="5"></rect><line x1="10" y1="12" x2="14" y2="12"></line></svg>',
-                    action: () => { 
+                    action: () => {
                         mail.folder = 'archive';
                         document.getElementById('emailRow-' + mail.id)?.remove();
                         if (typeof showToast === 'function') showToast('Email archived.');
@@ -10630,8 +10711,8 @@
                 {
                     label: mail.read ? 'Mark as unread' : 'Mark as read',
                     icon: mail.read ? '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>' : '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 13V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v12c0 1.1.9 2 2 2h8"></path><polyline points="22,6 12,13 2,6"></polyline><polyline points="16 21 18 23 22 19"></polyline></svg>',
-                    action: () => { 
-                        mail.read = !mail.read; 
+                    action: () => {
+                        mail.read = !mail.read;
                         const row = document.getElementById('emailRow-' + mail.id);
                         if (row) {
                             row.classList.toggle('read', mail.read);
@@ -10777,12 +10858,12 @@
 
             emailContextMenu.innerHTML = options.map((opt, i) => {
                 if (opt.divider) return '<div class="email-context-separator"></div>';
-                
+
                 let submenuHtml = '';
                 if (opt.hasSubmenu) {
                     submenuHtml = opt.submenuContent || '';
                 }
-                
+
                 return `
                     <div class="email-context-item ${opt.disabled ? 'disabled' : ''}" data-idx="${i}">
                         <div class="email-context-icon">${opt.icon || ''}</div>
@@ -10826,7 +10907,7 @@
         };
 
         // Helper functions for context menu actions
-        window.moveEmail = async function(mailId, folderId) {
+        window.moveEmail = async function (mailId, folderId) {
             try {
                 const targetFolder = folderId.startsWith('folder:') ? folderId.split(':')[1] : folderId;
                 const response = await fetch('/api/emails/' + mailId + '/status', {
@@ -10852,11 +10933,11 @@
             }
         };
 
-        window.copyEmail = function(mailId, folderId) {
+        window.copyEmail = function (mailId, folderId) {
             if (typeof showToast === 'function') showToast('Email copied (simulated).');
         };
 
-        window.setCategory = function(mailId, categoryColor) {
+        window.setCategory = function (mailId, categoryColor) {
             let categories = JSON.parse(localStorage.getItem('emailCategories') || '{}');
             if (categoryColor) {
                 if (!categories[mailId]) categories[mailId] = [];
@@ -10871,7 +10952,7 @@
             const row = document.getElementById('emailRow-' + mailId);
             if (row) {
                 row.style.borderLeft = '';
-                
+
                 let catsContainer = row.querySelector('.mail-categories');
                 if (!catsContainer) {
                     catsContainer = document.createElement('div');
@@ -10881,7 +10962,7 @@
                         preview.parentNode.insertBefore(catsContainer, preview.nextSibling);
                     }
                 }
-                
+
                 catsContainer.innerHTML = '';
                 if (categories[mailId] && categories[mailId].length > 0) {
                     categories[mailId].forEach(c => {
@@ -10910,7 +10991,7 @@
             }
         };
 
-        window.snoozeEmail = function(mailId, time) {
+        window.snoozeEmail = function (mailId, time) {
             const row = document.getElementById('emailRow-' + mailId);
             if (row) row.remove();
             if (typeof showToast === 'function') showToast(`Email snoozed until ${time}.`);
@@ -11009,10 +11090,10 @@
                             inputLi.style.borderLeft = '3px solid transparent';
 
                             inputLi.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                            <input type="text" class="subfolder-inline-input" style="flex:1; padding:4px 6px; border:1px solid var(--border-accent); border-radius:4px; outline:none; font-size:13px; min-width:0; background:#fff; color:var(--text-primary);" placeholder="Name">
-                            <svg class="subfolder-confirm-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <svg class="subfolder-cancel-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color: #94a3b8;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <input type="text" class="subfolder-inline-input" style="flex:1; padding:3px 6px; border:1px solid var(--primary); border-radius:3px; outline:none; font-size:13px; min-width:0; background:#fff; color:var(--text-primary); margin:0 4px;" placeholder="Name">
+                            <svg class="subfolder-confirm-btn subfolder-action-btn confirm" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg class="subfolder-cancel-btn subfolder-action-btn cancel" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                         `;
 
                             folderEl.after(inputLi);
@@ -11038,7 +11119,7 @@
                                     btn.addEventListener('click', (ev) => { ev.stopPropagation(); openFolderContextMenu(ev, li); });
 
                                     inputLi.replaceWith(li);
-                                    
+
                                     try {
                                         let customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
                                         customFolders.push({
@@ -11068,7 +11149,7 @@
                         label: 'Rename', icon: '<path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path>', disabled: ['folder:inbox', 'folder:sent', 'folder:drafts', 'folder:deleted', 'folder:junk', 'folder:archive', 'folder:notes', 'folder:conversation'].includes(folderId), action: () => {
                             const inputLi = document.createElement('li');
                             inputLi.className = 'email-folder subfolder-input-row';
-                            
+
                             let parentPadding = 16;
                             if (folderEl.style.paddingLeft) {
                                 parentPadding = parseInt(folderEl.style.paddingLeft);
@@ -11084,16 +11165,16 @@
                             inputLi.style.borderLeft = '3px solid transparent';
 
                             inputLi.innerHTML = `
-                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
-                            <input type="text" class="subfolder-inline-input" style="flex:1; padding:4px 6px; border:1px solid var(--border-accent); border-radius:4px; outline:none; font-size:13px; min-width:0; background:#fff; color:var(--text-primary);" value="${folderName}">
-                            <svg class="rename-confirm-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><polyline points="20 6 9 17 4 12"></polyline></svg>
-                            <svg class="rename-cancel-btn" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="cursor:pointer; flex-shrink:0;"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0; color: #94a3b8;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"></path></svg>
+                            <input type="text" class="subfolder-inline-input" style="flex:1; padding:3px 6px; border:1px solid var(--primary); border-radius:3px; outline:none; font-size:13px; min-width:0; background:#fff; color:var(--text-primary); margin:0 4px;" value="${folderName}">
+                            <svg class="rename-confirm-btn subfolder-action-btn confirm" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                            <svg class="rename-cancel-btn subfolder-action-btn cancel" xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
                             `;
 
                             folderEl.after(inputLi);
                             const originalDisplay = folderEl.style.display;
                             folderEl.style.display = 'none';
-                            
+
                             const input = inputLi.querySelector('input');
                             input.focus();
                             input.select();
@@ -11102,7 +11183,7 @@
                                 name = (name || '').trim();
                                 if (name && name !== folderName) {
                                     folderEl.childNodes.forEach(n => { if (n.nodeType === 3 && n.textContent.trim().length > 0) n.textContent = ' ' + name + ' '; });
-                                    
+
                                     const oldId = folderEl.dataset.emailFilter;
                                     const newId = 'folder:' + name.toLowerCase();
                                     folderEl.dataset.emailFilter = newId;
@@ -11213,11 +11294,11 @@
                         label: 'Delete', icon: '<polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>', disabled: ['folder:inbox', 'folder:sent', 'folder:drafts', 'folder:deleted', 'folder:junk', 'folder:archive', 'folder:notes', 'folder:conversation'].includes(folderId), action: () => {
                             if (confirm('Are you sure you want to delete ' + folderName + '?')) {
                                 folderEl.remove();
-                                
+
                                 try {
                                     let customFolders = JSON.parse(localStorage.getItem(getEmployeeStoreKey('customFolders')) || '[]');
                                     customFolders = customFolders.filter(f => f.id !== folderId);
-                                    
+
                                     const recursiveDelete = (parentId) => {
                                         const children = customFolders.filter(f => f.parentId === parentId);
                                         children.forEach(c => {
@@ -11228,10 +11309,10 @@
                                         });
                                     };
                                     recursiveDelete(folderId);
-                                    
+
                                     localStorage.setItem(getEmployeeStoreKey('customFolders'), JSON.stringify(customFolders));
                                 } catch (e) { console.error("Error deleting folder:", e); }
-                                
+
                                 if (typeof showToast === 'function') showToast(folderName + ' deleted.');
                             }
                         }

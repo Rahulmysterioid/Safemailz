@@ -18,7 +18,7 @@ router.get('/', (req, res) => {
     if (!context) return res.status(401).json({ error: 'Unauthorized' });
 
     db.all(
-        'SELECT id, display_name as displayName, name, email, phone, address, created_at as createdAt FROM clients WHERE organization_id = ? ORDER BY created_at DESC',
+        'SELECT id, client_id as clientId, display_name as displayName, name, email, phone, address, created_at as createdAt FROM clients WHERE organization_id = ? ORDER BY created_at DESC',
         [context.orgId],
         (err, rows) => {
             if (err) {
@@ -41,20 +41,20 @@ router.post('/', (req, res) => {
     const context = getUserContext(req);
     if (!context) return res.status(401).json({ error: 'Unauthorized' });
 
-    const { displayName, name, email, phone, address } = req.body;
+    const { displayName, name, email, phone, address, clientId } = req.body;
     if (!displayName || !name || !email) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
     db.run(
-        'INSERT INTO clients (organization_id, display_name, name, email, phone, address) VALUES (?, ?, ?, ?, ?, ?)',
-        [context.orgId, displayName, name, email, phone || '', address || ''],
+        'INSERT INTO clients (organization_id, display_name, name, email, phone, address, client_id) VALUES (?, ?, ?, ?, ?, ?, ?)',
+        [context.orgId, displayName, name, email, phone || '', address || '', clientId || ''],
         function (err) {
             if (err) {
                 console.error('[DB Error creating client]:', err);
                 return res.status(500).json({ error: 'Failed to create client' });
             }
-            res.json({ success: true, id: 'c-' + this.lastID, message: 'Client created successfully' });
+            res.json({ success: true, id: 'c-' + this.lastID, clientId: clientId, message: 'Client created successfully' });
         }
     );
 });
@@ -67,15 +67,15 @@ router.put('/:id', (req, res) => {
 
     const { id } = req.params;
     const numericId = id.startsWith('c-') ? id.substring(2) : id;
-    const { displayName, name, email, phone, address } = req.body;
+    const { displayName, name, email, phone, address, clientId } = req.body;
     
     if (!displayName || !name || !email) {
         return res.status(400).json({ error: 'Missing required fields' });
     }
 
     db.run(
-        'UPDATE clients SET display_name = ?, name = ?, email = ?, phone = ?, address = ? WHERE id = ? AND organization_id = ?',
-        [displayName, name, email, phone || '', address || '', numericId, context.orgId],
+        'UPDATE clients SET display_name = ?, name = ?, email = ?, phone = ?, address = ?, client_id = COALESCE(client_id, ?) WHERE id = ? AND organization_id = ?',
+        [displayName, name, email, phone || '', address || '', clientId || '', numericId, context.orgId],
         function (err) {
             if (err) {
                 console.error('[DB Error updating client]:', err);

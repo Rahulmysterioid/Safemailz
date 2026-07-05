@@ -256,6 +256,9 @@ const initDb = async () => {
         await runMigration("ALTER TABLE emails ADD COLUMN cc TEXT");
         await runMigration("ALTER TABLE emails ADD COLUMN bcc TEXT");
 
+        // Migrations for clients table
+        await runMigration("ALTER TABLE clients ADD COLUMN client_id TEXT");
+
     } catch (e) {
         console.error("Failed to initialize database:", e);
     }
