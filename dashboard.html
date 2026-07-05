@@ -1369,7 +1369,11 @@
                         if (sr) {
                             if (role) {
                                 sr.style.display = 'block';
-                                sr.textContent = role;
+                                if (role.trim().toLowerCase() === 'org_owner') {
+                                    sr.textContent = 'ORG Owner';
+                                } else {
+                                    sr.textContent = role;
+                                }
                                 if (role.toLowerCase() === 'employee') {
                                     sr.style.backgroundColor = '#64748b'; // Gray for employee
                                 } else {
@@ -1377,7 +1381,7 @@
                                 }
                             } else if (user.permissions && user.permissions.makeAdmin) {
                                 sr.style.display = 'block';
-                                sr.textContent = 'Admin';
+                                sr.textContent = 'ORG Owner';
                                 sr.style.backgroundColor = 'var(--primary)';
                             }
                         }
@@ -9010,6 +9014,17 @@
                         const userRole = user.role ? user.role.trim().toLowerCase() : '';
                         const hasAdminPermissions = user.permissions && (user.permissions.makeAdmin || user.permissions.addEmployees || user.permissions.createProjects || user.permissions.manageProjects);
                         const isAdmin = userRole === 'admin' || userRole === 'org_owner' || hasAdminPermissions;
+
+                        // Update badge text if they are ORG Owner
+                        if (userRole === 'org_owner' || (!userRole && user.permissions && user.permissions.makeAdmin)) {
+                            try {
+                                const sr = document.getElementById('sidebarAdminRole');
+                                if (sr) {
+                                    sr.textContent = 'ORG Owner';
+                                    sr.style.backgroundColor = 'var(--primary)';
+                                }
+                            } catch (e) { }
+                        }
 
                         const adminTabs = ['tabEmployees', 'tabClients', 'tabProjects', 'tabAdmins', 'tabEmailIds', 'tabTasks', 'tabSubscription'];
                         
