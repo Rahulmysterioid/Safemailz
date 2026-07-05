@@ -1739,14 +1739,14 @@
         <main class="main-content">
             <!-- Tabs -->
             <div class="tabs-container" role="tablist">
-                <div class="tab active" role="tab" aria-selected="true" id="tabEmployees">Employees</div>
+                <div class="tab active" role="tab" aria-selected="true" id="tabEmployees" style="display: none !important;">Employees</div>
                 <div class="tab" role="tab" id="tabEmail">Email</div>
-                <div class="tab" role="tab" id="tabClients">Clients</div>
-                <div class="tab" role="tab" id="tabProjects">Projects</div>
-                <div class="tab" role="tab" id="tabAdmins">Admins</div>
-                <div class="tab" role="tab" id="tabEmailIds">Email ids</div>
-                <div class="tab" role="tab" id="tabTasks">Tasks</div>
-                <div class="tab" role="tab" id="tabSubscription">Subscription</div>
+                <div class="tab" role="tab" id="tabClients" style="display: none !important;">Clients</div>
+                <div class="tab" role="tab" id="tabProjects" style="display: none !important;">Projects</div>
+                <div class="tab" role="tab" id="tabAdmins" style="display: none !important;">Admins</div>
+                <div class="tab" role="tab" id="tabEmailIds" style="display: none !important;">Email ids</div>
+                <div class="tab" role="tab" id="tabTasks" style="display: none !important;">Tasks</div>
+                <div class="tab" role="tab" id="tabSubscription" style="display: none !important;">Subscription</div>
                 <div class="tab" role="tab" id="tabSupport">Support</div>
             </div>
 
@@ -9034,32 +9034,40 @@
 
                     // Role-based access control
                     try {
-                        if (user.role && user.role.toLowerCase() === 'employee') {
-                            const tabs = ['tabEmployees', 'tabClients', 'tabProjects', 'tabAdmins', 'tabEmailIds', 'tabTasks', 'tabSubscription'];
-                            tabs.forEach(id => {
+                        const userRole = user.role ? user.role.trim().toLowerCase() : '';
+                        const adminTabs = ['tabEmployees', 'tabClients', 'tabProjects', 'tabAdmins', 'tabEmailIds', 'tabTasks', 'tabSubscription'];
+                        
+                        if (userRole === 'admin' || userRole === 'org_owner') {
+                            // Unhide admin tabs
+                            adminTabs.forEach(id => {
                                 const el = document.getElementById(id);
-                                if (el) el.style.display = 'none';
+                                if (el) el.style.setProperty('display', 'flex', 'important');
                             });
+                            
+                            // Apply specific permission restrictions
+                            if (user.permissions) {
+                                if (!user.permissions.addEmployees) {
+                                    const t1 = document.getElementById('tabEmployees'); if (t1) t1.style.setProperty('display', 'none', 'important');
+                                    const t2 = document.getElementById('tabClients'); if (t2) t2.style.setProperty('display', 'none', 'important');
+                                }
+                                if (!user.permissions.createProjects && !user.permissions.manageProjects) {
+                                    const t1 = document.getElementById('tabProjects'); if (t1) t1.style.setProperty('display', 'none', 'important');
+                                    const t2 = document.getElementById('tabTasks'); if (t2) t2.style.setProperty('display', 'none', 'important');
+                                }
+                                if (!user.permissions.createProjects) {
+                                    const btnAddProj = document.getElementById('btnAddProject');
+                                    if (btnAddProj) btnAddProj.style.setProperty('display', 'none', 'important');
+                                }
+                                if (!user.permissions.makeAdmin) {
+                                    const t1 = document.getElementById('tabAdmins'); if (t1) t1.style.setProperty('display', 'none', 'important');
+                                    const t2 = document.getElementById('tabEmailIds'); if (t2) t2.style.setProperty('display', 'none', 'important');
+                                    const t3 = document.getElementById('tabSubscription'); if (t3) t3.style.setProperty('display', 'none', 'important');
+                                }
+                            }
+                        } else {
+                            // Employees or unknown roles - tabs remain hidden by default
                             const tabEmail = document.getElementById('tabEmail');
                             if (tabEmail) tabEmail.click();
-                        } else if (user.role && (user.role.toLowerCase() === 'admin' || user.role.toLowerCase() === 'org_owner') && user.permissions) {
-                            if (!user.permissions.addEmployees) {
-                                const t1 = document.getElementById('tabEmployees'); if (t1) t1.style.display = 'none';
-                                const t2 = document.getElementById('tabClients'); if (t2) t2.style.display = 'none';
-                            }
-                            if (!user.permissions.createProjects && !user.permissions.manageProjects) {
-                                const t1 = document.getElementById('tabProjects'); if (t1) t1.style.display = 'none';
-                                const t2 = document.getElementById('tabTasks'); if (t2) t2.style.display = 'none';
-                            }
-                            if (!user.permissions.createProjects) {
-                                const btnAddProj = document.getElementById('btnAddProject');
-                                if (btnAddProj) btnAddProj.style.display = 'none';
-                            }
-                            if (!user.permissions.makeAdmin) {
-                                const t1 = document.getElementById('tabAdmins'); if (t1) t1.style.display = 'none';
-                                const t2 = document.getElementById('tabEmailIds'); if (t2) t2.style.display = 'none';
-                                const t3 = document.getElementById('tabSubscription'); if (t3) t3.style.display = 'none';
-                            }
                         }
                     } catch (e) { }
                 } catch (e) {
