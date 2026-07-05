@@ -118,11 +118,11 @@ const signin = async (req, res) => {
                 admin_name: user.admin_name,
                 role: user.role,
                 permissions: {
-                    addEmployees: user.perm_add_employees == 1 || user.perm_add_employees === true,
-                    createProjects: user.perm_create_projects == 1 || user.perm_create_projects === true,
-                    manageProjects: user.perm_manage_projects == 1 || user.perm_manage_projects === true,
-                    makeAdmin: user.perm_make_admin == 1 || user.perm_make_admin === true,
-                    deleteProject: user.perm_delete_project == 1 || user.perm_delete_project === true
+                    addEmployees: user.perm_add_employees == 1 || user.perm_add_employees === true || String(user.perm_add_employees).toLowerCase() === 'true',
+                    createProjects: user.perm_create_projects == 1 || user.perm_create_projects === true || String(user.perm_create_projects).toLowerCase() === 'true',
+                    manageProjects: user.perm_manage_projects == 1 || user.perm_manage_projects === true || String(user.perm_manage_projects).toLowerCase() === 'true',
+                    makeAdmin: user.perm_make_admin == 1 || user.perm_make_admin === true || String(user.perm_make_admin).toLowerCase() === 'true',
+                    deleteProject: user.perm_delete_project == 1 || user.perm_delete_project === true || String(user.perm_delete_project).toLowerCase() === 'true'
                 }
             }
         });

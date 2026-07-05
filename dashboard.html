@@ -8965,34 +8965,7 @@
             populateEmployeeList(currentQuantity);
         }
 
-        // On page load, restore purchased state
-        document.addEventListener('DOMContentLoaded', async () => {
-            renderEmailModule();
-            const savedQuantity = localStorage.getItem('purchasedQuantity');
-            if (savedQuantity && parseInt(savedQuantity) > 0) {
-                currentQuantity = parseInt(savedQuantity);
-
-                // Sync real employees from backend into purchasedSeats
-                await syncEmployeesFromBackend(currentQuantity);
-            }
-
-            // Initialize Clients
-            initClients();
-
-            // Initialize Projects
-            let savedProjects = localStorage.getItem('safemailzProjects');
-            if (!savedProjects) {
-                localStorage.setItem('safemailzProjects', JSON.stringify(DEFAULT_DASHBOARD_PROJECTS));
-                dashboardProjectsList = [...DEFAULT_DASHBOARD_PROJECTS];
-            } else {
-                dashboardProjectsList = JSON.parse(savedProjects);
-            }
-            renderDashboardProjects();
-
-            // Initialize Admins
-            initAdmins();
-
-            // Bind Admin Panel email address to the logged-in user
+        function enforceRoleBasedUI() {
             const userStr = localStorage.getItem('currentUser');
             if (userStr) {
                 try {
@@ -9069,6 +9042,9 @@
                             }
                         } else {
                             // Employees or unknown roles - tabs remain hidden by default
+                            document.getElementById('employeesView').style.setProperty('display', 'none', 'important');
+                            document.getElementById('employeesSidebar').style.setProperty('display', 'none', 'important');
+                            
                             const tabEmail = document.getElementById('tabEmail');
                             if (tabEmail) tabEmail.click();
                         }
@@ -9077,6 +9053,38 @@
                     console.error("Error binding user info:", e);
                 }
             }
+        }
+
+        // On page load, restore purchased state
+        document.addEventListener('DOMContentLoaded', async () => {
+            // First, enforce role-based UI synchronously BEFORE any async calls
+            // This prevents Employee roles from seeing Admin UI for 1 second while data fetches
+            enforceRoleBasedUI();
+
+            renderEmailModule();
+            const savedQuantity = localStorage.getItem('purchasedQuantity');
+            if (savedQuantity && parseInt(savedQuantity) > 0) {
+                currentQuantity = parseInt(savedQuantity);
+
+                // Sync real employees from backend into purchasedSeats
+                await syncEmployeesFromBackend(currentQuantity);
+            }
+
+            // Initialize Clients
+            initClients();
+
+            // Initialize Projects
+            let savedProjects = localStorage.getItem('safemailzProjects');
+            if (!savedProjects) {
+                localStorage.setItem('safemailzProjects', JSON.stringify(DEFAULT_DASHBOARD_PROJECTS));
+                dashboardProjectsList = [...DEFAULT_DASHBOARD_PROJECTS];
+            } else {
+                dashboardProjectsList = JSON.parse(savedProjects);
+            }
+            renderDashboardProjects();
+
+            // Initialize Admins
+            initAdmins();
         });
         // ===== PROFILE & SETTINGS =====
         function toggleProfileDropdown() {
