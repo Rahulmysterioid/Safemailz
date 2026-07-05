@@ -10,7 +10,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="dashboard.css?v=1.0.6">
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js?v=1.0.1"></script>
     <style id="safemailz-enhanced-ui">
         :root {
             /* Safemailz Enhanced Color System */
@@ -1348,7 +1348,7 @@
                         style="font-size: 12px; color: var(--text-secondary);">admin@safemailz.com</span>
                 </div>
             </div>
-            <script src="adminLogic.js"></script>
+            <script src="adminLogic.js?v=1.0.1"></script>
             <script>
                 // Immediately bind profile info from localStorage
                 (function bindUserProfile() {
@@ -9034,7 +9034,7 @@
 
                     // Role-based access control
                     try {
-                        if (user.role === 'employee') {
+                        if (user.role && user.role.toLowerCase() === 'employee') {
                             const tabs = ['tabEmployees', 'tabClients', 'tabProjects', 'tabAdmins', 'tabEmailIds', 'tabTasks', 'tabSubscription'];
                             tabs.forEach(id => {
                                 const el = document.getElementById(id);
@@ -9042,7 +9042,7 @@
                             });
                             const tabEmail = document.getElementById('tabEmail');
                             if (tabEmail) tabEmail.click();
-                        } else if (user.role === 'admin' && user.permissions) {
+                        } else if (user.role && (user.role.toLowerCase() === 'admin' || user.role.toLowerCase() === 'org_owner') && user.permissions) {
                             if (!user.permissions.addEmployees) {
                                 const t1 = document.getElementById('tabEmployees'); if (t1) t1.style.display = 'none';
                                 const t2 = document.getElementById('tabClients'); if (t2) t2.style.display = 'none';
