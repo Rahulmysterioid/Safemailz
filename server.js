@@ -17,7 +17,15 @@ app.use(express.json()); // Parse JSON bodies
 app.use(express.urlencoded({ extended: true }));
 
 // Serve static files from the root directory (so index.html, signup.html etc. work)
-app.use(express.static(path.join(__dirname)));
+app.use(express.static(path.join(__dirname), {
+    setHeaders: (res, path, stat) => {
+        if (path.endsWith('.html')) {
+            res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+            res.set('Pragma', 'no-cache');
+            res.set('Expires', '0');
+        }
+    }
+}));
 
 // API Routes
 app.use('/api', authRoutes);
@@ -35,6 +43,12 @@ const clientsRoutes = require('./routes/clients');
 app.use('/api/clients', clientsRoutes);
 
 // Clean URL routes (so /signin works the same as /signin.html)
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-cache, no-store, must-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    next();
+});
 app.get('/signin', (req, res) => res.sendFile(path.join(__dirname, 'signin.html')));
 app.get('/signup', (req, res) => res.sendFile(path.join(__dirname, 'signup.html')));
 app.get('/dashboard', (req, res) => res.sendFile(path.join(__dirname, 'dashboard.html')));
