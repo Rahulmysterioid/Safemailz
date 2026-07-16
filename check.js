@@ -1,0 +1,1 @@
+const { createClient } = require('@libsql/client'); const db = createClient({ url: 'file:safemailz.db' }); db.execute(SELECT email, role, perm_add_employees, perm_create_projects FROM users WHERE email = 'rahul.indianshelf99@gmail.com').then(r => console.log(r.rows)).catch(console.error);

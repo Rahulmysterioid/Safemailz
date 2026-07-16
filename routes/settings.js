@@ -344,7 +344,32 @@ router.get('/employees', (req, res) => {
                 console.error('[DB Error fetching employees]:', err);
                 return res.status(500).json({ error: 'Database error' });
             }
-            res.json({ success: true, employees: rows });
+            
+            // Also fetch pending invitations so they don't disappear if localStorage is cleared
+            db.all(
+                'SELECT id, email, created_at FROM invitations WHERE organization_id = ? AND status = \'pending\' ORDER BY created_at ASC',
+                [context.orgId],
+                (err, invites) => {
+                    if (err) {
+                        console.error('[DB Error fetching invites]:', err);
+                        return res.json({ success: true, employees: rows }); // Return just users if invites fail
+                    }
+
+                    const pendingInvites = invites.map(inv => ({
+                        id: 'invite_' + inv.id,
+                        name: inv.email.split('@')[0], // Fallback name for pending invites
+                        email: inv.email,
+                        role: 'employee (pending)',
+                        created_at: inv.created_at,
+                        isPending: true
+                    }));
+
+                    // Combine and sort by creation date
+                    const allEmployees = [...rows, ...pendingInvites].sort((a, b) => new Date(a.created_at) - new Date(b.created_at));
+                    
+                    res.json({ success: true, employees: allEmployees });
+                }
+            );
         }
     );
 });

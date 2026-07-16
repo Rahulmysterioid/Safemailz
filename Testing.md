@@ -1,0 +1,41 @@
+# Testing Plan & Results for Mail Action Buttons
+
+## Top Toolbar Buttons
+- [x] New Mail (Tested manually, opens composer)
+- [x] Delete (Tested, triggers `handleEmailAction` and modal correctly)
+- [x] Report (Tested, triggers `handleEmailAction` correctly)
+- [x] Archive (Tested, triggers `handleEmailAction` correctly)
+- [x] Sweep (Tested, triggers `handleEmailAction` and sweep logic correctly)
+- [x] Move To (Tested, prompts for folder name successfully)
+- [x] Restore (Tested, triggers restore logic correctly)
+- [x] Reply (Tested, calls `openReply()` correctly)
+- [x] Read / Unread (Tested, triggers `handleEmailAction('toggleRead')` correctly)
+
+## Reading Pane Buttons
+- [x] Expand (Tested manually, expands correctly)
+- [x] Reply (Tested, calls `openReply()` correctly)
+- [x] Reply All (Found bug! Was using `handleEmailAction('replyAll')` without backend. **Fixed**)
+- [x] Forward (Found bug! Was using `handleEmailAction('forward')` without backend. **Fixed**)
+- [x] Delete (reading pane) (Tested, triggers delete correctly)
+
+## Dropdown / Context Menu Actions
+- [x] Reply (Found bug! Was mocked with toast. **Fixed**)
+- [x] Reply all (Found bug! Was mocked with toast. **Fixed**)
+- [x] Forward (Found bug! Was mocked with toast. **Fixed**)
+- [x] Delete (Found bug! Only updated DOM locally, no API. **Fixed**)
+- [x] Archive (Found bug! Only updated DOM locally, no API. **Fixed**)
+- [x] Move (Found bug! Missing `moveEmail` function. **Fixed**)
+- [x] Copy (Found bug! Missing `copyEmail` function. **Fixed**)
+- [x] Mark as unread / read (Found bug! Updated locally without API. **Fixed**)
+- [x] Pin (Found bug! Was mocked with toast. **Fixed**)
+- [x] Categorize (Found bug! Missing `setCategory` function. **Fixed**)
+- [x] Flag (Found bug! Was mocked with toast. *Left as mock due to missing API*)
+- [x] Snooze (Found bug! Missing `snoozeEmail` function. **Fixed**)
+- [x] Rules (Found bug! Was mocked with toast. *Left as mock due to missing UI/API*)
+- [x] Report (Found bug! Was mocked with toast. **Fixed**)
+- [x] Block (Found bug! Was mocked with toast. **Fixed**)
+- [x] Ignore (Found bug! Was mocked with toast. **Fixed**)
+- [x] Save as (Found bug! Was mocked with toast. *Left as mock due to missing API*)
+- [x] Find related (Found bug! Was mocked with toast. **Fixed**)
+- [x] View (Found bug! Was mocked with toast. *Left as mock due to missing UI*)
+- [x] Advanced actions (Found bug! Was mocked with toast. *Left as mock due to missing UI*)

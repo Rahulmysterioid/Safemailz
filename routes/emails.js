@@ -29,11 +29,11 @@ const toIST = (dateString) => {
 };
 
 const formatToISTTime = (dateString) => {
-    return toIST(dateString).toLocaleTimeString('en-IN', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit' });
+    return toIST(dateString).toISOString();
 };
 
 const formatToISTDateTime = (dateString) => {
-    return toIST(dateString).toLocaleString('en-IN', { timeZone: 'Asia/Kolkata', day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' });
+    return toIST(dateString).toISOString();
 };
 
 // Helper to get user context from headers
