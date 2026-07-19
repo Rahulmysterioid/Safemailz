@@ -2794,7 +2794,7 @@ body.dashboard-body header.topbar {
 .mail-reading-column:not([style*="display: none"])~.mail-list-column,
 .mail-reading-column:not([style*="display: none"])+.mail-list-column,
 .mail-list-column:has(~ .mail-reading-column:not([style*="display: none"])) {
-  max-width: 440px;
+  max-width: 550px;
   /* Compress list when reading pane is open */
 }
 
