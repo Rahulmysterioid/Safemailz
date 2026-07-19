@@ -3555,7 +3555,7 @@ body.dashboard-body header.topbar {
   background: #F8FAFC;
   color: #333;
   outline: none;
-  font-family: 'Inter', sans-serif;
+  font-family: 'Inter', sans-serif !important;
 }
 
 .client-field-group div input {
@@ -5890,8 +5890,8 @@ body.dashboard-body header.topbar {
 .email-composer-attachments {
   display: flex;
   flex-wrap: wrap;
-  gap: 6px;
-  padding: 0.5rem 1.25rem;
+  gap: 12px;
+  padding: 8px 1.25rem 12px 1.25rem;
   background-color: #FFF;
   border-bottom: 1px solid #F1F3F4;
   text-align: left;
@@ -5901,42 +5901,77 @@ body.dashboard-body header.topbar {
   display: none;
 }
 
-.email-attachment-pill {
-  display: inline-flex;
+.email-attachment-card {
+  display: flex;
   align-items: center;
-  gap: 6px;
-  background-color: #F1F3F4;
-  border: 1px solid #DADCE0;
-  border-radius: 16px;
-  padding: 3px 10px;
-  font-size: 0.72rem;
-  font-weight: 500;
-  color: #3C4043;
-  max-width: 250px;
+  background-color: #F8FAFC;
+  border: 1px solid #E2E8F0;
+  border-radius: 6px;
+  padding: 6px 10px 6px 8px;
+  max-width: 280px;
+  min-width: 200px;
+  transition: background-color 0.15s, border-color 0.15s;
 }
 
-.email-attachment-pill span {
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+.email-attachment-card:hover {
+  background-color: #F1F5F9;
+  border-color: #CBD5E1;
 }
 
-.email-attachment-pill .remove-btn {
-  background: none;
-  border: none;
-  cursor: pointer;
-  color: #5F6368;
-  font-size: 0.9rem;
-  font-weight: bold;
-  line-height: 1;
-  padding: 0;
+.email-attachment-card .attachment-icon {
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 32px;
+  height: 32px;
+  background-color: #EFF6FF;
+  color: #2563EB;
+  border-radius: 4px;
+  margin-right: 10px;
+  flex-shrink: 0;
 }
 
-.email-attachment-pill .remove-btn:hover {
-  color: #D32F2F;
+.email-attachment-card .attachment-info {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  margin-right: 8px;
+}
+
+.email-attachment-card .attachment-name {
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #1E293B;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  line-height: 1.2;
+  margin-bottom: 2px;
+}
+
+.email-attachment-card .attachment-size {
+  font-size: 0.75rem;
+  color: #64748B;
+  line-height: 1.2;
+}
+
+.email-attachment-card .remove-btn {
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  color: #94A3B8;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 4px;
+  border-radius: 4px;
+  flex-shrink: 0;
+}
+
+.email-attachment-card .remove-btn:hover {
+  background-color: #E2E8F0;
+  color: #334155;
 }
 
 /* Footer Section */
@@ -7596,6 +7631,11 @@ body.dashboard-body {
 .to-row-wrapper {
   border-bottom: 2px solid var(--primary, #2563EB) !important;
   padding: var(--composer-row-padding, 6px 16px) !important;
+}
+
+.cc-bcc-trigger-btn.cc-bcc-active {
+  background-color: var(--primary-light, #EFF6FF) !important;
+  color: var(--primary, #2563EB) !important;
 }
 
 .email-composer-field {

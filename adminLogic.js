@@ -43,7 +43,13 @@
         }
 
         function populateAdminForm() {
+            const emptyState = document.getElementById('adminDetailsEmptyState');
+            const detailsContent = document.getElementById('adminDetailsContent');
+
             if (!selectedAdminData) {
+                if (emptyState) emptyState.style.display = 'flex';
+                if (detailsContent) detailsContent.style.display = 'none';
+
                 const nameInput = document.getElementById('adminNameInput');
                 const emailInput = document.getElementById('adminEmailInput');
                 if (nameInput) {
@@ -57,6 +63,10 @@
                 updatePermissionUI();
                 return;
             }
+
+            if (emptyState) emptyState.style.display = 'none';
+            if (detailsContent) detailsContent.style.display = 'block';
+
             const nameInput = document.getElementById('adminNameInput');
             const emailInput = document.getElementById('adminEmailInput');
             if (nameInput) {

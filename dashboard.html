@@ -886,7 +886,7 @@
 
         .mail-row {
             border-radius: 8px !important;
-            margin: 4px 8px !important;
+            margin: 4px 1px !important;
             width: auto !important;
         }
 
@@ -2360,118 +2360,137 @@
             <!-- Admins View -->
             <div class="content-area has-table" id="adminsView"
                 style="display: none; flex-direction: column; width: 100%; flex: 1; min-height: 0; background-color: #fff; overflow-y: auto; padding: 2rem 2.5rem; box-sizing: border-box;">
-                <!-- Admin fields -->
-                <div class="admin-top-fields">
-                    <div class="admin-field-group">
-                        <label for="adminNameInput">Admin name</label>
-                        <input type="text" id="adminNameInput" placeholder="Admin name">
-                    </div>
-                    <div class="admin-field-group">
-                        <label for="adminEmailInput">Admin Email ID</label>
-                        <input type="email" id="adminEmailInput" placeholder="Admin Email ID">
-                    </div>
+
+                <div id="adminDetailsEmptyState"
+                    style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; color: #64748B;">
+                    <img src="images/empty_state.png" alt="No admin selected"
+                        style="max-width: 200px; margin-bottom: 20px; opacity: 0.8;">
+                    <h2 style="font-size: 1.25rem; color: #334155; margin-bottom: 8px;">Select an admin</h2>
+                    <p style="font-size: 0.95rem;">Select an admin from the list to view and manage their permissions.
+                    </p>
                 </div>
 
-                <!-- Permission list -->
-                <div class="admin-permission-list">
-                    <!-- Permission Card 1: Add employees -->
-                    <div class="permission-card" id="adminCardAddEmployees">
-                        <span class="permission-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
-                                <circle cx="9" cy="7" r="4"></circle>
-                                <polyline points="17 8 22 12 17 16"></polyline>
-                                <line x1="22" y1="12" x2="13" y2="12"></line>
-                            </svg>
-                        </span>
-                        <span class="permission-copy">
-                            <strong>Add employees</strong>
-                            <span>Allow to add employess</span>
-                        </span>
-                        <button class="toggle-switch" type="button" role="switch" id="switchAddEmployees"
-                            onclick="clickAdminPermToggle('addEmployees')"></button>
+                <div id="adminDetailsContent" style="display: none;">
+                    <!-- Admin fields -->
+                    <div class="admin-top-fields">
+                        <div class="admin-field-group">
+                            <label for="adminNameInput">Admin name</label>
+                            <input type="text" id="adminNameInput" placeholder="Admin name">
+                        </div>
+                        <div class="admin-field-group">
+                            <label for="adminEmailInput">Admin Email ID</label>
+                            <input type="email" id="adminEmailInput" placeholder="Admin Email ID">
+                        </div>
                     </div>
 
-                    <!-- Permission Card 2: Create projects -->
-                    <div class="permission-card" id="adminCardCreateProjects">
-                        <span class="permission-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 14 4 9 9 4"></polyline>
-                                <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
-                            </svg>
-                        </span>
-                        <span class="permission-copy">
-                            <strong>Create projects</strong>
-                            <span>Allow to create projects</span>
-                        </span>
-                        <button class="toggle-switch" type="button" role="switch" id="switchCreateProjects"
-                            onclick="clickAdminPermToggle('createProjects')"></button>
+                    <!-- Permission list -->
+                    <div class="admin-permission-list">
+                        <!-- Permission Card 1: Add employees -->
+                        <div class="permission-card" id="adminCardAddEmployees">
+                            <span class="permission-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                                    <circle cx="9" cy="7" r="4"></circle>
+                                    <polyline points="17 8 22 12 17 16"></polyline>
+                                    <line x1="22" y1="12" x2="13" y2="12"></line>
+                                </svg>
+                            </span>
+                            <span class="permission-copy">
+                                <strong>Add employees</strong>
+                                <span>Allow to add employess</span>
+                            </span>
+                            <button class="toggle-switch" type="button" role="switch" id="switchAddEmployees"
+                                onclick="clickAdminPermToggle('addEmployees')"></button>
+                        </div>
+
+                        <!-- Permission Card 2: Create projects -->
+                        <div class="permission-card" id="adminCardCreateProjects">
+                            <span class="permission-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="9 14 4 9 9 4"></polyline>
+                                    <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+                                </svg>
+                            </span>
+                            <span class="permission-copy">
+                                <strong>Create projects</strong>
+                                <span>Allow to create projects</span>
+                            </span>
+                            <button class="toggle-switch" type="button" role="switch" id="switchCreateProjects"
+                                onclick="clickAdminPermToggle('createProjects')"></button>
+                        </div>
+
+                        <!-- Permission Card 3: Manage projects -->
+                        <div class="permission-card" id="adminCardManageProjects">
+                            <span class="permission-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="9 14 4 9 9 4"></polyline>
+                                    <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+                                </svg>
+                            </span>
+                            <span class="permission-copy">
+                                <strong>Manage projects</strong>
+                                <span>Allow to manage the projects</span>
+                            </span>
+                            <button class="toggle-switch" type="button" role="switch" id="switchManageProjects"
+                                onclick="clickAdminPermToggle('manageProjects')"></button>
+                        </div>
+
+                        <!-- Permission Card 4: make an admin -->
+                        <div class="permission-card" id="adminCardMakeAdmin">
+                            <span class="permission-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="9 14 4 9 9 4"></polyline>
+                                    <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+                                </svg>
+                            </span>
+                            <span class="permission-copy">
+                                <strong>make an admin</strong>
+                                <span>Allow an admin to Manage the employees</span>
+                            </span>
+                            <button class="toggle-switch" type="button" role="switch" id="switchMakeAdmin"
+                                onclick="clickAdminPermToggle('makeAdmin')"></button>
+                        </div>
+
+                        <!-- Permission Card 5: Delete project -->
+                        <div class="permission-card" id="adminCardDeleteProject">
+                            <span class="permission-icon">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+                                    stroke="currentColor" stroke-width="2" stroke-linecap="round"
+                                    stroke-linejoin="round">
+                                    <polyline points="9 14 4 9 9 4"></polyline>
+                                    <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
+                                </svg>
+                            </span>
+                            <span class="permission-copy">
+                                <strong>Delete project</strong>
+                                <span>Allow to delete the projects</span>
+                            </span>
+                            <button class="toggle-switch" type="button" role="switch" id="switchDeleteProject"
+                                onclick="clickAdminPermToggle('deleteProject')"></button>
+                        </div>
                     </div>
 
-                    <!-- Permission Card 3: Manage projects -->
-                    <div class="permission-card" id="adminCardManageProjects">
-                        <span class="permission-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 14 4 9 9 4"></polyline>
-                                <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
-                            </svg>
-                        </span>
-                        <span class="permission-copy">
-                            <strong>Manage projects</strong>
-                            <span>Allow to manage the projects</span>
-                        </span>
-                        <button class="toggle-switch" type="button" role="switch" id="switchManageProjects"
-                            onclick="clickAdminPermToggle('manageProjects')"></button>
+                    <!-- Note box -->
+                    <div class="admin-note-box">
+                        <strong>Note:</strong> If the user first purchases an employee account and then adds an account
+                        in
+                        the admin panel, the billing should not be charged starting from the next month.
                     </div>
 
-                    <!-- Permission Card 4: make an admin -->
-                    <div class="permission-card" id="adminCardMakeAdmin">
-                        <span class="permission-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 14 4 9 9 4"></polyline>
-                                <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
-                            </svg>
-                        </span>
-                        <span class="permission-copy">
-                            <strong>make an admin</strong>
-                            <span>Allow an admin to Manage the employees</span>
-                        </span>
-                        <button class="toggle-switch" type="button" role="switch" id="switchMakeAdmin"
-                            onclick="clickAdminPermToggle('makeAdmin')"></button>
+                    <!-- Action buttons -->
+                    <div class="admin-actions-row">
+                        <button class="btn-admin-cancel" id="btnAdminCancel"
+                            onclick="cancelAdminEdits()">cancle</button>
+                        <button class="btn-admin-save" id="btnAdminSave" onclick="saveAdminEdits()">Save</button>
                     </div>
-
-                    <!-- Permission Card 5: Delete project -->
-                    <div class="permission-card" id="adminCardDeleteProject">
-                        <span class="permission-icon">
-                            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
-                                stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                <polyline points="9 14 4 9 9 4"></polyline>
-                                <path d="M20 20v-7a4 4 0 0 0-4-4H4"></path>
-                            </svg>
-                        </span>
-                        <span class="permission-copy">
-                            <strong>Delete project</strong>
-                            <span>Allow to delete the projects</span>
-                        </span>
-                        <button class="toggle-switch" type="button" role="switch" id="switchDeleteProject"
-                            onclick="clickAdminPermToggle('deleteProject')"></button>
-                    </div>
-                </div>
-
-                <!-- Note box -->
-                <div class="admin-note-box">
-                    <strong>Note:</strong> If the user first purchases an employee account and then adds an account in
-                    the admin panel, the billing should not be charged starting from the next month.
-                </div>
-
-                <!-- Action buttons -->
-                <div class="admin-actions-row">
-                    <button class="btn-admin-cancel" id="btnAdminCancel" onclick="cancelAdminEdits()">cancle</button>
-                    <button class="btn-admin-save" id="btnAdminSave" onclick="saveAdminEdits()">Save</button>
                 </div>
             </div>
 
@@ -3390,21 +3409,28 @@
                                     color: var(--primary);
                                 }
                             </style>
-                            <div class="mail-top-header-row" style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border-light); background: var(--surface);">
-                                <div class="mail-tabs" style="margin: 0 !important;">
+                            <div class="mail-top-header-row"
+                                style="display: flex; align-items: center; justify-content: space-between; padding: 10px 16px; border-bottom: 1px solid var(--border-light); background: var(--surface);">
+                                <div id="mailTabsContainer" class="mail-tabs" style="margin: 0 !important;">
                                     <button class="mail-tab active" data-folder="received"
                                         onclick="switchMailTab(this, 'folder:inbox')">Received</button>
                                     <button class="mail-tab" data-folder="sent"
                                         onclick="switchMailTab(this, 'folder:sent')">Sent</button>
                                 </div>
+                                <div id="mailContextTitle"
+                                    style="display: none; font-size: 1.1rem; font-weight: 600; color: var(--text-primary); margin: 0;">
+                                </div>
                                 <div style="display: flex; align-items: center; gap: 14px;">
-                                    <div class="mail-select-all-wrap" style="display: flex; align-items: center; gap: 6px;">
+                                    <div class="mail-select-all-wrap"
+                                        style="display: flex; align-items: center; gap: 6px;">
                                         <input type="checkbox" id="selectAllEmails" onchange="toggleAllEmails(this)"
                                             style="cursor: pointer; margin: 0; width: 14px; height: 14px;">
                                         <label for="selectAllEmails"
-                                            style="font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); cursor: pointer; user-select: none; margin: 0;">Select All</label>
+                                            style="font-size: 0.8125rem; font-weight: 500; color: var(--text-secondary); cursor: pointer; user-select: none; margin: 0;">Select
+                                            All</label>
                                     </div>
-                                    <div class="jump-to-container" style="position: relative; display: flex; align-items: center;">
+                                    <div class="jump-to-container"
+                                        style="position: relative; display: flex; align-items: center;">
                                         <button id="jumpToBtn" onclick="toggleJumpToDropdown(event)" title="Jump To"
                                             style="padding: 5px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--surface); color: var(--text-primary); cursor: pointer; display: flex; align-items: center; justify-content: center;">
                                             <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15"
@@ -3423,23 +3449,27 @@
                                             <div class="jump-to-item" onclick="selectJumpToDate('today', 'Today')"
                                                 style="padding: 9px 14px; font-size: 12px; cursor: pointer; border-bottom: 1px solid var(--border-light);">
                                                 Today</div>
-                                            <div class="jump-to-item" onclick="selectJumpToDate('yesterday', 'Yesterday')"
+                                            <div class="jump-to-item"
+                                                onclick="selectJumpToDate('yesterday', 'Yesterday')"
                                                 style="padding: 9px 14px; font-size: 12px; cursor: pointer; border-bottom: 1px solid var(--border-light);">
                                                 Yesterday</div>
-                                            <div class="jump-to-item" onclick="selectJumpToDate('last_week', 'Last week')"
+                                            <div class="jump-to-item"
+                                                onclick="selectJumpToDate('last_week', 'Last week')"
                                                 style="padding: 9px 14px; font-size: 12px; cursor: pointer; border-bottom: 1px solid var(--border-light);">
                                                 Last week</div>
-                                            <div class="jump-to-item" onclick="selectJumpToDate('last_month', 'Last month')"
+                                            <div class="jump-to-item"
+                                                onclick="selectJumpToDate('last_month', 'Last month')"
                                                 style="padding: 9px 14px; font-size: 12px; cursor: pointer; border-bottom: 1px solid var(--border-light);">
                                                 Last month</div>
-                                            <div class="jump-to-item" onclick="selectJumpToDate('last_year', 'Last year')"
+                                            <div class="jump-to-item"
+                                                onclick="selectJumpToDate('last_year', 'Last year')"
                                                 style="padding: 9px 14px; font-size: 12px; cursor: pointer; border-bottom: 1px solid var(--border-light);">
                                                 Last year</div>
                                             <div class="jump-to-item" onclick="openCalendarPicker()"
                                                 style="padding: 9px 14px; font-size: 12px; cursor: pointer; background: var(--surface-hover); font-weight: 500; display:flex; align-items:center; gap:6px; border-radius: 0 0 8px 8px;">
                                                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                                                    stroke-linecap="round" stroke-linejoin="round">
+                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                                     <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
                                                     <line x1="16" y1="2" x2="16" y2="6"></line>
                                                     <line x1="8" y1="2" x2="8" y2="6"></line>
@@ -3454,7 +3484,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <div class="mail-filters-bar"
+                            <div class="mail-filters-bar" id="mailFiltersBar"
                                 style="padding: 0.5rem 1rem; border-bottom: 1px solid #DDE2E6; display: flex; gap: 0.5rem; background: var(--surface); overflow-x: auto; white-space: nowrap; align-items:center;">
                                 <button class="mail-filter-pill active" onclick="applyMailFilter(this, 'all')"
                                     style="padding: 4px 10px; border-radius: 12px; border: 1px solid var(--border-light); background: var(--primary); color: white; font-size: 11px; cursor: pointer;">All</button>
@@ -3726,10 +3756,11 @@
                                                 style="border: none; outline: none; flex: 1; font-size: 0.85rem; padding: 6px 0;">
                                             <div class="cc-bcc-triggers"
                                                 style="display: flex; gap: 8px; font-size: 0.85rem; color: #64748B;">
-                                                <span onclick="toggleCc()"
-                                                    style="cursor: pointer; user-select: none; font-weight: 500;">Cc</span>
-                                                <span onclick="toggleBcc()"
-                                                    style="cursor: pointer; user-select: none; font-weight: 500;">Bcc</span>
+                                                <span id="ccTriggerBtn" class="cc-bcc-trigger-btn" onclick="toggleCc()"
+                                                    style="cursor: pointer; user-select: none; font-weight: 500; padding: 2px 6px; border-radius: 4px; transition: all 0.2s;">Cc</span>
+                                                <span id="bccTriggerBtn" class="cc-bcc-trigger-btn"
+                                                    onclick="toggleBcc()"
+                                                    style="cursor: pointer; user-select: none; font-weight: 500; padding: 2px 6px; border-radius: 4px; transition: all 0.2s;">Bcc</span>
                                             </div>
                                         </div>
                                         <div id="composeToError" class="email-compose-error-label"
@@ -3762,6 +3793,9 @@
                                     </div>
                                 </div>
 
+                                <!-- Attachments List Container -->
+                                <div class="email-composer-attachments" id="composeAttachmentsList"></div>
+
                                 <!-- 4) Message Body -->
                                 <div class="email-composer-editor-wrap">
                                     <textarea id="composeBody" style="display: none;"></textarea>
@@ -3770,9 +3804,6 @@
                                     <div class="email-composer-editor" id="composeBodyEditor" contenteditable="true"
                                         oninput="syncEditorToTextarea()"></div>
                                 </div>
-
-                                <!-- Attachments List Container -->
-                                <div class="email-composer-attachments" id="composeAttachmentsList"></div>
                             </div>
                         </div>
                     </div>
@@ -6849,15 +6880,27 @@
 
         function toggleCc() {
             const ccRow = document.getElementById('ccRow');
+            const ccBtn = document.getElementById('ccTriggerBtn');
             if (ccRow) {
-                ccRow.style.display = ccRow.style.display === 'none' ? 'flex' : 'none';
+                const isHidden = ccRow.style.display === 'none';
+                ccRow.style.display = isHidden ? 'flex' : 'none';
+                if (ccBtn) {
+                    if (isHidden) ccBtn.classList.add('cc-bcc-active');
+                    else ccBtn.classList.remove('cc-bcc-active');
+                }
             }
         }
 
         function toggleBcc() {
             const bccRow = document.getElementById('bccRow');
+            const bccBtn = document.getElementById('bccTriggerBtn');
             if (bccRow) {
-                bccRow.style.display = bccRow.style.display === 'none' ? 'flex' : 'none';
+                const isHidden = bccRow.style.display === 'none';
+                bccRow.style.display = isHidden ? 'flex' : 'none';
+                if (bccBtn) {
+                    if (isHidden) bccBtn.classList.add('cc-bcc-active');
+                    else bccBtn.classList.remove('cc-bcc-active');
+                }
             }
         }
 
@@ -7076,11 +7119,18 @@
             list.innerHTML = '';
             attachedFiles.forEach((file, index) => {
                 const pill = document.createElement('div');
-                pill.className = 'email-attachment-pill';
+                pill.className = 'email-attachment-card';
                 pill.innerHTML = `
-                    <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path></svg>
-                    <span>${escapeHtml(file.name)} (${file.size})</span>
-                    <button type="button" class="remove-btn" onclick="removeAttachment(${index})" title="Remove File">&times;</button>
+                    <div class="attachment-icon">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                    </div>
+                    <div class="attachment-info">
+                        <span class="attachment-name" title="${escapeHtml(file.name)}">${escapeHtml(file.name)}</span>
+                        <span class="attachment-size">${file.size}</span>
+                    </div>
+                    <button type="button" class="remove-btn" onclick="removeAttachment(${index})" title="Remove File">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                    </button>
                 `;
                 list.appendChild(pill);
             });
@@ -7764,6 +7814,41 @@
                 setDisplay('mailEmailIdsPanel', 'none');
                 setDisplay('mailBackupPanel', 'none');
                 setEmailDashboardCollapsed(false);
+
+                // Handle Header UI for different folders
+                const folderNameMap = {
+                    'folder:drafts': 'Drafts',
+                    'folder:deleted': 'Deleted Items',
+                    'folder:junk': 'Junk Email',
+                    'folder:archive': 'Archive',
+                    'folder:notes': 'Notes',
+                    'folder:conversation': 'Conversation'
+                };
+
+                const mailTabsContainer = document.getElementById('mailTabsContainer');
+                const mailContextTitle = document.getElementById('mailContextTitle');
+                const mailFiltersBar = document.getElementById('mailFiltersBar');
+
+                if (filter === 'folder:inbox' || filter === 'folder:sent') {
+                    if (mailTabsContainer) mailTabsContainer.style.setProperty('display', 'inline-flex', 'important');
+                    if (mailContextTitle) mailContextTitle.style.setProperty('display', 'none', 'important');
+                    if (mailFiltersBar) mailFiltersBar.style.setProperty('display', 'flex', 'important');
+                } else if (folderNameMap[filter]) {
+                    if (mailTabsContainer) mailTabsContainer.style.setProperty('display', 'none', 'important');
+                    if (mailContextTitle) {
+                        mailContextTitle.textContent = folderNameMap[filter];
+                        mailContextTitle.style.setProperty('display', 'block', 'important');
+                    }
+                    if (mailFiltersBar) mailFiltersBar.style.setProperty('display', 'none', 'important');
+                } else {
+                    // Fallback for custom folders
+                    if (mailTabsContainer) mailTabsContainer.style.setProperty('display', 'none', 'important');
+                    if (mailContextTitle) {
+                        mailContextTitle.textContent = filter.replace('folder:', '');
+                        mailContextTitle.style.setProperty('display', 'block', 'important');
+                    }
+                    if (mailFiltersBar) mailFiltersBar.style.setProperty('display', 'none', 'important');
+                }
             }
             syncMailTabStates();
             renderEmailModule();
@@ -9542,7 +9627,7 @@
                             <div class="client-field-group">
                                 <label>Client ID</label>
                                 <div style="position: relative; width: 100%;">
-                                    <input type="text" value="${escapeHtml(c.clientId || '')}" readonly style="padding-right: 36px; background-color: #f8fafc; font-family: monospace; color: #0f172a; font-weight: 500; text-overflow: ellipsis; outline: none; border-color: #e2e8f0;">
+                                    <input type="text" value="${escapeHtml(c.clientId || '')}" readonly style="padding-right: 36px; background-color: #f8fafc; color: #0f172a; font-weight: 500; text-overflow: ellipsis; outline: none; border-color: #e2e8f0;">
                                     <button type="button" onclick="navigator.clipboard.writeText('${escapeHtml(c.clientId || '')}').then(() => showToast('Client ID copied'))" style="position: absolute; right: 4px; top: 50%; transform: translateY(-50%); width: 28px; height: 28px; padding: 0; display: flex; align-items: center; justify-content: center; background: transparent; border: none; cursor: pointer; color: #64748B; border-radius: 4px; transition: background 0.2s;" onmouseover="this.style.background='#e2e8f0'" onmouseout="this.style.background='transparent'" title="Copy Client ID">
                                         <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path></svg>
                                     </button>

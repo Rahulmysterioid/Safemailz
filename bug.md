@@ -143,3 +143,15 @@ In the **new email compose** area, the formatting toolbar UI is crowded and inco
   - **Table**: Integrated formatted HTML table generator (`insertTableEditor()`).
   - **Emoji**: Integrated emoji selection popover menu (`toggleEmojiPicker()`).
   - **Editor / Proofing**: Integrated browser spellcheck toggle and text proofreading analysis (`toggleProofingEditor()`).
+
+---
+
+# Bug Report 10: Replace Sent/Received + Filter Chips with Context Title in Draft/Conversation Area (PENDING)
+
+## Status: ?? PENDING
+
+## Bug Description
+When navigating to folders other than Inbox/Sent Items (such as Drafts, Deleted Items, Junk Email, Archive, Notes, Conversation), the message list header incorrectly shows the 'Received / Sent' toggles and filter chips (All, Unread, etc.). These sections should instead display a simple context title (e.g. 'Drafts') and hide the filter chips to maintain a clean UI.
+
+## Fix Applied
+(To be implemented: Update folder selection logic to toggle visibility of filter rows and update a new header title element based on the selected folder context.)
