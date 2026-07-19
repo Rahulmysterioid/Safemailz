@@ -2840,16 +2840,40 @@ body.dashboard-body header.topbar {
 }
 
 .reading-header {
-  padding: 1.5rem 2rem 1rem;
-  border-bottom: 1px solid #F0F0F0;
+  padding: 0;
+  border-bottom: none;
   flex-shrink: 0;
 }
 
+.reading-thread-header {
+  font-size: 1.05rem;
+  color: #334155;
+  font-weight: 500;
+  padding: 14px 24px;
+  border-bottom: 1px solid #E2E8F0;
+  margin: 0;
+  line-height: 1.4;
+}
+
+.reading-subject-line {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #0F172A;
+  padding: 14px 24px;
+  border-bottom: 1px solid #CBD5E1;
+  margin: 0;
+  line-height: 1.4;
+}
+
 .reading-email-no {
-  font-size: 0.75rem;
-  color: #888;
-  font-weight: 600;
-  margin-bottom: 0.5rem;
+  font-size: 0.88rem;
+  color: #1D4ED8;
+  font-weight: 700;
+  background-color: #F1F5F9;
+  padding: 12px 24px;
+  border-bottom: 1px solid #E2E8F0;
+  margin: 0;
+  line-height: 1.4;
 }
 
 .reading-subject {
@@ -5383,12 +5407,13 @@ body.dashboard-body header.topbar {
 
 /* --- Expanded Ribbon Layout --- */
 .email-composer-toolbar.expanded-ribbon {
+  display: flex;
   flex-wrap: nowrap;
-  align-items: flex-start;
-  padding: 4px 12px;
-  height: 84px;
+  align-items: stretch;
+  padding: 2px 4px 1px 4px;
+  height: 72px;
   background: linear-gradient(to bottom, #f8fafc, #f1f5f9);
-  border-bottom: 1px solid #e2e8f0;
+  border-bottom: 1px solid #cbd5e1;
   overflow-x: auto !important;
   overflow-y: hidden !important;
   box-shadow: inset 0 -1px 4px rgba(0, 0, 0, 0.02);
@@ -5396,7 +5421,7 @@ body.dashboard-body header.topbar {
 
 /* Custom Scrollbar for Ribbon */
 .email-composer-toolbar.expanded-ribbon::-webkit-scrollbar {
-  height: 6px;
+  height: 4px;
 }
 
 .email-composer-toolbar.expanded-ribbon::-webkit-scrollbar-track {
@@ -5421,17 +5446,19 @@ body.dashboard-body header.topbar {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 0 16px;
+  justify-content: space-between;
+  padding: 1px 5px;
   position: relative;
   height: 100%;
+  flex-shrink: 0;
 }
 
 .email-composer-toolbar.expanded-ribbon .ribbon-group::after {
   content: '';
   position: absolute;
   right: 0;
-  top: 15%;
-  height: 70%;
+  top: 10%;
+  height: 80%;
   width: 1px;
   background-color: #cbd5e1;
 }
@@ -5443,26 +5470,28 @@ body.dashboard-body header.topbar {
 .email-composer-toolbar.expanded-ribbon .ribbon-group-content {
   display: flex;
   flex-direction: row;
-  gap: 4px;
-  height: calc(100% - 16px);
-  align-items: flex-start;
-  padding-top: 2px;
+  gap: 2px;
+  align-items: center;
+  flex: 1;
+  padding-top: 1px;
 }
 
 .email-composer-toolbar.expanded-ribbon .ribbon-group-label {
-  position: absolute;
-  bottom: 2px;
-  left: 0;
+  position: relative !important;
+  bottom: 0 !important;
+  left: -3px;
   width: 100%;
   text-align: center;
   justify-content: center;
-  font-size: 10px;
-  color: #475569;
+  font-size: 9px;
+  color: #64748b;
   font-weight: 600;
-  letter-spacing: 0.2px;
+  letter-spacing: 0.1px;
   text-transform: capitalize;
   z-index: 5;
   white-space: nowrap;
+  margin-top: 6px;
+  line-height: 1;
 }
 
 .email-composer-toolbar.expanded-ribbon .email-composer-toolbar-divider {
@@ -5471,19 +5500,31 @@ body.dashboard-body header.topbar {
 
 /* Ribbon Button Styles */
 .email-composer-toolbar.expanded-ribbon .email-composer-toolbar-btn {
-  border-radius: 4px;
-  transition: all 0.2s ease;
+  border-radius: 3px;
+  transition: all 0.12s ease;
   border: 1px solid transparent;
+  padding: 1px 4px;
+  height: 22px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: transparent;
+  cursor: pointer;
+  color: #334155;
 }
 
 .email-composer-toolbar.expanded-ribbon .email-composer-toolbar-btn:hover {
-  background-color: rgba(226, 232, 240, 0.7);
+  background-color: rgba(226, 232, 240, 0.85);
   border: 1px solid #cbd5e1;
+  color: #0f172a;
 }
 
-.email-composer-toolbar.expanded-ribbon .email-composer-toolbar-btn:active {
-  background-color: rgba(203, 213, 225, 0.8);
-  transform: scale(0.97);
+.email-composer-toolbar.expanded-ribbon .email-composer-toolbar-btn:active,
+.email-composer-toolbar.expanded-ribbon .email-composer-toolbar-btn.active {
+  background-color: #e2e8f0;
+  border-color: #94a3b8;
+  color: #1e293b;
+  transform: translateY(1px);
 }
 
 /* Button Labels */
@@ -5491,25 +5532,34 @@ body.dashboard-body header.topbar {
 .email-composer-toolbar.expanded-ribbon .stacked-btn-text {
   display: inline-flex !important;
   align-items: center;
-  font-size: 11px;
+  font-size: 10px;
   color: #334155;
   font-weight: 500;
-  margin-left: 4px;
+  margin-left: 2px;
+  white-space: nowrap;
 }
 
 .email-composer-toolbar.expanded-ribbon .stacked-btn {
-  flex-direction: column;
-  gap: 2px;
-  padding: 4px;
-  min-width: 52px;
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 1px !important;
+  padding: 2px 3px !important;
+  min-width: 40px;
+  height: 45px !important;
 }
 
 .email-composer-toolbar.expanded-ribbon .stacked-btn svg {
-  margin-bottom: 2px;
+  margin-bottom: 0;
+  width: 18px;
+  height: 18px;
 }
 
 .email-composer-toolbar.expanded-ribbon .stacked-btn-text {
-  margin-left: 0;
+  margin-left: 0 !important;
+  font-size: 9.5px;
+  line-height: 2;
 }
 
 /* Hide labels in compact view */
@@ -7447,11 +7497,16 @@ body.dashboard-body {
   /* 🔧 COMPOSER LAYOUT CONFIGURATION VALUES (Tweaking parameters)
      Change these values manually to resize formatting bar, composer height, or spacing.
      Yahan values change karke formatting bar aur composer ki width/height control karein: */
-  --composer-height: 100%;                  /* Composer height in normal mode (right pane) | Try: 100%, 92% */
-  --composer-max-height: none;              /* Max height limit in normal mode | Try: 650px */
-  --composer-toolbar-height: 72px;          /* Height of formatting ribbon toolbar | Try: 84px (default), 70px (compact) */
-  --composer-row-padding: 6px 16px;         /* Row spacing (From/To/Subject) | Try: 4px 16px (tighter) */
-  --composer-editor-padding: 12px 16px;     /* Editor body content padding */
+  --composer-height: 100%;
+  /* Composer height in normal mode (right pane) | Try: 100%, 92% */
+  --composer-max-height: none;
+  /* Max height limit in normal mode | Try: 650px */
+  --composer-toolbar-height: 72px;
+  /* Height of formatting ribbon toolbar */
+  --composer-row-padding: 6px 16px;
+  /* Row spacing (From/To/Subject) | Try: 4px 16px (tighter) */
+  --composer-editor-padding: 12px 16px;
+  /* Editor body content padding */
 }
 
 /* 1) Fill the Full Available Width & Remove Visual Gap */
@@ -7467,12 +7522,12 @@ body.dashboard-body {
   border-bottom: 1px solid #e2e8f0 !important;
   box-shadow: none !important;
   height: var(--composer-toolbar-height, 72px) !important;
-  padding: 4px 12px !important;
+  padding: 2px 4px 1px 4px !important;
 }
 
-/* Ensure ribbon groups fit correctly within reduced height */
+/* Ensure ribbon groups fit correctly within toolbar height */
 .email-composer-toolbar.expanded-ribbon .ribbon-group {
-  height: calc(var(--composer-toolbar-height, 72px) - 8px) !important;
+  height: calc(var(--composer-toolbar-height, 72px) - 4px) !important;
 }
 
 /* When composing, remove padding from the reading column to let the composer fill the available workspace */
@@ -7672,8 +7727,10 @@ body.dashboard-body {
 /* ============================================================ */
 
 @media (max-width: 1024px) {
+
   /* Prevent horizontal scrolling on the entire body caused by absolute positioned elements */
-  body.dashboard-body, html {
+  body.dashboard-body,
+  html {
     overflow-x: hidden !important;
     width: 100%;
   }
@@ -7690,6 +7747,7 @@ body.dashboard-body {
 }
 
 @media (max-width: 768px) {
+
   /* Mail Toolbar Wrap */
   .mail-main-toolbar {
     flex-wrap: wrap !important;
@@ -7702,7 +7760,7 @@ body.dashboard-body {
     flex-wrap: wrap !important;
     padding: 8px !important;
   }
-  
+
   .email-composer-toolbar.expanded-ribbon .ribbon-group {
     flex-wrap: wrap !important;
     height: auto !important;
@@ -7726,12 +7784,15 @@ body.dashboard-body {
   flex-shrink: 0;
   margin-left: 8px;
 }
+
 .mail-row:hover .mail-hover-actions {
   display: flex;
 }
+
 .mail-row:hover .mail-date {
   display: none;
 }
+
 .hover-action-btn {
   background: transparent;
   border: none;
@@ -7744,6 +7805,7 @@ body.dashboard-body {
   justify-content: center;
   transition: background-color 0.15s ease, color 0.15s ease;
 }
+
 .hover-action-btn:hover {
   background: var(--surface-hover);
   color: var(--primary);
@@ -7898,7 +7960,7 @@ body.dashboard-body {
 .btn-threaded-action:hover {
   background: var(--bg-light);
   border-color: #CBD5E1;
-  box-shadow: 0 1px 2px rgba(0,0,0,0.05);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
 }
 
 .btn-threaded-action svg {
@@ -7987,5 +8049,3 @@ body.dashboard-body {
   background: #F1F5F9;
   color: var(--text-dark);
 }
-
-

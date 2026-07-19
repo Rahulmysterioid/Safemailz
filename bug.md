@@ -116,6 +116,30 @@ When sending a reply or new email in a development/testing environment, a red er
 The POST /api/emails/send backend route rigidly enforced that if a user's sync_provider was set to 'google' or 'microsoft', they must have a valid OAuth access token to send the email via Gmail API / MS Graph. If the token was invalid (as is common in local testing when tokens expire), it immediately returned a 401 error, blocking the user from sending the message.
 
 ## Fix Applied
-Updated /api/emails/send in outes/emails.js. Instead of returning a 401 error and blocking the send when getValidAccessToken() returns 
+Updated /api/emails/send in outes/emails.js. Instead of returning a 401 error and blocking the send when getValidAccessToken() returns 
 ull (which happens in dev/test when tokens expire), it now gracefully logs a warning (console.warn) and falls through to the SMTP fallback mechanism (
 odemailer). This ensures emails are still successfully sent (or simulated) even if the OAuth connection is dropped or invalid.
+
+---
+
+# Bug Report 9: Email Compose Formatting Toolbar UI Overlapping & Incomplete Button Functionality (RESOLVED)
+
+## Status: ✅ FIXED
+
+## Bug Description
+In the **new email compose** area, the formatting toolbar UI is crowded and inconsistent. Some button text/labels overlap or appear on top of each other (specifically button elements colliding with `.ribbon-group-label` text like "Basic Text", "Paragraph", "Clipboard", "Insert", "Voice", "Proofing"). In addition, several toolbar controls (Paste, Subscript, Superscript, Pictures, Table, Emoji, Proofing/Editor) rely on mock/placeholder functions (`mockAction`) rather than executing actual rich-text editing actions.
+
+## Root Cause
+1. CSS height constraint (`height: 72px`) on `.email-composer-toolbar.expanded-ribbon` forces 2-row button content downwards into the absolutely positioned group labels (`.ribbon-group-label` at `bottom: 2px`).
+2. Label text inside buttons (e.g. Bullets, Numbering, Format Painter) lacks explicit line-height and margin controls, causing visual crowding.
+3. Placeholder `mockAction(...)` calls were used for several buttons instead of implementing complete rich text editing routines.
+
+## Fix Applied
+- Adjusted ribbon toolbar container styles in `dashboard.css` to provide clean vertical padding, appropriate group label positioning, and flexible horizontal scrolling.
+- Replaced all `mockAction(...)` calls with functional implementations in `dashboard.html`:
+  - **Subscript & Superscript**: Integrated native `document.execCommand('subscript')` and `document.execCommand('superscript')`.
+  - **Paste**: Integrated `navigator.clipboard.readText()` with fallback editor focus/insertion.
+  - **Pictures**: Integrated file picker image selection and URL insertion (`triggerPictureInsert()`).
+  - **Table**: Integrated formatted HTML table generator (`insertTableEditor()`).
+  - **Emoji**: Integrated emoji selection popover menu (`toggleEmojiPicker()`).
+  - **Editor / Proofing**: Integrated browser spellcheck toggle and text proofreading analysis (`toggleProofingEditor()`).
