@@ -155,3 +155,20 @@ When navigating to folders other than Inbox/Sent Items (such as Drafts, Deleted 
 
 ## Fix Applied
 (To be implemented: Update folder selection logic to toggle visibility of filter rows and update a new header title element based on the selected folder context.)
+
+---
+
+# Bug Report 11: Implement Outlook-style Signatures in Safemailz Settings (PENDING)
+
+## Status: ?? PENDING
+
+## Bug Description
+Implement Outlook-style signature management in Safemailz Settings (under Account/Account Info). User must be able to:
+- create/edit/delete multiple signatures
+- select default signature for new emails and for replies/forwards
+- automatically insert the selected default signature at the bottom of the compose body for New Mail, Reply, Reply All, and Forward
+- update immediately if default signature changes in Settings
+- persist through refresh/login if storage supports it
+
+## Fix Applied
+(To be implemented: Verify/adjust Settings UI placement to match "Settings → Account Info", verify localStorage persistence behavior, and ensure compose insertion keeps signature at the bottom—especially for Forward.)

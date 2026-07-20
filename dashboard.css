@@ -3341,7 +3341,7 @@ body.dashboard-body header.topbar {
   background: #F4F7FD;
   border-radius: 8px;
   padding: 12px 15px;
-  margin-bottom: 15px;
+  margin-bottom: 3px;
   display: flex;
   flex-direction: column;
   gap: 4px;
@@ -8088,4 +8088,9 @@ body.dashboard-body {
 .btn-threaded-discard:hover {
   background: #F1F5F9;
   color: var(--text-dark);
-}
+}. m a i l - f i l t e r - p i l l  
+   > >   d a s h b o a r d . c s s  
+ e c h o           f o n t - f a m i l y :   ' I n t e r ' ,   s a n s - s e r i f   ! i m p o r t a n t ;   > >   d a s h b o a r d . c s s  
+ e c h o    
+ 
+.mail-filter-pill { font-family: 'Inter', sans-serif !important; }

@@ -3168,32 +3168,15 @@
                                             </svg>
                                         </button>
                                         <div style="position: relative;">
-                                            <button class="email-composer-toolbar-btn dropdown-select-btn" type="button"
+                                            <button class="email-composer-toolbar-btn" type="button"
                                                 id="editorTemplateBtn"
-                                                onclick="toggleEditorDropdown('editorTemplateMenu', event)"
-                                                title="Signature/Template" style="padding: 1px 3px;">
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                                                    <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                                                    <polyline points="17 8 12 3 7 8"></polyline>
-                                                    <line x1="12" y1="3" x2="12" y2="15"></line>
-                                                </svg>
-                                                <svg xmlns="http://www.w3.org/2000/svg" width="9" height="9"
-                                                    viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                                                    stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                                                    style="margin-left: 1px;">
-                                                    <polyline points="6 9 12 15 18 9"></polyline>
+                                                onclick="openSettingsPanel('settingsSignatures')"
+                                                title="Manage Signatures">
+                                                <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                                    <path d="M12 20h9"></path>
+                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
                                                 </svg>
                                             </button>
-                                            <div class="email-composer-dropdown-menu" id="editorTemplateMenu"
-                                                style="width: 140px;">
-                                                <button class="email-composer-dropdown-item" type="button"
-                                                    onclick="insertEmailTemplate('formal')">Formal Greeting</button>
-                                                <button class="email-composer-dropdown-item" type="button"
-                                                    onclick="insertEmailTemplate('signature')">Standard
-                                                    Signature</button>
-                                            </div>
                                         </div>
                                     </div>
                                     <div style="display: flex; flex-direction: column; gap: 2px;">
@@ -6995,16 +6978,32 @@
         }
 
         // Compose Email
-        function openComposeModal() {
+        function openComposeModal(mode = 'new') {
             currentDraftId = null;
             attachedFiles = [];
 
             document.getElementById('composeTo').value = '';
             document.getElementById('composeSubject').value = '';
-            document.getElementById('composeBody').value = '';
+            
+            let sigHtml = '';
+            try {
+                const sigs = JSON.parse(localStorage.getItem('userSignatures') || '[]');
+                const defId = (mode === 'reply' || mode === 'forward') 
+                    ? localStorage.getItem('defaultSignatureReply') 
+                    : localStorage.getItem('defaultSignatureNew');
+                
+                if (defId) {
+                    const sig = sigs.find(s => s.id === defId);
+                    if (sig && sig.content) {
+                        sigHtml = '<br><br><div class="email-signature">' + sig.content + '</div>';
+                    }
+                }
+            } catch(e) { console.error(e); }
+
+            document.getElementById('composeBody').value = sigHtml;
 
             const editor = document.getElementById('composeBodyEditor');
-            if (editor) editor.innerHTML = '';
+            if (editor) editor.innerHTML = sigHtml;
 
             document.getElementById('composeEmailTitle').textContent = "New Message";
 
@@ -7357,7 +7356,7 @@
             const subjectEl = document.getElementById('readingSubjectLine');
             const rawSubject = subjectEl ? subjectEl.textContent.replace(/^Subject:\s*/i, '') : '';
             const subject = mailData ? mailData.subject : rawSubject;
-            openComposeModal();
+            openComposeModal('reply');
             document.getElementById('composeTo').value = senderEmail || '';
             document.getElementById('composeSubject').value = "Re: " + (subject || '');
             syncTextareaToEditor();
@@ -7369,9 +7368,25 @@
             const subject = mailData ? mailData.subject : rawSubjectFwd;
             const senderEmail = mailData ? (mailData.senderEmail || mailData.sender) : document.getElementById('readingSenderEmail').textContent;
             const originalBody = mailData ? (mailData.body || mailData.preview || '') : document.getElementById('readingBody').innerHTML;
-            openComposeModal();
+
+            openComposeModal('forward');
+
+            // Default signature should remain at the bottom after we append forwarded content
+            let signatureHtml = '';
+            try {
+                signatureHtml = document.getElementById('composeBody').value || '';
+            } catch (e) { }
+
             document.getElementById('composeSubject').value = "Fwd: " + (subject || '');
-            document.getElementById('composeBody').value = "<br><br>--- Forwarded Message ---<br><b>From:</b> " + escapeHtml(senderEmail || '') + "<br><br>" + originalBody;
+
+            const forwardedHtml =
+                "<br><br>--- Forwarded Message ---<br><b>From:</b> " + escapeHtml(senderEmail || '') + "<br><br>" + originalBody;
+
+            // Replace editor/body with forwarded content + signature
+            document.getElementById('composeBody').value = forwardedHtml + (signatureHtml || '');
+            const editor = document.getElementById('composeBodyEditor');
+            if (editor) editor.innerHTML = document.getElementById('composeBody').value;
+
             syncTextareaToEditor();
         }
 
@@ -11559,6 +11574,13 @@
 
             const arrowIcon = '<svg class="email-context-submenu-arrow" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"></polyline></svg>';
 
+            const targetIdInt = parseInt(mail.id, 10);
+            const targetIdStr = String(mail.id);
+            const isDrafts = (mail.folder && mail.folder.toLowerCase() === 'drafts') || (typeof activeEmailFilter !== 'undefined' && activeEmailFilter === 'folder:drafts');
+            const hasTargetId = typeof selectedEmailIds !== 'undefined' && (selectedEmailIds.has(targetIdInt) || selectedEmailIds.has(targetIdStr));
+            const isMultiSelect = isDrafts && typeof selectedEmailIds !== 'undefined' && selectedEmailIds.size > 1 && hasTargetId;
+            const targetMailIds = isMultiSelect ? Array.from(selectedEmailIds) : [mail.id];
+
             const renderSubmenu = (items) => {
                 if (!items || items.length === 0) {
                     return '<div class="email-context-submenu-container"><div class="email-context-item disabled"><div class="email-context-label" style="padding-left: 12px; color: #a19f9d;">No subfolders</div></div></div>';
@@ -11571,7 +11593,88 @@
                 `).join('') + '</div>';
             };
 
-            const options = [
+            let options = [];
+            
+            if (isMultiSelect) {
+                options = [
+                    {
+                        label: 'Delete',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2-2v2"></path></svg>',
+                        action: () => {
+                            document.getElementById('emailContextMenu').classList.remove('show');
+                            handleEmailAction('delete', targetMailIds);
+                        }
+                    },
+                    {
+                        label: 'Categorize',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+                        hasSubmenu: true,
+                        submenuContent: (() => {
+                            let customCategoriesHtml = '';
+                            try {
+                                let customCats = JSON.parse(localStorage.getItem('customCategories') || '[]');
+                                customCats.forEach(cat => {
+                                    customCategoriesHtml += `
+                                        <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, '${cat.name}'));">
+                                            <div class="email-context-icon" style="color: ${cat.color};"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                            <div class="email-context-label">${cat.name} category</div>
+                                        </div>
+                                    `;
+                                });
+                            } catch (e) { }
+                            return `
+                            <div class="email-context-submenu-container" style="width: 220px; padding-top: 0;">
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, 'blue'));">
+                                    <div class="email-context-icon" style="color: #0078d4;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                    <div class="email-context-label">Blue category</div>
+                                </div>
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, 'green'));">
+                                    <div class="email-context-icon" style="color: #107c10;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                    <div class="email-context-label">Green category</div>
+                                </div>
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, 'orange'));">
+                                    <div class="email-context-icon" style="color: #d83b01;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                    <div class="email-context-label">Orange category</div>
+                                </div>
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, 'purple'));">
+                                    <div class="email-context-icon" style="color: #5c2d91;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                    <div class="email-context-label">Purple category</div>
+                                </div>
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, 'red'));">
+                                    <div class="email-context-icon" style="color: #a4262c;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                    <div class="email-context-label">Red category</div>
+                                </div>
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, 'yellow'));">
+                                    <div class="email-context-icon" style="color: #8a6a00;"><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path></svg></div>
+                                    <div class="email-context-label">Yellow category</div>
+                                </div>
+                                ${customCategoriesHtml}
+                                <div class="email-context-separator"></div>
+                                <div class="email-context-item" onclick="document.getElementById('emailContextMenu').classList.remove('show'); [${targetMailIds.map(id=>`'${id}'`).join(',')}].forEach(id=>setCategory(id, null));">
+                                    <div class="email-context-label" style="padding-left: 28px;">Clear all categories</div>
+                                </div>
+                            </div>`;
+                        })()
+                    },
+                    {
+                        label: 'Flag',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"></path><line x1="4" y1="22" x2="4" y2="15"></line></svg>',
+                        action: () => { 
+                            document.getElementById('emailContextMenu').classList.remove('show');
+                            if (typeof showToast === 'function') showToast(targetMailIds.length + ' emails flagged.'); 
+                        }
+                    },
+                    {
+                        label: 'View',
+                        icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>',
+                        hasSubmenu: true,
+                        submenuContent: renderSubmenu([
+                            { label: 'View message details', actionStr: `(function(){ document.getElementById('emailContextMenu').classList.remove('show'); showToast('Viewing details for multiple messages is not supported.'); })()` }
+                        ])
+                    }
+                ];
+            } else {
+                options = [
                 {
                     label: 'Reply',
                     icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 17 4 12 9 7"></polyline><path d="M20 18v-2a4 4 0 0 0-4-4H4"></path></svg>',
@@ -11797,6 +11900,7 @@
                     ])
                 }
             ];
+            }
 
             emailContextMenu.innerHTML = options.map((opt, i) => {
                 if (opt.divider) return '<div class="email-context-separator"></div>';
@@ -12501,6 +12605,15 @@
                     </svg>
                     Account Info
                 </button>
+                <button class="settings-float-submenu-item" data-section="settingsSignatures"
+                    onclick="switchSettingsSection(this)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <path d="M21.17 3.83a2.83 2.83 0 0 0-4 0l-14 14v4h4l14-14a2.83 2.83 0 0 0 0-4z"></path>
+                        <line x1="16.5" y1="7.5" x2="20.5" y2="11.5"></line>
+                    </svg>
+                    Signatures
+                </button>
                 <button class="settings-float-submenu-item" data-section="settingsOrgInfo"
                     onclick="switchSettingsSection(this)">
                     <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -12607,6 +12720,47 @@
                             <span class="settings-float-row-value" id="settingsUserJoined">-</span>
                         </div>
                     </div>
+                </div>
+
+                <!-- Signatures -->
+                <div class="settings-float-section" id="settingsSignatures" data-tab="account">
+                    <h3 class="settings-float-section-title">Signatures</h3>
+                    <p class="settings-float-section-desc" style="margin-bottom: 24px;">You can add and modify signatures that can be added to your emails. You can also choose which signature to add by default to your new emails and replies.</p>
+                    
+                    <div style="display: flex; justify-content: flex-end; margin-bottom: 20px;">
+                        <button type="button" class="btn btn-primary" onclick="openSignatureEditor()" style="display:flex; align-items:center; gap:8px; padding: 6px 12px; font-weight: 500;">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                            Add signature
+                        </button>
+                    </div>
+
+
+                    <div style="display: flex; gap: 24px; margin-bottom: 24px;">
+                        <div style="flex: 1;">
+                            <label style="display:block; font-size: 13px; margin-bottom: 6px; font-weight: 500; color: var(--text-primary);">Default for new messages</label>
+                            <select id="defaultSignatureNew" onchange="saveDefaultSignature('new', this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border-light); border-radius: 4px; background: var(--surface); color: var(--text-primary);">
+                                <option value="">No signature yet</option>
+                            </select>
+                        </div>
+                        <div style="flex: 1;">
+                            <label style="display:block; font-size: 13px; margin-bottom: 6px; font-weight: 500; color: var(--text-primary);">Default for replies and forwards</label>
+                            <select id="defaultSignatureReply" onchange="saveDefaultSignature('reply', this.value)" style="width: 100%; padding: 8px; border: 1px solid var(--border-light); border-radius: 4px; background: var(--surface); color: var(--text-primary);">
+                                <option value="">No signature yet</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="settings-float-card" id="signaturesListContainer" style="min-height: 200px; display: flex; flex-direction: column; background: var(--surface);">
+                        <div id="noSignaturesEmptyState" style="padding: 40px; text-align: center; color: var(--text-secondary);">
+                            <div style="margin-bottom: 8px; font-weight: 500; color: var(--text-primary);">No signature yet</div>
+                            <div style="font-size: 13px;">Create your first signature.</div>
+                        </div>
+                        <div id="signaturesList" style="display: none; flex-direction: column; gap: 1px; background: var(--border-light);">
+                            <!-- Populated via JS -->
+                        </div>
+                    </div>
+
+
                 </div>
 
                 <!-- Organization Info -->
@@ -12936,6 +13090,7 @@
         const settingsSubmenus = {
             account: [
                 { id: 'settingsAccountInfo', label: 'Account Info', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>' },
+                { id: 'settingsSignatures', label: 'Signatures', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21.17 3.83a2.83 2.83 0 0 0-4 0l-14 14v4h4l14-14a2.83 2.83 0 0 0 0-4z"></path><line x1="16.5" y1="7.5" x2="20.5" y2="11.5"></line></svg>' },
                 { id: 'settingsOrgInfo', label: 'Organization', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path><polyline points="9 22 9 12 15 12 15 22"></polyline></svg>' },
                 { id: 'settingsSignupDetails', label: 'Signup Details', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>' },
                 { id: 'settingsAccountSettings', label: 'Settings', icon: '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15"></path></svg>' },
@@ -12998,6 +13153,7 @@
         // Map old section IDs to tab names for backward compatibility
         const sectionToTab = {
             settingsAccountInfo: 'account',
+            settingsSignatures: 'account',
             settingsOrgInfo: 'account',
             settingsSignupDetails: 'account',
             settingsAccountSettings: 'account',
@@ -13323,6 +13479,180 @@
             }
         }
     </script>
+    <!-- Signature Modal -->
+    <div id="signatureModalOverlay" class="settings-overlay" onclick="closeSignatureEditor()" style="z-index:10000;"></div>
+    <div id="signatureModal" class="settings-floating-panel" style="width: 720px; max-width: 95vw; height: auto; max-height: 90vh; z-index:10001;">
+        <div class="settings-float-header" style="display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid var(--border-light); padding:16px 20px;">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <h2 id="signatureModalTitle" style="margin:0; font-size:18px; font-weight:600;">Edit signature</h2>
+            </div>
+            <div style="display:flex; align-items:center; gap:12px;">
+                <span id="signatureModalUserEmail" style="font-size:12px; color:var(--text-secondary); background:var(--surface-light); padding:4px 10px; border-radius:12px; border:1px solid var(--border-light);">outlook_82DD0E9DF3456E98@outlook.com</span>
+                <button class="settings-float-close-btn" onclick="closeSignatureEditor()">&times;</button>
+            </div>
+        </div>
+        <div class="settings-float-body" style="flex-direction: column; padding: 16px 20px; overflow-y:auto;">
+            <!-- Ribbon Tabs Navigation (Format text / Insert) -->
+            <div style="display: flex; gap: 20px; border-bottom: 1px solid var(--border-light); padding: 0 4px; margin-bottom: 12px;">
+                <div id="sigTabFormat" onclick="switchSigTab('format')" class="sig-tab active" style="padding: 6px 4px; font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid var(--primary, #0078d4); color: var(--primary, #0078d4);">Format text</div>
+                <div id="sigTabInsert" onclick="switchSigTab('insert')" class="sig-tab" style="padding: 6px 4px; font-size: 13px; font-weight: 500; cursor: pointer; border-bottom: 2px solid transparent; color: var(--text-secondary);">Insert</div>
+            </div>
+
+            <!-- Format Toolbar Container -->
+            <div id="signatureFormatToolbar" class="mail-toolbar disabled-toolbar" style="margin-bottom: 14px; border: 1px solid var(--border-light); border-radius: 6px; background: var(--surface-light); transition: opacity 0.2s; pointer-events: none; opacity: 0.5; padding: 10px 12px;">
+                
+                <!-- TAB 1: Format Text Ribbon -->
+                <div id="sigRibbonFormat" style="display: flex; gap: 16px; align-items: stretch; overflow-x: auto;">
+                    <!-- Group 1: Clipboard -->
+                    <div style="display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-light); padding-right: 14px;">
+                        <div style="display: flex; gap: 4px; align-items: center;">
+                            <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('cut')" title="Cut" style="padding: 4px 8px; font-size: 12px; display:flex; align-items:center; gap:4px;">
+                                <span>✂️</span> Cut
+                            </button>
+                            <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('copy')" title="Copy" style="padding: 4px 8px; font-size: 12px; display:flex; align-items:center; gap:4px;">
+                                <span>📋</span> Copy
+                            </button>
+                            <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); copySigFormat()" title="Format Painter" style="padding: 4px 8px; font-size: 12px; display:flex; align-items:center; gap:4px;">
+                                <span>🖌️</span> Format painter
+                            </button>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); text-align: center; margin-top: 6px; font-weight: 500;">Clipboard</div>
+                    </div>
+
+                    <!-- Group 2: Basic Text -->
+                    <div style="display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-light); padding-right: 14px;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <!-- Top row: Fonts, sizes, grow/shrink, clear format -->
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                <select onchange="document.execCommand('fontName', false, this.value)" style="height: 26px; font-size: 12px; border: 1px solid var(--border-light); border-radius: 4px; padding: 0 4px; background: var(--surface); color: var(--text-primary); outline: none;">
+                                    <option value="Inter" selected>Inter</option>
+                                    <option value="Arial">Arial</option>
+                                    <option value="Calibri">Calibri</option>
+                                    <option value="Comic Sans MS">Comic Sans</option>
+                                    <option value="Courier New">Courier New</option>
+                                    <option value="Georgia">Georgia</option>
+                                    <option value="Segoe UI">Segoe UI</option>
+                                    <option value="Times New Roman">Times New Roman</option>
+                                    <option value="Verdana">Verdana</option>
+                                </select>
+
+                                <select onchange="document.execCommand('fontSize', false, this.value)" style="height: 26px; font-size: 12px; border: 1px solid var(--border-light); border-radius: 4px; padding: 0 4px; background: var(--surface); color: var(--text-primary); outline: none;">
+                                    <option value="1">8pt</option>
+                                    <option value="2">10pt</option>
+                                    <option value="3" selected>12pt</option>
+                                    <option value="4">14pt</option>
+                                    <option value="5">18pt</option>
+                                    <option value="6">24pt</option>
+                                    <option value="7">36pt</option>
+                                </select>
+
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); changeSigFontSize(1)" title="Increase Font Size" style="font-weight:600; padding:2px 6px;">aA</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); changeSigFontSize(-1)" title="Decrease Font Size" style="font-weight:600; padding:2px 6px;">A-</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('removeFormat')" title="Clear Formatting" style="padding:2px 6px;">A⌫</button>
+                            </div>
+
+                            <!-- Bottom row: Bold, Italic, Underline, Strikethrough, Sub/Sup, Highlight, ForeColor -->
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('bold')" title="Bold"><b>B</b></button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('italic')" title="Italic"><i>I</i></button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('underline')" title="Underline"><u>U</u></button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('strikeThrough')" title="Strikethrough"><s>S</s></button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('subscript')" title="Subscript">x<sub>2</sub></button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('superscript')" title="Superscript">x<sup>2</sup></button>
+
+                                <!-- Highlight color picker -->
+                                <label title="Highlight Color" style="cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; border:1px solid var(--border-light); border-radius:4px; background:var(--surface); position:relative;">
+                                    <span>🖊️</span>
+                                    <input type="color" value="#ffff00" onchange="document.execCommand('hiliteColor', false, this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
+                                </label>
+
+                                <!-- Text color picker -->
+                                <label title="Text Color" style="cursor:pointer; display:inline-flex; align-items:center; justify-content:center; width:26px; height:24px; border:1px solid var(--border-light); border-radius:4px; background:var(--surface); position:relative;">
+                                    <span style="font-weight:bold; color:#d93025; text-decoration:underline;">A</span>
+                                    <input type="color" value="#000000" onchange="document.execCommand('foreColor', false, this.value)" style="opacity:0; position:absolute; width:100%; height:100%; cursor:pointer;">
+                                </label>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); text-align: center; margin-top: 6px; font-weight: 500;">Basic Text</div>
+                    </div>
+
+                    <!-- Group 3: Paragraph -->
+                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="display: flex; flex-direction: column; gap: 6px;">
+                            <!-- Top row: Lists & Indent -->
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('insertUnorderedList')" title="Bullet List">•≡ List</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('insertOrderedList')" title="Numbered List">1≡ List</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('outdent')" title="Decrease Indent">←≡</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('indent')" title="Increase Indent">≡→</button>
+                            </div>
+
+                            <!-- Bottom row: Alignments & Quote -->
+                            <div style="display: flex; gap: 4px; align-items: center;">
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('justifyLeft')" title="Align Left">Left</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('justifyCenter')" title="Align Center">Center</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('justifyRight')" title="Align Right">Right</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('justifyFull')" title="Justify">Justify</button>
+                                <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('formatBlock', false, 'blockquote')" title="Quote">” Quote</button>
+                            </div>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); text-align: center; margin-top: 6px; font-weight: 500;">Paragraph</div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: Insert Ribbon -->
+                <div id="sigRibbonInsert" style="display: none; gap: 16px; align-items: stretch;">
+                    <!-- Group 1: Media -->
+                    <div style="display: flex; flex-direction: column; justify-content: space-between; border-right: 1px solid var(--border-light); padding-right: 14px;">
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button type="button" class="mail-toolbar-btn" onclick="document.getElementById('sigImageInput').click()" title="Insert Picture" style="padding: 6px 12px; font-size: 13px; display:flex; align-items:center; gap:6px;">
+                                🖼️ Insert Picture
+                            </button>
+                            <input type="file" id="sigImageInput" accept="image/*" style="display:none;" onchange="handleSigImageUpload(this)">
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); text-align: center; margin-top: 6px; font-weight: 500;">Illustrations</div>
+                    </div>
+
+                    <!-- Group 2: Links & Content -->
+                    <div style="display: flex; flex-direction: column; justify-content: space-between;">
+                        <div style="display: flex; gap: 6px; align-items: center;">
+                            <button type="button" class="mail-toolbar-btn" onclick="insertSigLink()" title="Insert Hyperlink" style="padding: 6px 12px; font-size: 13px; display:flex; align-items:center; gap:6px;">
+                                🔗 Link
+                            </button>
+                            <button type="button" class="mail-toolbar-btn" onclick="insertSigTable()" title="Insert Table" style="padding: 6px 12px; font-size: 13px; display:flex; align-items:center; gap:6px;">
+                                ▦ Table
+                            </button>
+                            <button type="button" class="mail-toolbar-btn" onmousedown="event.preventDefault(); document.execCommand('insertHorizontalRule')" title="Horizontal Line" style="padding: 6px 12px; font-size: 13px; display:flex; align-items:center; gap:6px;">
+                                ➖ Horizontal Line
+                            </button>
+                        </div>
+                        <div style="font-size: 10px; color: var(--text-secondary); text-align: center; margin-top: 6px; font-weight: 500;">Insert Options</div>
+                    </div>
+                </div>
+            </div>
+            
+            <input type="text" id="signatureEditName" placeholder="Add a signature name" style="width: 100%; border: 1px solid var(--border-light); border-radius: 4px; padding: 10px; font-size: 14px; margin-bottom: 12px; outline: none; background: var(--surface); color:var(--text-primary);">
+            
+            <div id="signatureEditContent" contenteditable="true" style="width: 100%; border: 1px solid var(--border-light); border-radius: 4px; padding: 12px; min-height: 200px; font-size: 14px; outline: none; background: var(--surface); color: var(--text-primary); margin-bottom: 20px; overflow-y:auto;" onfocus="document.getElementById('signatureFormatToolbar').style.pointerEvents='auto'; document.getElementById('signatureFormatToolbar').style.opacity='1';" onblur="setTimeout(() => { if(document.activeElement !== document.getElementById('signatureEditContent')) { document.getElementById('signatureFormatToolbar').style.pointerEvents='none'; document.getElementById('signatureFormatToolbar').style.opacity='0.5'; } }, 200);"></div>
+            
+            <input type="hidden" id="signatureEditId" value="">
+            
+            <div style="display:flex; gap: 24px; margin-bottom: 24px;">
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-primary); cursor:pointer;">
+                    <input type="checkbox" id="sigDefaultNew"> Set default for new messages
+                </label>
+                <label style="display:flex; align-items:center; gap:8px; font-size:13px; color:var(--text-primary); cursor:pointer;">
+                    <input type="checkbox" id="sigDefaultReply"> Set default for replies and forwards
+                </label>
+            </div>
+            
+            <div style="display: flex; justify-content: flex-end; gap: 12px;">
+                <button type="button" class="btn btn-primary" onclick="saveCurrentSignature()" style="padding: 6px 20px;">Save</button>
+                <button type="button" class="btn btn-outline" onclick="closeSignatureEditor()" style="padding: 6px 20px;">Cancel</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Feature 6: Profile Modal -->
     <div id="profileModalOverlay" class="settings-overlay" onclick="closeProfileModal()"></div>
     <div id="profileModal" class="settings-floating-panel"
@@ -13413,6 +13743,234 @@
         }
         // Show daily notification on load
         setTimeout(showNotification, 2000);
+
+        // --- Signature Management Logic ---
+        function loadSignatures() {
+            const sigs = JSON.parse(localStorage.getItem('userSignatures') || '[]');
+            const defNew = localStorage.getItem('defaultSignatureNew') || '';
+            const defReply = localStorage.getItem('defaultSignatureReply') || '';
+            
+            const listContainer = document.getElementById('signaturesList');
+            const emptyState = document.getElementById('noSignaturesEmptyState');
+            const selectNew = document.getElementById('defaultSignatureNew');
+            const selectReply = document.getElementById('defaultSignatureReply');
+            
+            // Populate Dropdowns
+            let optionsHtml = '<option value="">No signature</option>';
+            sigs.forEach(s => {
+                optionsHtml += `<option value="${s.id}">${s.name}</option>`;
+            });
+            selectNew.innerHTML = optionsHtml;
+            selectReply.innerHTML = optionsHtml;
+            selectNew.value = defNew;
+            selectReply.value = defReply;
+            
+            // Populate List
+            if (sigs.length === 0) {
+                emptyState.style.display = 'block';
+                listContainer.style.display = 'none';
+            } else {
+                emptyState.style.display = 'none';
+                listContainer.style.display = 'flex';
+                let listHtml = '';
+                sigs.forEach(s => {
+                    listHtml += `
+                    <div style="padding: 12px 16px; display: flex; justify-content: space-between; align-items: center; background: var(--surface);">
+                        <div>
+                            <div style="font-weight: 500; font-size: 14px; color: var(--text-primary); margin-bottom: 4px;">${s.name}</div>
+                            <div style="font-size: 12px; color: var(--text-secondary); max-height: 20px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${s.content.replace(/<[^>]*>?/gm, ' ')}</div>
+                        </div>
+                        <div style="display: flex; gap: 8px;">
+                            <button type="button" class="btn btn-outline" onclick="editSignature('${s.id}')" style="padding: 4px 8px; font-size: 12px;">Edit</button>
+                            <button type="button" class="btn btn-outline" onclick="deleteSignature('${s.id}')" style="padding: 4px 8px; font-size: 12px; color: var(--danger);">Delete</button>
+                        </div>
+                    </div>`;
+                });
+                listContainer.innerHTML = listHtml;
+            }
+        }
+
+        function saveDefaultSignature(type, val) {
+            if (type === 'new') localStorage.setItem('defaultSignatureNew', val);
+            if (type === 'reply') localStorage.setItem('defaultSignatureReply', val);
+        }
+
+        function switchSigTab(tab) {
+            const tabF = document.getElementById('sigTabFormat');
+            const tabI = document.getElementById('sigTabInsert');
+            const ribbonF = document.getElementById('sigRibbonFormat');
+            const ribbonI = document.getElementById('sigRibbonInsert');
+
+            if (tab === 'format') {
+                tabF.style.borderBottom = '2px solid var(--primary, #0078d4)';
+                tabF.style.color = 'var(--primary, #0078d4)';
+                tabF.style.fontWeight = '600';
+                
+                tabI.style.borderBottom = '2px solid transparent';
+                tabI.style.color = 'var(--text-secondary)';
+                tabI.style.fontWeight = '500';
+                
+                ribbonF.style.display = 'flex';
+                ribbonI.style.display = 'none';
+            } else {
+                tabI.style.borderBottom = '2px solid var(--primary, #0078d4)';
+                tabI.style.color = 'var(--primary, #0078d4)';
+                tabI.style.fontWeight = '600';
+                
+                tabF.style.borderBottom = '2px solid transparent';
+                tabF.style.color = 'var(--text-secondary)';
+                tabF.style.fontWeight = '500';
+                
+                ribbonI.style.display = 'flex';
+                ribbonF.style.display = 'none';
+            }
+        }
+
+        function changeSigFontSize(dir) {
+            const size = document.queryCommandValue('fontSize') || '3';
+            let newSize = parseInt(size) + dir;
+            if (newSize < 1) newSize = 1;
+            if (newSize > 7) newSize = 7;
+            document.execCommand('fontSize', false, newSize);
+        }
+
+        function handleSigImageUpload(input) {
+            if (input.files && input.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.execCommand('insertImage', false, e.target.result);
+                };
+                reader.readAsDataURL(input.files[0]);
+            }
+        }
+
+        function insertSigLink() {
+            const url = prompt('Enter URL for link:', 'https://');
+            if (url) {
+                document.execCommand('createLink', false, url);
+            }
+        }
+
+        function insertSigTable() {
+            const tableHtml = '<table border="1" style="border-collapse:collapse; width:100%; border:1px solid var(--border-light, #ccc); margin: 8px 0;"><tbody><tr><td style="padding:8px; border:1px solid var(--border-light, #ccc);">Cell 1</td><td style="padding:8px; border:1px solid var(--border-light, #ccc);">Cell 2</td></tr><tr><td style="padding:8px; border:1px solid var(--border-light, #ccc);">Cell 3</td><td style="padding:8px; border:1px solid var(--border-light, #ccc);">Cell 4</td></tr></tbody></table>';
+            document.execCommand('insertHTML', false, tableHtml);
+        }
+
+        function copySigFormat() {
+            if (typeof showToast === 'function') showToast('Format Painter: Select text to apply formatting.');
+        }
+
+        function openSignatureEditor() {
+            document.getElementById('signatureModalTitle').textContent = 'Add signature';
+            document.getElementById('signatureEditId').value = '';
+            document.getElementById('signatureEditName').value = '';
+            document.getElementById('signatureEditContent').innerHTML = '';
+            
+            document.getElementById('sigDefaultNew').checked = false;
+            document.getElementById('sigDefaultReply').checked = false;
+            
+            const userStr = localStorage.getItem('currentUser');
+            if (userStr) {
+                try {
+                    const u = JSON.parse(userStr);
+                    if (u.email) document.getElementById('signatureModalUserEmail').textContent = u.email;
+                } catch(e){}
+            }
+
+            switchSigTab('format');
+
+            document.getElementById('signatureFormatToolbar').style.pointerEvents = 'none';
+            document.getElementById('signatureFormatToolbar').style.opacity = '0.5';
+            
+            document.getElementById('signatureModalOverlay').classList.add('active');
+            document.getElementById('signatureModal').classList.add('active');
+            
+            setTimeout(() => document.getElementById('signatureEditName').focus(), 300);
+        }
+
+        function editSignature(id) {
+            const sigs = JSON.parse(localStorage.getItem('userSignatures') || '[]');
+            const sig = sigs.find(s => s.id === id);
+            if (sig) {
+                document.getElementById('signatureModalTitle').textContent = 'Edit signature';
+                document.getElementById('signatureEditId').value = sig.id;
+                document.getElementById('signatureEditName').value = sig.name;
+                document.getElementById('signatureEditContent').innerHTML = sig.content;
+                
+                document.getElementById('sigDefaultNew').checked = (localStorage.getItem('defaultSignatureNew') === sig.id);
+                document.getElementById('sigDefaultReply').checked = (localStorage.getItem('defaultSignatureReply') === sig.id);
+                
+                const userStr = localStorage.getItem('currentUser');
+                if (userStr) {
+                    try {
+                        const u = JSON.parse(userStr);
+                        if (u.email) document.getElementById('signatureModalUserEmail').textContent = u.email;
+                    } catch(e){}
+                }
+
+                switchSigTab('format');
+
+                document.getElementById('signatureFormatToolbar').style.pointerEvents = 'none';
+                document.getElementById('signatureFormatToolbar').style.opacity = '0.5';
+                
+                document.getElementById('signatureModalOverlay').classList.add('active');
+                document.getElementById('signatureModal').classList.add('active');
+                
+                setTimeout(() => document.getElementById('signatureEditName').focus(), 300);
+            }
+        }
+
+        function closeSignatureEditor() {
+            document.getElementById('signatureModalOverlay').classList.remove('active');
+            document.getElementById('signatureModal').classList.remove('active');
+        }
+
+        function saveCurrentSignature() {
+            const id = document.getElementById('signatureEditId').value || 'sig_' + Date.now();
+            const name = document.getElementById('signatureEditName').value.trim() || 'Untitled Signature';
+            const content = document.getElementById('signatureEditContent').innerHTML;
+            
+            let sigs = JSON.parse(localStorage.getItem('userSignatures') || '[]');
+            const existingIndex = sigs.findIndex(s => s.id === id);
+            if (existingIndex >= 0) {
+                sigs[existingIndex] = { id, name, content };
+            } else {
+                sigs.push({ id, name, content });
+            }
+            localStorage.setItem('userSignatures', JSON.stringify(sigs));
+            
+            if (document.getElementById('sigDefaultNew').checked) {
+                saveDefaultSignature('new', id);
+            } else if (localStorage.getItem('defaultSignatureNew') === id) {
+                localStorage.removeItem('defaultSignatureNew');
+            }
+            
+            if (document.getElementById('sigDefaultReply').checked) {
+                saveDefaultSignature('reply', id);
+            } else if (localStorage.getItem('defaultSignatureReply') === id) {
+                localStorage.removeItem('defaultSignatureReply');
+            }
+            
+            closeSignatureEditor();
+            loadSignatures();
+            if (typeof showToast === 'function') showToast('Signature saved.');
+        }
+
+        function deleteSignature(id) {
+            if (!confirm('Are you sure you want to delete this signature?')) return;
+            let sigs = JSON.parse(localStorage.getItem('userSignatures') || '[]');
+            sigs = sigs.filter(s => s.id !== id);
+            localStorage.setItem('userSignatures', JSON.stringify(sigs));
+            
+            if (localStorage.getItem('defaultSignatureNew') === id) localStorage.removeItem('defaultSignatureNew');
+            if (localStorage.getItem('defaultSignatureReply') === id) localStorage.removeItem('defaultSignatureReply');
+            
+            loadSignatures();
+            if (typeof showToast === 'function') showToast('Signature deleted.');
+        }
+
+        // Run this when DOM is ready or modal opens
+        document.addEventListener('DOMContentLoaded', loadSignatures);
     </script>
 </body>
 
